@@ -1,0 +1,162 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+}
+
+.navbar {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-color: #fff;
+    padding: 10px 50px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    position: sticky;
+    top: 0;
+    width: 100%;
+    z-index: 1000;
+}
+
+.navbar-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+}
+
+.navbar-logo {
+    font-size: 1.5rem;
+    font-weight: bold;
+}
+.navbar-logo a {
+    text-decoration: none;
+    color: #333;
+}
+
+.navbar-auth {
+    display: flex;
+    gap: 20px;
+    font-size: 0.9rem;
+}
+
+.navbar-auth a {
+    text-decoration: none;
+    color: #333;
+}
+
+.navbar-auth a:hover {
+    color: #007bff;
+}
+
+.search-bar {
+    margin: 20px 0;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+}
+
+.search-bar input[type="text"] {
+    width: 500px;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px 0 0 4px;
+}
+
+.search-bar input[type="submit"] {
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 0 4px 4px 0;
+    cursor: pointer;
+}
+
+.navbar-links {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-grow: 1;
+    width: 100%;
+}
+
+.navbar-links ul {
+    list-style: none;
+    display: flex;
+    gap: 20px;
+}
+
+.navbar-links ul li {
+    position: relative;
+}
+
+.navbar-links ul li a {
+    text-decoration: none;
+    color: #333;
+    font-size: 1rem;
+}
+
+.navbar-links ul li a:hover {
+    color: #007bff;
+}
+
+.menu-icon {
+    display: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+}
+
+@media (max-width: 768px) {
+    .navbar {
+        padding: 10px 20px;
+    }
+
+    .navbar-top {
+        display: flex;
+        justify-content: space-between; /* 양쪽 정렬 */
+        align-items: center; /* 세로 정렬 */
+        width: 100%;
+    }
+
+    .navbar-logo {
+        order: 1; /* GOODSSHOP 왼쪽으로 */
+    }
+
+    .navbar-auth {
+        display: flex;
+        flex-direction: row; /* 가로 정렬 */
+        align-items: center; /* 세로 정렬 */
+        gap: 10px;
+        order: 2; /* 중앙으로 이동 */
+        margin: 0 auto; /* 중앙 정렬 */
+    }
+
+    .menu-icon {
+        order: 3; /* 햄버거 아이콘 오른쪽으로 */
+        display: block;
+    }
+
+    .navbar-links ul {
+        display: none;
+        flex-direction: column;
+        gap: 10px;
+        align-items: center; /* 가운데 정렬 */
+    }
+
+    .navbar-links.active ul {
+        display: flex;
+    }
+
+    .search-bar {
+        order: 4; /* 검색 바 순서 조정 */
+        width: 100%;
+        margin: 10px 0;
+    }
+
+    .search-bar input[type="text"] {
+        width: 100%;
+    }
+}

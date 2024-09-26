@@ -1,0 +1,101 @@
+@charset "UTF-8";
+body {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+a {
+  text-decoration: none;
+  color: inherit; /* 부모의 글자색과 동일하게 */
+}
+
+table {
+  width: 280px;
+  height: 550px;
+  margin: auto;
+}
+
+.email {
+  width: 127px;
+  height: 32px;
+  font-size: 15px;
+  border: 0;
+  border-color: lightgray;
+  border-radius: 15px;
+  outline: none;
+  padding-left: 10px;
+  background-color: rgb(233, 233, 233);
+}
+
+.text {
+  width: 250px;
+  height: 32px;
+  font-size: 15px;
+  border: 0;
+  border-radius: 15px;
+  outline: none;
+  padding-left: 10px;
+  background-color: rgb(233, 233, 233);
+}
+
+select {
+  width: 100px;
+  height: 32px;
+  font-size: 15px;
+  border: 1;
+  border-color: lightgray;
+  border-radius: 15px;
+  outline: none;
+  padding-left: 10px;
+}
+
+.btn {
+  width: 262px;
+  height: 32px;
+  font-size: 15px;
+  border: 0;
+  border-radius: 15px;
+  outline: none;
+  padding-left: 10px;
+  background-color: rgb(164, 199, 255);
+}
+
+.btn:active {
+  height: 32px;
+  font-size: 15px;
+  border: 0;
+  border-radius: 15px;
+  outline: none;
+  padding-left: 10px;
+  background-color: rgb(61, 135, 255);
+}
+
+.mg-t10 {
+  margin-top: 10px;
+}
+
+.pst_rel {
+  position: relative;
+}
+
+.pst_abs {
+  position: absolute;
+  right: 0;
+}
+
+.pst_abs_r_none {
+  position: absolute;
+  width: 100px;
+  font-size: 13px;
+}
+
+.btn-sm {
+  width: 70px;
+  font-size: 13px;
+}
+
+.red {
+  color: red;
+  font-size: 14px;
+}/*# sourceMappingURL=join.css.map */
