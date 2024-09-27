@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="_csrf" th:content="${_csrf.token}"/>
+    <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
+    <title>카테고리 관리</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        .container {
+            max-width: 600px;
+            margin: auto;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        h1, h2 {
+            text-align: center;
+        }
+        form, .subcategory-section, .category-list {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+        }
+        input, select, button {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        .category-list ul {
+            list-style-type: none;
+            padding: 0;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>카테고리 추가</h1>
+    <form name="maincategoryForm" method="post" th:action="@{/admin/mainCategoryAdd}">
+        <label for="main-category">대분류:</label>
+        <input type="text" id="main_title" name="main_title" placeholder="대분류를 입력하세요" required>
+        <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
+        <button type="button" onclick="addMainCategory()">대분류 추가</button>
+    </form>
+
+    <div class="subcategory-section">
+        <form name="subcategoryForm" method="post" th:action="@{/admin/subCategoryAdd}">
+            <label for="sub-category">소분류:</label>
+            <input type="text" id="sub-category" name="sub-category" placeholder="소분류를 입력하세요" required>
+            <select id="main-category-select" name="main-category-select" required>
+                <option value="">대분류 선택</option>
+                <!-- 대분류 옵션이 추가될 곳 -->
+                <option th:each="mainCategory : ${mainCategory}" th:value="${mainCategory.id}" th:text="${mainCategory.title}"></option>
+            </select>
+            <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
+            <button type="button" onclick="addSubCategory()">소분류 추가</button>
+        </form>
+    </div>
+</div>
+
+<script>
+    'use strict'
+    function addMainCategory() {
+        let title = document.getElementById("main_title").value.trim();
+
+        if(title == "") {
+            alert("대분류의 이름을 정해주세요.");
+            maincategoryForm["main_title"].focus();
+            return
+        }
+        else {
+            maincategoryForm.submit();
+        }
+    }
+
+    function addSubCategory() {
+        let sub_title = document.getElementById("sub-category").value.trim();
+        let main_id = document.getElementById("main-category-select").value.trim();
+
+        if(sub_title == "") {
+            alert("소분류를 입력해주세요.");
+            subcategoryForm["sub-category"].focus();
+            return
+        }
+        else if(main_id == "") {
+            alert("대분류를 선택해주세요.");
+            return
+        }
+        else {
+            subcategoryForm.submit();
+        }
+    }
+</script>
+</body>
+</html>

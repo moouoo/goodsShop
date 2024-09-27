@@ -5,11 +5,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="_csrf" th:content="${_csrf.token}"/>
     <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
+    <link rel="stylesheet" href="../fontawesome/css/all.min.css">
+    <link rel="stylesheet" href="../nav.css">
     <link rel="stylesheet" href="../login.css" />
     <title>login</title>
 </head>
 <body>
-    <form name="loginForm" method="post" th:action="@{/member/login}">
+    <div th:replace="include/nav :: navbar"></div>
+
+    <form name="loginForm" method="post" th:action="@{/member/login}" style="padding: 20px;">
         <table>
             <tr>
                 <td><h2>로그인</h2></td>
@@ -29,8 +33,8 @@
             </tr>
             <tr>
                 <td class="join">
-                    <div style="margin-top: 10px;"><a href="/member/join">회원가입</a></div>
-                    <div style="margin-top: 5px;"><a href="/member/memberFind">아이디 / 비밀번호 찾기</a></div>
+                    <div style="margin-top: 5px; font-size: 12px;"><a style="color: darkgray; text-decoration: none;" href="/member/join">회원가입</a></div>
+                    <div style="margin-top: 5px; font-size: 12px;"><a style="color: darkgray; text-decoration: none;" href="/member/memberFind">아이디 / 비밀번호 찾기</a></div>
                 </td>
             </tr>
         </table>
@@ -40,8 +44,8 @@
     'use strict'
 
     function loginCheck() {
-        let mid = document.getElementById("mid").value;
-        let pwd = document.getElementById("pwd").value;
+        let mid = document.getElementById("mid").value.trim();
+        let pwd = document.getElementById("pwd").value.trim();
 
         if(mid == "") {
             alert("아이디를 입력해주세요.");

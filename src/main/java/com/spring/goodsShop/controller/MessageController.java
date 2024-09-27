@@ -31,6 +31,18 @@ public class MessageController {
             model.addAttribute("msg", "로그아웃 했습니다.");
             model.addAttribute("url", "/");
         }
+        else if(msgFlag.equals("mainCategoryAddNo")){
+            model.addAttribute("msg", "생성 실패! 개발자에게 문의해주세요.");
+            model.addAttribute("url", "/admin/adminP");
+        }
+        else if(msgFlag.equals("mainCategoryAddOk")){
+            model.addAttribute("msg", "대분류 생성 성공!");
+            model.addAttribute("url", "/admin/categoryAdd");
+        }
+        else if(msgFlag.equals("subCategoryAddOk")){
+            model.addAttribute("msg", "소분류 생성 성공!");
+            model.addAttribute("url", "/admin/categoryAdd");
+        }
 
         return "include/message";
     }

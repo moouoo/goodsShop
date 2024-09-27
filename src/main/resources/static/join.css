@@ -29,7 +29,7 @@ table {
 }
 
 .text {
-  width: 250px;
+  width: 272px;
   height: 32px;
   font-size: 15px;
   border: 0;
@@ -40,7 +40,7 @@ table {
 }
 
 select {
-  width: 100px;
+  width: 120px;
   height: 32px;
   font-size: 15px;
   border: 1;
@@ -51,13 +51,13 @@ select {
 }
 
 .btn {
-  width: 262px;
+  width: 282px;
   height: 32px;
   font-size: 15px;
   border: 0;
   border-radius: 15px;
   outline: none;
-  padding-left: 10px;
+  padding-left: 5px;
   background-color: rgb(164, 199, 255);
 }
 

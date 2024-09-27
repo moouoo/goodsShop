@@ -23,7 +23,7 @@ public class memberController {
 
     @RequestMapping(value = "/join", method = RequestMethod.GET)
     String memberJoinGet(){
-        return "join";
+        return "member/join";
     }
 
     @RequestMapping(value = "/join", method = RequestMethod.POST)
@@ -71,7 +71,7 @@ public class memberController {
 
     @RequestMapping(value = "/login", method = RequestMethod.GET)
     String loginGet(){
-        return "login";
+        return "member/login";
     }
 
     @RequestMapping(value = "/login", method = RequestMethod.POST)
@@ -97,7 +97,7 @@ public class memberController {
 
     @RequestMapping(value = "/memberFind", method = RequestMethod.GET)
     String findIdPwdGet(){
-        return "memberFind";
+        return "member/memberFind";
     }
 
     @ResponseBody
