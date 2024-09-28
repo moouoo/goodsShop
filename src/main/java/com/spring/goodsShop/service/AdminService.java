@@ -12,4 +12,6 @@ public interface AdminService {
     void setSubCategory(String subTitle, String main_id);
 
     List<SubcategoryVo> getSubCategory();
+
+    void deleteMaincategory(String hiddenMaincategory);
 }

@@ -1,9 +1,12 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html lang="ko" xmlns:th="http://www.w3.org/1999/xhtml">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>카테고리 관리</title>
+    <meta name="_csrf" th:content="${_csrf.token}"/>
+    <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
+    <link rel="stylesheet" href="../modal.css">
+    <title>카테고리 수정/삭제</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -40,15 +43,21 @@
         .accordion-item {
             border-bottom: 1px solid #ccc;
             padding: 10px 0;
+            display: flex;
+            align-items: center; /* 버튼과 제목을 수직으로 정렬 */
+            justify-content: space-between; /* 제목과 버튼 사이의 간격 조절 */
         }
 
         .accordion-title {
-            cursor: pointer;
+            margin-right: 10px;
         }
 
         .accordion-content {
-            display: inline-block;
             margin-top: 10px;
+            flex: 1;
+            white-space: nowrap;
+            display: flex;
+            justify-content: flex-end;
         }
 
         .accordion-title.active + .accordion-content {
@@ -69,37 +78,53 @@
     </style>
 </head>
 <body>
-<div class="category-management">
-    <h1>카테고리 관리</h1>
-    <div class="category-selector">
-        <label for="main-category">대분류 선택:</label>
-        <select id="main-category">
-            <option value="">대분류 선택</option>
-            <option th:each="mainCategory : ${mainCategory}" th:value="${mainCategory.id}" th:text="${mainCategory.title}"></option>
-        </select>
-        <button type="button" id="edit_maincategory">대분류 수정</button>
-        <button type="button" id="delete_maincategory">대분류 삭제</button>
-    </div>
-    <div id="maincategory_edit"></div>
+    <div class="category-management">
+        <h1>카테고리 관리</h1>
+        <div class="category-selector">
+            <label for="main-category">대분류 선택:</label>
+            <select id="main-category">
+                <option value=""></option>
+                <option th:each="mainCategory : ${mainCategory}" th:value="${mainCategory.id}" th:text="${mainCategory.title}"></option>
+            </select>
+            <button type="button" id="edit_maincategory">대분류 수정</button>
+            <button type="button" class="open-modal-btn" onclick="openModal()">대분류 삭제</button>
+        </div>
+        <div id="maincategory_edit"></div>
 
-    <div class="sub-categories" id="sub-categories">
-        <h2>소분류 관리</h2>
-        <div class="accordion" id="accordion">
-            <div class="accordion-item" th:each="subCategory : ${subCategory}" th:attr="data-category=${subCategory.main_category_id}">
-                <h3 class="accordion-title" th:text="${subCategory.title}"></h3>
-                <div class="accordion-content">
-                    <button type="button" class="edit">수정</button>
-                    <button type="button" class="delete">삭제</button>
-                </div>
+        <!-- 대분류 삭제 모달 -->
+        <div id="customModal" class="modal">
+            <div class="modal-content">
+                <span class="close-btn">&times;</span>
+                <form id="modalDelCheck" method="post" th:action="@{/admin/modalDelKeyCheck}">
+                    <h2 id="modalContent">모달 제목</h2>
+                    <input type="text" placeholder="삭제" id="delKey" name="delKey"/>
+                    <input type="hidden" id="hiddenMaincategory" name="hiddenMaincategory" />
+                    <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
+                    <button type="button" class="action-btn" onclick="delKeyCheck()">확인</button>
+                </form>
             </div>
         </div>
 
+        <div class="sub-categories" id="sub-categories">
+            <h2>소분류 관리</h2>
+            <div class="accordion" id="accordion">
+                <div class="accordion-item" th:each="subCategory : ${subCategory}" th:attr="data-category=${subCategory.main_category_id}">
+                    <h3 class="accordion-title" th:text="${subCategory.title}"></h3>
+                    <div class="accordion-content">
+                        <button type="button" class="edit">수정</button>
+                        <button type="button" class="delete">삭제</button>
+                    </div>
+                </div>
+            </div>
 
+
+        </div>
     </div>
-</div>
 
 <script>
+    'use strict';
     document.addEventListener('DOMContentLoaded', function() {
+        // 드롭다운 및 아코디언 관련 요소 선택
         const mainCategorySelect = document.getElementById('main-category');
         const accordionItems = document.querySelectorAll('.accordion-item');
         const editMainCategoryButton = document.getElementById('edit_maincategory');
@@ -118,7 +143,7 @@
             });
         });
 
-        // 대분류 수정 및 삭제 버튼 클릭 이벤트
+        // 대분류 수정 버튼 클릭 이벤트
         editMainCategoryButton.addEventListener('click', function() {
             const selectedValue = mainCategorySelect.value;
             if (selectedValue) {
@@ -128,20 +153,52 @@
                 alert("대분류를 선택하세요.");
             }
         });
+    });
 
-        deleteMainCategoryButton.addEventListener('click', function() {
-            const selectedValue = mainCategorySelect.value;
-            if (selectedValue) {
-                const confirmDelete = confirm(`대분류 "${selectedValue}"을(를) 삭제하시겠습니까?`);
-                if (confirmDelete) {
-                    alert(`대분류 "${selectedValue}" 삭제 기능 추가!`);
-                    // 삭제 로직 추가
-                }
-            } else {
-                alert("대분류를 선택하세요.");
+
+</script>
+<script>
+    'use strict'
+     // 모달 관련 요소 선택
+        const modal = document.getElementById("customModal");
+        const openModalBtn = document.getElementById("openModalBtn");
+        const closeModalBtn = document.querySelector(".close-btn");
+
+        // 모달 닫기 함수 (닫기 버튼 클릭 시)
+        closeModalBtn.addEventListener("click", () => {
+            modal.style.display = "none";
+        });
+
+        // 모달 닫기 함수 (배경 클릭 시)
+        window.addEventListener("click", (e) => {
+            if (e.target === modal) {
+                modal.style.display = "none";
             }
         });
-    });
+
+        function delKeyCheck() {
+            let delKey = document.getElementById("delKey").value.trim();
+
+            if(delKey == "" || delKey !== "삭제") {
+                alert("키워드가 잘못되었습니다. 다시 확인해주세요.");
+                return
+            }
+            else modalDelCheck.submit();
+        }
+
+        function openModal() {
+            const selectElement = document.getElementById('main-category');
+            const selectedOption = selectElement.options[selectElement.selectedIndex]; // 선택된 옵션
+            const selectedText = selectedOption.text; // 선택된 옵션의 텍스트
+            if(selectedText == "") {
+                alert("삭제하고자하는 대분류를 선택해주세요.");
+                return
+            }
+            document.getElementById("modalContent").innerHTML = "삭제하고자하는 대분류가 [<span style='color: red; font-weight: bold;'>" + selectedText + "</span> ]이라면 아래에 [삭제]라고 입력해주십시오.";
+            document.getElementById("hiddenMaincategory").value = selectedText;
+            // 모달 열기
+            modal.style.display = "flex";
+        }
 </script>
 </body>
 </html>

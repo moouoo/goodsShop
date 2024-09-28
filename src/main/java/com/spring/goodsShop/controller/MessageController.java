@@ -43,6 +43,22 @@ public class MessageController {
             model.addAttribute("msg", "소분류 생성 성공!");
             model.addAttribute("url", "/admin/categoryAdd");
         }
+        else if(msgFlag.equals("modalDelKeyCheckOk")){
+            model.addAttribute("msg", "삭제되었습니다.");
+            model.addAttribute("url", "/admin/categoryAdd");
+        }
+        else if(msgFlag.equals("modalDelKeyCheckErr")){
+            model.addAttribute("msg", "삭제하는 도중 데이터 값이 안넘어왔습니다. 개발자에게 문의해주세요.");
+            model.addAttribute("url", "/admin/categoryAdd");
+        }
+        else if(msgFlag.equals("modalDelKeyCheckNo")){
+            model.addAttribute("msg", "삭제키가 다릅니다. 다시 확인해주세요.");
+            model.addAttribute("url", "/admin/categoryAdd");
+        }
+        else if(msgFlag.equals("databaseDeleteErr")){
+            model.addAttribute("msg", "삭제중, 데이터베이스처리에 오류가 생겼습니다. \n혹시 대분류 안에 남아있는 소분류가 있는 경우, 소분류를 전부 삭제하시고 다시 시도하십시오.");
+            model.addAttribute("url", "/admin/categoryAdd");
+        }
 
         return "include/message";
     }

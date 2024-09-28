@@ -31,4 +31,9 @@ public class AdminServiceImpl implements AdminService{
     public List<SubcategoryVo> getSubCategory() {
         return adminDao.getSubCategory();
     }
+
+    @Override
+    public void deleteMaincategory(String hiddenMaincategory) {
+        adminDao.deleteMaincategory(hiddenMaincategory);
+    }
 }

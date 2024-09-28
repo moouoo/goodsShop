@@ -2,6 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="com.spring.goodsShop.dao.AdminDao">
+    <!--  select  -->
     <select id="getMainCategory" resultType="com.spring.goodsShop.vo.MaincategoryVo">
         select * from main_category;
     </select>
@@ -10,6 +11,7 @@
         select * from sub_category;
     </select>
 
+    <!--  insert  -->
     <insert id="setMainCategory">
         insert into main_category (id, title) values (default, #{title});
     </insert>
@@ -17,4 +19,10 @@
     <insert id="setSubCategory">
         insert into sub_category (id, main_category_id, title) values (default, #{main_id}, #{subTitle});
     </insert>
+
+    <!--  delete  -->
+    <delete id="deleteMaincategory" parameterType="String">
+        delete from main_category where title = #{hiddenMaincategory};
+    </delete>
+
 </mapper>

@@ -4,12 +4,15 @@ import com.spring.goodsShop.service.AdminService;
 import com.spring.goodsShop.vo.MaincategoryVo;
 import com.spring.goodsShop.vo.SubcategoryVo;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -65,6 +68,29 @@ public class AdminController {
         model.addAttribute("mainCategory", vos);
         model.addAttribute("subCategory", vos2);
         return "admin/categoryDeleteUpdate";
+    }
+
+    @Transactional
+    @RequestMapping(value = "/modalDelKeyCheck", method = RequestMethod.POST)
+    String modalDelKeyCheck(
+            @RequestParam(value = "delKey") String delKey,
+            @RequestParam(value = "hiddenMaincategory") String hiddenMaincategory
+                            ){
+        if(delKey == "" || delKey == null || hiddenMaincategory == "" || hiddenMaincategory == null){
+            return "redirect:/message/modalDelKeyCheckErr";
+        }
+        else if(!delKey.equals("삭제")){
+            return "redirect:/message/modalDelKeyCheckNo";
+        }
+        else {
+            try {
+                adminService.deleteMaincategory(hiddenMaincategory);
+                return "redirect:/message/modalDelKeyCheckOk";
+            } catch (DataAccessException e) {
+                // 외래 키 제약 조건으로 인한 오류 처리
+                return "redirect:/message/databaseDeleteErr";
+            }
+        }
     }
 
 
