@@ -2,6 +2,8 @@ package com.spring.goodsShop.service;
 
 import com.spring.goodsShop.vo.MemberVo;
 
+import java.util.List;
+
 public interface MemberService {
 
     boolean midCheck(String mid);
@@ -21,4 +23,8 @@ public interface MemberService {
     boolean emailMidCheck(String email);
 
     void setPwd(String pwd, String mid);
+
+    List<MemberVo> getMember();
+
+    void memberDelete(String mid, String email);
 }

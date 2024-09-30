@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>내 페이지</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+        }
+        header {
+            background: #3b5998;
+            color: #fff;
+            padding: 10px 0;
+            text-align: center;
+        }
+        .container {
+            max-width: 800px;
+            margin: 20px auto;
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            margin-top: 0;
+        }
+        .section {
+            margin: 20px 0;
+        }
+        .section h2 {
+            border-bottom: 2px solid #3b5998;
+            padding-bottom: 10px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        table, th, td {
+            border: 1px solid #ddd;
+        }
+        th, td {
+            padding: 12px;
+            text-align: left;
+        }
+        th {
+            background-color: #3b5998;
+            color: white;
+        }
+        .btn {
+            background: #3b5998;
+            color: #fff;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        .btn:hover {
+            background: #2d4373;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>내 페이지</h1>
+</header>
+
+<div class="container">
+    <div class="section">
+        <h2>회원 정보</h2>
+        <p>이름: <span id="userName">홍길동</span></p>
+        <p>이메일: <span id="userEmail">example@example.com</span></p>
+        <button class="btn" onclick="editProfile()">프로필 수정</button>
+    </div>
+
+    <div class="section">
+        <h2>주문 내역</h2>
+        <table>
+            <thead>
+            <tr>
+                <th>주문 번호</th>
+                <th>상품명</th>
+                <th>가격</th>
+                <th>주문일</th>
+                <th>상태</th>
+            </tr>
+            </thead>
+            <tbody id="orderList">
+            <tr>
+                <td>1</td>
+                <td>상품 A</td>
+                <td>₩10,000</td>
+                <td>2024-01-01</td>
+                <td>배송중</td>
+            </tr>
+            <tr>
+                <td>2</td>
+                <td>상품 B</td>
+                <td>₩20,000</td>
+                <td>2024-01-02</td>
+                <td>완료</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="section">
+        <h2>장바구니</h2>
+        <table>
+            <thead>
+            <tr>
+                <th>상품명</th>
+                <th>가격</th>
+                <th>수량</th>
+                <th>합계</th>
+            </tr>
+            </thead>
+            <tbody id="cartList">
+            <tr>
+                <td>상품 C</td>
+                <td>₩15,000</td>
+                <td>2</td>
+                <td>₩30,000</td>
+            </tr>
+            <tr>
+                <td>상품 D</td>
+                <td>₩25,000</td>
+                <td>1</td>
+                <td>₩25,000</td>
+            </tr>
+            </tbody>
+        </table>
+        <button class="btn" onclick="checkout()">결제하기</button>
+    </div>
+
+    <div class="section">
+        <h2>찜 목록</h2>
+        <table>
+            <thead>
+            <tr>
+                <th>상품명</th>
+                <th>가격</th>
+                <th>상태</th>
+            </tr>
+            </thead>
+            <tbody id="wishList">
+            <tr>
+                <td>상품 E</td>
+                <td>₩30,000</td>
+                <td>찜하기</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+    function editProfile() {
+        alert("프로필 수정 기능을 구현해주세요.");
+    }
+
+    function checkout() {
+        alert("결제하기 기능을 구현해주세요.");
+    }
+</script>
+
+</body>
+</html>

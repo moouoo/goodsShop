@@ -15,4 +15,14 @@ public interface AdminDao {
     List<SubcategoryVo> getSubCategory();
 
     void deleteMaincategory(@Param("hiddenMaincategory") String hiddenMaincategory);
+
+    void updateMaincategory(@Param("title") String title, @Param("id") int id);
+
+    int checkMaincategory(@Param("title") String title);
+
+    void deleteSubcatergory(@Param("hiddenSubcategory") String hiddenSubcategory);
+
+    int befUpdateSubcategory(@Param("before_title") String before_title, @Param("id") int id);
+
+    void UpdateSubcategory(@Param("sub_update_title") String sub_update_title, @Param("id") int id);
 }

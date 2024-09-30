@@ -59,6 +59,19 @@ public class MessageController {
             model.addAttribute("msg", "삭제중, 데이터베이스처리에 오류가 생겼습니다. \n혹시 대분류 안에 남아있는 소분류가 있는 경우, 소분류를 전부 삭제하시고 다시 시도하십시오.");
             model.addAttribute("url", "/admin/categoryAdd");
         }
+        else if(msgFlag.equals("no")){
+            model.addAttribute("msg", "에러");
+            model.addAttribute("url", "/admin/categoryAdd");
+        }
+        else if(msgFlag.equals("ok")){
+            model.addAttribute("msg", "성공");
+            model.addAttribute("url", "/admin/categoryAdd");
+        }
+        else if(msgFlag.equals("noUpdate")){
+            model.addAttribute("msg", "이미 존재하는 소분류입니다.");
+            model.addAttribute("url", "/admin/categoryAdd");
+        }
+
 
         return "include/message";
     }

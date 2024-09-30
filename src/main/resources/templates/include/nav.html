@@ -16,7 +16,14 @@
                         <a href="/member/logout">로그아웃</a>
                     </div>
                 </div>
-                <a href="#">주문조회</a>
+                <div th:with="level=${session.sLevel}">
+                    <div th:if="${level == 1}">
+                        <a href="member/memberP">나의 페이지</a>
+                    </div>
+                    <div th:if="${level == 2}">
+                        <a href="/admin/adminP">관리자 페이지</a>
+                    </div>
+                </div>
                 <a href="#">찜한상품</a>
             </div>
         </div>

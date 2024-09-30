@@ -11,6 +11,15 @@
         select * from sub_category;
     </select>
 
+    <select id="checkMaincategory" resultType="java.lang.Integer">
+        select count(*) from main_category where title = #{title};
+    </select>
+
+    <select id="befUpdateSubcategory" resultType="java.lang.Integer">
+        select count(*) from sub_category where id = #{id} and title = #{before_title};
+    </select>
+
+
     <!--  insert  -->
     <insert id="setMainCategory">
         insert into main_category (id, title) values (default, #{title});
@@ -20,9 +29,24 @@
         insert into sub_category (id, main_category_id, title) values (default, #{main_id}, #{subTitle});
     </insert>
 
+
     <!--  delete  -->
     <delete id="deleteMaincategory" parameterType="String">
         delete from main_category where title = #{hiddenMaincategory};
     </delete>
+
+    <delete id="deleteSubcatergory" parameterType="String">
+        delete from sub_category where title = #{hiddenSubcategory};
+    </delete>
+
+
+    <!--  update  -->
+    <update id="updateMaincategory">
+        update main_category set title = #{title} where id = #{id};
+    </update>
+
+    <update id="UpdateSubcategory">
+        update sub_category set title = #{sub_update_title} where id = #{id};
+    </update>
 
 </mapper>

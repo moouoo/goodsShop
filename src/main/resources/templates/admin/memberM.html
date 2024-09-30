@@ -1,11 +1,286 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html lang="ko" xmlns:th="http://www.w3.org/1999/xhtml">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=<device-width>, initial-scale=1.0">
-  <title>Document</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="_csrf" th:content="${_csrf.token}"/>
+    <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
+    <title>회원 관리 페이지</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+        }
+
+        .container {
+            width: 80%;
+            margin: 50px auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h2 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .member-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+
+        .member-table th, .member-table td {
+            padding: 12px;
+            text-align: center;
+            border: 1px solid #ddd;
+        }
+
+        .member-table th {
+            background-color: #4CAF50;
+            color: white;
+        }
+
+        .delete-btn {
+            background-color: red;
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+
+        .delete-btn:hover {
+            background-color: darkred;
+        }
+
+        .button-container {
+            text-align: right; /* 버튼을 오른쪽 정렬 */
+            margin-bottom: 20px; /* 버튼과 테이블 사이 간격 */
+        }
+
+        .request-list-btn {
+            background-color: #007BFF; /* 버튼 배경 색상 */
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+
+        .request-list-btn:hover {
+            background-color: #0056b3; /* 버튼 호버 시 색상 */
+        }
+        .modal {
+            display: none; /* 기본적으로 숨김 */
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.5); /* 배경 색상 */
+        }
+
+        .modal-content {
+            background-color: #fff;
+            margin: 15% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+            border-radius: 8px; /* 모서리 둥글게 */
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .close:hover, .close:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .request-list-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 5px 0;
+        }
+
+        .request-list-table th, .request-list-table td {
+            padding: 12px;
+            text-align: center;
+            border: 1px solid #ddd;
+        }
+
+        .delete-selected-btn {
+            background-color: red;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+
+        .delete-selected-btn:hover {
+            background-color: darkred;
+        }
+    </style>
 </head>
 <body>
-<h4>회원관리</h4>
+    <div class="container">
+        <h2>회원 관리</h2>
+        <!-- <div class="button-container">
+            <button class="request-list-btn" onclick="viewList()">탈퇴 신청 목록</button>
+        </div> -->
+        <table class="member-table">
+            <thead>
+            <tr>
+                <th>아이디</th>
+                <th>이메일</th>
+                <th>계좌번호</th>
+                <th>등급</th>
+                <th>관리</th>
+            </tr>
+            </thead>
+            <tbody>
+            <!-- 각 회원의 정보는 서버에서 가져와 반복해서 렌더링 -->
+            <tr th:each="vos : ${vos}">
+                <td th:text="${vos.mid}">user001</td>
+                <td th:text="${vos.email}">user001@example.com</td>
+                <td th:text="${vos.account_num}">1234-5678-9012</td>
+                <td th:text="${vos.level}">Gold</td>
+                <td><button class="delete-btn" th:mid="${vos.mid}" th:email="${vos.email}" onclick="memberDelete(this.getAttribute('mid'), this.getAttribute('email'))">탈퇴</button></td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- 탈퇴신청회원목록 -->
+    <!-- <div class="modal" id="requestListModal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal()">&times;</span>
+            <h2>탈퇴 신청 목록</h2>
+            <div class="checkbox-container" style="text-align: right; margin-top: 20px;">
+                <input type="checkbox" id="selectAll" onclick="toggleSelectAll()"> 전체 선택
+            </div>
+            <table class="request-list-table">
+                <thead>
+                    <tr>
+                        <th>선택</th>
+                        <th>아이디</th>
+                        <th>이메일</th>
+                        <th>계좌번호</th>
+                        <th>등급</th>
+                    </tr>
+                </thead>
+                <tbody> -->
+    <!-- 예시 데이터, 실제로는 서버에서 가져와 반복 렌더링 -->
+    <!-- <tr>
+        <td><input type="checkbox" class="member-checkbox" value="user001"></td>
+        <td>user001</td>
+        <td>user001@example.com</td>
+        <td>1234-5678-9012</td>
+        <td>Gold</td>
+    </tr>
+    <tr>
+        <td><input type="checkbox" class="member-checkbox" value="user002"></td>
+        <td>user002</td>
+        <td>user002@example.com</td>
+        <td>9876-5432-1098</td>
+        <td>Silver</td>
+    </tr>
+    </tbody>
+    </table>
+    <button class="delete-selected-btn" onclick="deleteSelectedMembers()">선택된 회원 탈퇴</button>
+    </div>
+    </div> -->
+
+    <script>
+        'use strict'
+
+        const csrfToken = document.querySelector('meta[name="_csrf"]').getAttribute('content');
+        const csrfHeader = document.querySelector('meta[name="_csrf_header"]').getAttribute('content');
+
+        function memberDelete(mid, email) {
+             if (confirm(mid + " 회원을 정말 탈퇴시키겠습니까?")) {
+                 fetch("/admin/memberDelete", {
+                 method: "POST",
+                 headers: {
+                     [csrfHeader]: csrfToken,
+                     "Content-Type": "application/json"
+                 },
+                 body: JSON.stringify({
+                     mid: mid,
+                     email: email
+                 })
+                 })
+                 .then(response => {
+                     if (!response.ok) {
+                         throw new Error('Network response was not ok');
+                     }
+                     return response.json(); // 서버가 텍스트를 반환하면
+                 })
+                 .then(data => {
+                     if (data.success){
+                         alert(mid + "회원을 탈퇴시키셨습니다.");
+                         location.reload();
+                     }
+                     else alert("회원탈퇴실패");
+                 })
+                 .catch(error => {
+                     console.error('Error:', error);
+                 });
+             }
+             else return
+         }
+
+         // function viewList() {
+         //     requestListModal.style.display = "flex";
+         // }
+
+         // function closeModal() {
+         //     document.getElementById("requestListModal").style.display = "none";
+         // }
+
+         // function toggleSelectAll() {
+         //     const selectAllCheckbox = document.getElementById("selectAll");
+         //     const memberCheckboxes = document.querySelectorAll(".member-checkbox");
+         //     memberCheckboxes.forEach(checkbox => {
+         //         checkbox.checked = selectAllCheckbox.checked;
+         //     });
+         // }
+
+         // function deleteSelectedMembers() {
+         //     const memberCheckboxes = document.querySelectorAll(".member-checkbox:checked");
+         //     const selectedMembers = Array.from(memberCheckboxes).map(checkbox => checkbox.value);
+
+         //     if (selectedMembers.length === 0) {
+         //         alert("탈퇴할 회원을 선택해주세요.");
+         //         return;
+         //     }
+
+         //     // 선택된 회원 탈퇴 처리 로직 (예: 서버에 요청 보내기)
+         //     console.log("탈퇴할 회원:", selectedMembers);
+
+         //     // 모달 닫기
+         //     closeModal();
+         // }
+
+
+    </script>
 </body>
 </html>

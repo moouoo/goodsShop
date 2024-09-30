@@ -8,6 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class MemberServiceImpl implements MemberService{
 
@@ -105,5 +107,16 @@ public class MemberServiceImpl implements MemberService{
     public void setPwd(String pwd, String mid) {
         memberDao.setPwd(pwd, mid);
     }
+
+    @Override
+    public List<MemberVo> getMember() {
+        return memberDao.getMember();
+    }
+
+    @Override
+    public void memberDelete(String mid, String email) {
+        memberDao.memberDelete(mid, email);
+    }
+
 
 }

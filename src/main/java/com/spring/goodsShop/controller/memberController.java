@@ -130,4 +130,9 @@ public class memberController {
         return "{\"message\": \" OMG...!... \"}";
     }
 
+    @RequestMapping(value = "/memberP", method = RequestMethod.GET)
+    String memberP(){
+        return "member/memberP";
+    }
+
 }

@@ -1,26 +1,30 @@
 package com.spring.goodsShop.controller;
 
 import com.spring.goodsShop.service.AdminService;
+import com.spring.goodsShop.service.MemberService;
 import com.spring.goodsShop.vo.MaincategoryVo;
+import com.spring.goodsShop.vo.MemberVo;
 import com.spring.goodsShop.vo.SubcategoryVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @Controller
 @RequestMapping("/admin")
 public class AdminController {
     @Autowired
     AdminService adminService;
+
+    @Autowired
+    MemberService memberService;
 
     @RequestMapping(value = "/adminP", method = RequestMethod.GET)
     String admin(){
@@ -93,6 +97,89 @@ public class AdminController {
         }
     }
 
+    @ResponseBody
+    @RequestMapping(value = "/maincategoryUpdate", method = RequestMethod.POST)
+    String maincategoryUpdate(@RequestBody Map<String, String> JupdateMaincategory
+            ) {
+        String title = (String) JupdateMaincategory.get("mainUpdate");
+        String S_id = (String) JupdateMaincategory.get("hiddenMaincategory");
+
+
+        if(title == "" || title == null || S_id == "" || S_id == null){
+            throw new RuntimeException("Invalid input: title or S_id cannot be empty or null");
+        }
+        else {
+            boolean check = adminService.checkMaincategory(title);
+
+            if(check) {
+                int id = Integer.parseInt(S_id);
+                adminService.updateMaincategory(title, id);
+                return "{\"success\": true }";
+            }
+            else {
+                return "{\"success\": false }";
+            }
+        }
+    }
+
+    @RequestMapping(value = "/modalDelKeyCheck_sub", method = RequestMethod.POST)
+    String modalDelKeyCheck_sub(
+            @RequestParam(value = "delKey_sub") String delKey,
+            @RequestParam(value = "hiddenSubcategory") String hiddenSubcategory
+        ) {
+        if(delKey == "" || delKey == null || hiddenSubcategory == "" || hiddenSubcategory == null){
+            return "redirect:/message/modalDelKeyCheckErr";
+        }
+        else if(!delKey.equals("삭제")){
+            return "redirect:/message/modalDelKeyCheckNo";
+        }
+        else {
+            adminService.deleteSubcatergory(hiddenSubcategory);
+            return "redirect:/message/ok";
+        }
+    }
+
+    @RequestMapping(value = "/subcategoryUpdate", method = RequestMethod.POST)
+    String subcategoryUpdate(
+            @RequestParam(value = "sub_update_title") String sub_update_title,
+            @RequestParam(value = "before_title") String before_title,
+            @RequestParam(value = "title_id") String S_title_id
+        ){
+
+        if(sub_update_title == "" || sub_update_title == null || before_title == "" || before_title == null || S_title_id == "" || S_title_id == null){
+            return "redirect:/message/no";
+        }
+        else {
+            int id = Integer.parseInt(S_title_id);
+            boolean check = adminService.befUpdateSubcategory(before_title, id);
+
+            if(check) {
+                adminService.UpdateSubcategory(sub_update_title, id);
+                return "redirect:/message/ok";
+            }
+            else return "redirect:/message/noUpdate";
+        }
+
+    }
+
+    @RequestMapping(value = "/memberM", method = RequestMethod.GET)
+    String memberM(MemberVo vo, Model model){
+        List<MemberVo> vos = memberService.getMember();
+        model.addAttribute("vos", vos);
+
+        return "admin/memberM";
+    }
+
+    @ResponseBody
+    @RequestMapping(value = "/memberDelete", method = RequestMethod.POST)
+    String memberDelete(@RequestBody Map<String, String> JmemberDel){
+        String mid = (String) JmemberDel.get("mid");
+        String email = (String) JmemberDel.get("email");
+
+        memberService.memberDelete(mid, email);
+
+        return "{\"success\": true }";
+    }
 
     @RequestMapping(value = "/inquiryM", method = RequestMethod.GET)
     String inquiryM(){

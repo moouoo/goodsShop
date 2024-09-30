@@ -14,4 +14,14 @@ public interface AdminService {
     List<SubcategoryVo> getSubCategory();
 
     void deleteMaincategory(String hiddenMaincategory);
+
+    void updateMaincategory(String title, int id);
+
+    boolean checkMaincategory(String title);
+
+    void deleteSubcatergory(String hiddenSubcategory);
+
+    boolean befUpdateSubcategory(String before_title, int id);
+
+    void UpdateSubcategory(String sub_update_title, int id);
 }

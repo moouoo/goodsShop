@@ -26,6 +26,10 @@
         select count(*) from member where email = #{email} and mid = #{mid};
     </select>
 
+    <select id="getMember" resultType="com.spring.goodsShop.vo.MemberVo">
+        select * from member;
+    </select>
+
 
     <insert id="memberJoin">
         insert into member (id, mid, pwd, email, level) values (default, #{vo.mid}, #{vo.pwd}, #{vo.email}, default);
@@ -34,4 +38,8 @@
     <update id="setPwd">
         update member set pwd = #{pwd} where mid = #{mid};
     </update>
+
+    <delete id="memberDelete" parameterType="String">
+        delete from member where mid = #{mid} and email = #{email};
+    </delete>
 </mapper>

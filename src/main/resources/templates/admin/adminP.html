@@ -87,9 +87,9 @@
                         <li><a href="#" data-page="/admin/categoryDeleteUpdate">카테고리 수정/삭제</a></li>
                     </ul>
                 </li>
-                <li><a href="#" data-page="memberM">회원 관리</a></li>
+                <li><a href="#" data-page="/admin/memberM">회원 관리</a></li>
                 <li><a href="#" data-page="inquiryM">문의 사항 관리</a></li>
-                <li><a href="#">관리자기능 나가기</a></li>
+                <li><a href="/" data-page="/">관리자기능 나가기</a></li>
             </ul>
         </aside>
         <main class="content">
@@ -113,7 +113,11 @@
             });
 
             function loadPage(page) {
-                dynamicIframe.src = page; // <iframe>의 src 속성을 업데이트하여 페이지 로드
+                if (page === "/") {
+                    window.location.href = page; // 홈 페이지로 이동
+                } else {
+                    dynamicIframe.src = page; // <iframe>의 src 속성을 업데이트하여 페이지 로드
+                }
             }
         });
 </script>

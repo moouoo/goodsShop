@@ -52,7 +52,7 @@
 <div class="container">
     <h1>카테고리 추가</h1>
     <form name="maincategoryForm" method="post" th:action="@{/admin/mainCategoryAdd}">
-        <label for="main-category">대분류:</label>
+        <label for="main_title">대분류:</label>
         <input type="text" id="main_title" name="main_title" placeholder="대분류를 입력하세요" required>
         <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
         <button type="button" onclick="addMainCategory()">대분류 추가</button>
