@@ -17,10 +17,10 @@
                     </div>
                 </div>
                 <div th:with="level=${session.sLevel}">
-                    <div th:if="${level == 1}">
+                    <div th:if="${level >= 1 and level < 3}">
                         <a href="member/memberP">나의 페이지</a>
                     </div>
-                    <div th:if="${level == 2}">
+                    <div th:if="${level == 99}">
                         <a href="/admin/adminP">관리자 페이지</a>
                     </div>
                 </div>

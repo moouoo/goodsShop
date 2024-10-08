@@ -1,14 +1,21 @@
 package com.spring.goodsShop.service;
 
+import com.spring.goodsShop.etc.ImgHandler;
 import com.spring.goodsShop.vo.MemberVo;
 import com.spring.goodsShop.dao.MemberDao;
+import com.spring.goodsShop.vo.ProductVo;
+import com.spring.goodsShop.vo.Product_imgVo;
+import com.spring.goodsShop.vo.SubcategoryVo;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
+import java.util.UUID;
 
 @Service
 public class MemberServiceImpl implements MemberService{
@@ -116,6 +123,86 @@ public class MemberServiceImpl implements MemberService{
     @Override
     public void memberDelete(String mid, String email) {
         memberDao.memberDelete(mid, email);
+    }
+
+    @Override
+    public MemberVo getMember(String mid, String email) {
+        return (MemberVo) memberDao.getMember2(mid, email);
+    }
+
+    @Override
+    public List<SubcategoryVo> getSubCategoriesByMainCategory(String mainCategory) {
+        return memberDao.getSubCategoriesByMainCategory(mainCategory);
+    }
+
+    @Override
+    public void setAccount_num(String account_num, String mid) {
+        memberDao.setAccount_num(account_num, mid);
+    }
+
+    @Override
+    public void updateLevel(int level) {
+        memberDao.updateLevel(level);
+    }
+
+    @Override
+    public int getMemberIdBymid(String mid) {
+        return memberDao.getMemberIdBymid(mid);
+    }
+
+    @Override
+    public void setProduct_img(Product_imgVo imgVo, List<MultipartFile> files) throws IOException {
+        ImgHandler imgHandler = new ImgHandler();
+        String urlPath = "product_img";
+
+        for (int i = 0; i < files.size(); i++) {
+            MultipartFile fName = files.get(i);
+            if(fName.isEmpty()) break;
+
+            UUID uid = UUID.randomUUID();
+            String oFileName = fName.getOriginalFilename();
+            String saveFileName = uid + "-" + oFileName;
+            imgHandler.writeFile(fName, saveFileName, urlPath);
+
+            // VO의 img 필드에 파일 경로 설정
+            switch (i) {
+                case 0: imgVo.setImg1(saveFileName); break;
+                case 1: imgVo.setImg2(saveFileName); break;
+                case 2: imgVo.setImg3(saveFileName); break;
+                case 3: imgVo.setImg4(saveFileName); break;
+                case 4: imgVo.setImg5(saveFileName); break;
+                default: break; // 최대 5개까지만 처리
+            }
+        }
+        //db저장
+        memberDao.setProduct_img(imgVo);
+    }
+
+    @Override
+    public int getProductImgIdByImg1(String img1) {
+        return memberDao.getProductImgIdByImg1(img1);
+    }
+
+    @Override
+    public String setProduct_img_detail_saveName(MultipartFile product_img_detail) throws IOException {
+
+        if((!product_img_detail.isEmpty())){
+            UUID uid = UUID.randomUUID();
+            String oFileName = product_img_detail.getOriginalFilename();
+            String saveFileName = uid + "-" + oFileName;
+            return saveFileName;
+        }
+        else return "redirect:/message/no_product_detail";
+    }
+
+    @Override
+    public void setProduct(ProductVo productVo, MultipartFile product_img_detail) throws IOException {
+        String urlPath = "product_detail";
+        String saveFileName = productVo.getProduct_img_detail();
+        ImgHandler imgHandler = new ImgHandler();
+        imgHandler.writeFile(product_img_detail, saveFileName, urlPath);
+
+        memberDao.setProduct(productVo);
     }
 
 

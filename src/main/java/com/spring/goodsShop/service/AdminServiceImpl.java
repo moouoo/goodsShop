@@ -72,4 +72,9 @@ public class AdminServiceImpl implements AdminService{
     public void UpdateSubcategory(String sub_update_title, int id) {
         adminDao.UpdateSubcategory(sub_update_title, id);
     }
+
+    @Override
+    public List<SubcategoryVo> getSubCategory(int mainCategoryId) {
+        return adminDao.getSubCategory2(mainCategoryId);
+    }
 }

@@ -71,6 +71,22 @@ public class MessageController {
             model.addAttribute("msg", "이미 존재하는 소분류입니다.");
             model.addAttribute("url", "/admin/categoryAdd");
         }
+        else if(msgFlag.equals("ok_account_num")){
+            model.addAttribute("msg", "계좌번호를 성공적으로 수정하였습니다.");
+            model.addAttribute("url", "/member/memberP");
+        }
+        else if(msgFlag.equals("no_account_num")){
+            model.addAttribute("msg", "계좌번호를 형식에 맞게 잘 입력해주세요. 하이폰은 필수입니다.");
+            model.addAttribute("url", "/member/memberP");
+        }
+        else if(msgFlag.equals("ok_product")){
+            model.addAttribute("msg", "상품이 등록되었습니다.");
+            model.addAttribute("url", "/member/memberP");
+        }
+        else if(msgFlag.equals("no_product_detail")){
+            model.addAttribute("msg", "상품설명사진저장중 에러");
+            model.addAttribute("url", "/member/memberP");
+        }
 
 
         return "include/message";

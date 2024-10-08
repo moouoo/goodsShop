@@ -25,4 +25,6 @@ public interface AdminDao {
     int befUpdateSubcategory(@Param("before_title") String before_title, @Param("id") int id);
 
     void UpdateSubcategory(@Param("sub_update_title") String sub_update_title, @Param("id") int id);
+
+    List<SubcategoryVo> getSubCategory2(@Param("mainCategoryId") int mainCategoryId);
 }

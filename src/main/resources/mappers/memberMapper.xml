@@ -30,15 +30,54 @@
         select * from member;
     </select>
 
+    <select id="getMember2" resultType="com.spring.goodsShop.vo.MemberVo">
+        select * from member where mid = #{mid} and email = #{email};
+    </select>
 
+    <select id="getSubCategoriesByMainCategory" resultType="com.spring.goodsShop.vo.SubcategoryVo">
+        select * from sub_category where main_category_id = #{mainCategory};
+    </select>
+
+    <select id="getMemberIdBymid" resultType="java.lang.Integer">
+        select id from member where mid = #{mid};
+    </select>
+
+    <select id="getProductImgIdByImg1" resultType="java.lang.Integer">
+        select id from product_img where img1 = #{img1};
+    </select>
+
+
+    <!--  insert  -->
     <insert id="memberJoin">
         insert into member (id, mid, pwd, email, level) values (default, #{vo.mid}, #{vo.pwd}, #{vo.email}, default);
     </insert>
 
+    <insert id="setProduct_img">
+        insert into product_img (id, img1, img2, img3, img4, img5) values (default, #{imgVo.img1}, #{imgVo.img2}, #{imgVo.img3}, #{imgVo.img4}, #{imgVo.img5});
+    </insert>
+
+    <insert id="setProduct">
+        insert into product (id, sub_category_id, brand, product_name, member_id, product_img_id, product_img_detail, price, stock, design)
+            values (default, #{productVo.sub_category_id}, #{brand}, #{product_name}, #{member_id}, #{product_img_id}, #{product_img_detail}, #{price}, #{stock}, #{design});
+    </insert>
+
+
+    <!--  update  -->
     <update id="setPwd">
         update member set pwd = #{pwd} where mid = #{mid};
     </update>
 
+    <update id="setAccount_num">
+        update member set account_num = #{account_num} where mid = #{mid};
+    </update>
+
+    <update id="updateLevel">
+        update member set level = #{level};
+    </update>
+
+
+
+    <!--  delete  -->
     <delete id="memberDelete" parameterType="String">
         delete from member where mid = #{mid} and email = #{email};
     </delete>

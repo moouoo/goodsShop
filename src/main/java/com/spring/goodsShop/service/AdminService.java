@@ -24,4 +24,6 @@ public interface AdminService {
     boolean befUpdateSubcategory(String before_title, int id);
 
     void UpdateSubcategory(String sub_update_title, int id);
+
+    List<SubcategoryVo> getSubCategory(int mainCategoryId);
 }

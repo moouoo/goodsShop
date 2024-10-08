@@ -1,32 +1,56 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html lang="ko" xmlns:th="http://www.w3.org/1999/xhtml">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="_csrf" th:content="${_csrf.token}"/>
+    <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
     <title>내 페이지</title>
+    <link rel="stylesheet" href="/nav.css">
+    <link rel="stylesheet" href="/registerProduct.css">
     <style>
+        /* 스타일 내용은 그대로 유지 */
         body {
             font-family: Arial, sans-serif;
             background-color: #f4f4f4;
             margin: 0;
-            padding: 20px;
+            height: 100vh;
         }
-        header {
-            background: #3b5998;
-            color: #fff;
-            padding: 10px 0;
-            text-align: center;
+        .sidebar {
+            width: 200px;
+            background: #fff;
+            padding: 20px;
+            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+            margin-top: 50px;
+            height: calc(100% - 20px);
+            overflow-y: auto;
+        }
+        .sidebar h2 {
+            font-size: 18px;
+            margin-top: 0;
+        }
+        .sidebar a {
+            display: block;
+            padding: 10px;
+            color: #3b5998;
+            text-decoration: none;
+            border-radius: 5px;
+            margin: 5px 0;
+        }
+        .sidebar a:hover {
+            background: #f0f0f0;
         }
         .container {
+            flex: 1;
             max-width: 800px;
-            margin: 20px auto;
+            margin: 20px;
+            margin-top: 60px;
             background: #fff;
             padding: 20px;
             border-radius: 8px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-        }
-        h1 {
-            margin-top: 0;
+            height: calc(100% - 30px);
+            overflow-y: auto;
         }
         .section {
             margin: 20px 0;
@@ -62,112 +86,489 @@
         .btn:hover {
             background: #2d4373;
         }
+        .add-design, .remove-design {
+            display: inline-block;
+            width: 50px;
+            height: 38px;
+            background-color: #007bff;
+            color: white;
+            text-align: center;
+            line-height: 38px;
+            cursor: pointer;
+            border-radius: 4px;
+            margin-left: 10px;
+        }
+        .remove-design {
+            background-color: #dc3545;
+        }
+        .design-row {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .account_num_display {
+            display: none;
+        }
+        .flex {
+            display: flex;
+        }
     </style>
 </head>
 <body>
+<div th:replace="include/nav :: navbar"></div>
+<div class="flex">
 
-<header>
-    <h1>내 페이지</h1>
-</header>
-
-<div class="container">
-    <div class="section">
-        <h2>회원 정보</h2>
-        <p>이름: <span id="userName">홍길동</span></p>
-        <p>이메일: <span id="userEmail">example@example.com</span></p>
-        <button class="btn" onclick="editProfile()">프로필 수정</button>
+    <div class="sidebar">
+        <h2>개인관리</h2>
+        <a href="#" onclick="showSection('profile')">회원 정보</a>
+        <a href="#" onclick="showSection('orders')">주문 내역</a>
+        <a href="#" onclick="showSection('cart')">장바구니</a>
+        <a href="#" onclick="showSection('wishlist')">찜 목록</a>
+        <p><hr></p><br>
+        <h2>판매관리</h2>
+        <a href="#" onclick="showSection('product_register')">상품등록</a>
+        <a href="#" onclick="showSection('product_management')">판매관리</a>
     </div>
 
-    <div class="section">
-        <h2>주문 내역</h2>
-        <table>
-            <thead>
-            <tr>
-                <th>주문 번호</th>
-                <th>상품명</th>
-                <th>가격</th>
-                <th>주문일</th>
-                <th>상태</th>
-            </tr>
-            </thead>
-            <tbody id="orderList">
-            <tr>
-                <td>1</td>
-                <td>상품 A</td>
-                <td>₩10,000</td>
-                <td>2024-01-01</td>
-                <td>배송중</td>
-            </tr>
-            <tr>
-                <td>2</td>
-                <td>상품 B</td>
-                <td>₩20,000</td>
-                <td>2024-01-02</td>
-                <td>완료</td>
-            </tr>
-            </tbody>
-        </table>
-    </div>
 
-    <div class="section">
-        <h2>장바구니</h2>
-        <table>
-            <thead>
-            <tr>
-                <th>상품명</th>
-                <th>가격</th>
-                <th>수량</th>
-                <th>합계</th>
-            </tr>
-            </thead>
-            <tbody id="cartList">
-            <tr>
-                <td>상품 C</td>
-                <td>₩15,000</td>
-                <td>2</td>
-                <td>₩30,000</td>
-            </tr>
-            <tr>
-                <td>상품 D</td>
-                <td>₩25,000</td>
-                <td>1</td>
-                <td>₩25,000</td>
-            </tr>
-            </tbody>
-        </table>
-        <button class="btn" onclick="checkout()">결제하기</button>
-    </div>
+    <div class="container">
+        <div class="section" id="profile" style="display: none;">
+            <h2>회원 정보</h2>
+            <p>닉네임: <span id="userName" th:text="${mid}">홍길동</span></p>
+            <p>닉네임: <span id="level" th:text="${level_name}">등급</span></p>
+            <p>이메일: <span id="userEmail" th:text="${email}">example@example.com</span></p>
+            <p>계좌번호: <span id="userAccount_num" th:text="${account_num}">352-0869-2631-53</span></p>
+            <form name="accountForm" method="post" th:action="@{/member/editAccount_num}">
+                <div class="account_num_display">
+                    <input type="text" id="account_num" name="account_num">
+                    <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
+                    <button type="button" class="btn" onclick="editAccount_num()">등록/수정하기</button>
+                </div>
+            </form>
+            <button class="btn" type="button" onclick="editProfile()">계좌번호등록/수정</button>
+        </div>
 
-    <div class="section">
-        <h2>찜 목록</h2>
-        <table>
-            <thead>
-            <tr>
-                <th>상품명</th>
-                <th>가격</th>
-                <th>상태</th>
-            </tr>
-            </thead>
-            <tbody id="wishList">
-            <tr>
-                <td>상품 E</td>
-                <td>₩30,000</td>
-                <td>찜하기</td>
-            </tr>
-            </tbody>
-        </table>
+        <div class="section" id="orders" style="display: none;">
+            <h2>주문 내역</h2>
+            <table>
+                <thead>
+                <tr>
+                    <th>주문 번호</th>
+                    <th>상품명</th>
+                    <th>가격</th>
+                    <th>주문일</th>
+                    <th>상태</th>
+                </tr>
+                </thead>
+                <tbody id="orderList">
+                <tr>
+                    <td>1</td>
+                    <td>상품 A</td>
+                    <td>₩10,000</td>
+                    <td>2024-01-01</td>
+                    <td>배송중</td>
+                </tr>
+                <tr>
+                    <td>2</td>
+                    <td>상품 B</td>
+                    <td>₩20,000</td>
+                    <td>2024-01-02</td>
+                    <td>완료</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="section" id="cart" style="display: none;">
+            <h2>장바구니</h2>
+            <table>
+                <thead>
+                <tr>
+                    <th>상품명</th>
+                    <th>가격</th>
+                    <th>수량</th>
+                    <th>합계</th>
+                </tr>
+                </thead>
+                <tbody id="cartList">
+                <tr>
+                    <td>상품 C</td>
+                    <td>₩15,000</td>
+                    <td>2</td>
+                    <td>₩30,000</td>
+                </tr>
+                <tr>
+                    <td>상품 D</td>
+                    <td>₩25,000</td>
+                    <td>1</td>
+                    <td>₩25,000</td>
+                </tr>
+                </tbody>
+            </table>
+            <button class="btn" onclick="checkout()">결제하기</button>
+        </div>
+
+        <div class="section" id="wishlist" style="display: none;">
+            <h2>찜 목록</h2>
+            <table>
+                <thead>
+                <tr>
+                    <th>상품명</th>
+                    <th>가격</th>
+                    <th>상태</th>
+                </tr>
+                </thead>
+                <tbody id="wishList">
+                <tr>
+                    <td>상품 E</td>
+                    <td>₩30,000</td>
+                    <td>찜하기</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="section" id="product_register" style="display: none;">
+            <h2>상품등록</h2>
+            <form name="productForm" method="post" th:action="@{/product/insertProduct}" enctype="multipart/form-data">
+                <div class="form-group">
+                    <label for="maincategory">대분류카테고리 선택</label>
+                    <select id="maincategory" name="maincategory" required>
+                        <option value="">대분류카테고리를 선택하세요</option>
+                        <option th:each="vos_mainCategory : ${vos_mainCategory}" th:value="${vos_mainCategory.id}" th:text="${vos_mainCategory.title}"></option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="subcategory">서브카테고리 선택</label>
+                    <select id="subcategory" name="subcategory" required>
+                        <option value="">서브카테고리를 선택하세요</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="brand">브랜드</label>
+                    <input type="text" id="brand" name="brand" required>
+                </div>
+                <div class="form-group">
+                    <label for="product_name">상품 이름</label>
+                    <input type="text" id="product_name" name="product_name" required>
+                </div>
+                <div class="form-group">
+                    <label for="product_img">상품 이미지</label>
+                    <input type="file" id="product_img" name="product_img" accept=".jpg, .jpeg, .png" multiple required>
+                    <p id="fileLimitMessage" style="color: red;"></p>
+                    <input type="hidden" id="img1" name="img1">
+                    <input type="hidden" id="img2" name="img2">
+                    <input type="hidden" id="img3" name="img3">
+                    <input type="hidden" id="img4" name="img4">
+                    <input type="hidden" id="img5" name="img5">
+                </div>
+                <div class="form-group">
+                    <label for="product_img_detail">상세 이미지</label>
+                    <input type="file" id="product_img_detail" name="product_img_detail" accept=".jpg, .jpeg, .png" required>
+                </div>
+                <div class="form-group">
+                    <label for="price">가격</label>
+                    <input type="number" id="price" name="price" required>
+                </div>
+                <div class="form-group">
+                    <label for="stock">재고 수</label>
+                    <input type="number" id="stock" name="stock" required>
+                </div>
+
+                <div id="designFields">
+                    <label for="design">디자인</label>
+                    <div class="form-group design-row">
+                        <input type="text" id="design" class="design-input" placeholder="최대 5항목" required>
+                        <input type="hidden" id="designData" name="designData">
+                        <div class="add-design" id="addDesign">+</div>
+                    </div>
+                </div>
+                <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
+                <input type="button" onclick="productCheck()" value="상품 등록">
+            </form>
+        </div>
+
+        <div class="section" id="product_management" style="display: none;">
+            <h2>판매관리</h2>
+            <table>
+                <thead>
+                <tr>
+                    <th>상품명</th>
+                    <th>가격</th>
+                    <th>상태</th>
+                    <th>관리</th>
+                </tr>
+                </thead>
+                <tbody id="productList">
+                <tr>
+                    <td>상품 A</td>
+                    <td>₩10,000</td>
+                    <td>판매중</td>
+                    <td><button class="btn" onclick="removeProduct(this)">삭제</button></td>
+                </tr>
+                <tr>
+                    <td>상품 B</td>
+                    <td>₩20,000</td>
+                    <td>판매중</td>
+                    <td><button class="btn" onclick="removeProduct(this)">삭제</button></td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
     </div>
 </div>
 
 <script>
-    function editProfile() {
-        alert("프로필 수정 기능을 구현해주세요.");
+    function showSection(section) {
+        const sections = document.querySelectorAll('.section');
+
+        // 선택된 섹션의 ID를 확인합니다.
+        let isProductSection = section === 'product_register' || section === 'product_management';
+
+        if(isProductSection){
+            let sLevel = [[${level}]];
+            if(sLevel < 2) {
+                alert("계좌를 등록하시면 이용 할 수 있습니다.");
+                return
+            }
+        }
+        sections.forEach((sec) => {
+            sec.style.display = 'none';
+        });
+        document.getElementById(section).style.display = 'block';
     }
 
-    function checkout() {
-        alert("결제하기 기능을 구현해주세요.");
+    function editProfile(){
+        const accountNumDisplay = document.querySelector('.account_num_display');
+        accountNumDisplay.style.display = 'block';
+    }
+
+    function editAccount_num(){
+        let account_num = document.getElementById("account_num").value.trim();
+        if(account_num == "") {
+            alert("계좌번호를 적어주세요.");
+            return
+        }
+        accountForm.submit();
     }
 </script>
 
+
+<script>
+    'use strict';
+    const csrfToken = document.querySelector('meta[name="_csrf"]').getAttribute('content');
+    const csrfHeader = document.querySelector('meta[name="_csrf_header"]').getAttribute('content');
+
+    let designCount = 1;
+    const maxDesignCount = 5;
+
+    // 디자인 항목 추가 버튼 기능
+    function addDesignField() {
+        if (designCount >= maxDesignCount) return; // 디자인 항목 최대치 제한
+        designCount++;
+
+        // 기존에 있던 + 버튼과 - 버튼 제거
+        const currentAddButton = document.querySelector('.add-design');
+        if (currentAddButton) {
+            currentAddButton.remove();
+        }
+
+        const currentRemoveButton = document.querySelector('.remove-design');
+        if (currentRemoveButton) {
+            currentRemoveButton.remove();
+        }
+
+        // 새로운 디자인 항목 추가
+        const designDiv = document.createElement('div');
+        designDiv.classList.add('form-group', 'design-row');
+        designDiv.innerHTML = `
+            <input type="text" class="design-input" placeholder="디자인 ${designCount}" required>
+            <div class="remove-design">-</div>
+            <div class="add-design">+</div>
+        `;
+
+        // 새로 추가된 디자인 항목의 +, - 버튼에 기능 적용
+        designDiv.querySelector('.add-design').addEventListener('click', addDesignField);
+        designDiv.querySelector('.remove-design').addEventListener('click', function() {
+            removeDesignField(designDiv);
+        });
+
+        document.getElementById('designFields').appendChild(designDiv);
+
+        updateRemoveButtonVisibility();
+    }
+
+    // 디자인 항목 제거 기능
+    function removeDesignField(designDiv) {
+        designDiv.remove();
+        designCount--;
+
+        // 모든 디자인 항목에서 +, - 버튼 제거
+        const allAddButtons = document.querySelectorAll('.add-design');
+        const allRemoveButtons = document.querySelectorAll('.remove-design');
+        allAddButtons.forEach(button => button.remove());
+        allRemoveButtons.forEach(button => button.remove());
+
+        // 마지막 디자인 항목에만 +, - 버튼 추가
+        const lastDesignRow = document.querySelectorAll('.design-row');
+        if (lastDesignRow.length > 0) {
+            const lastRow = lastDesignRow[lastDesignRow.length - 1];
+
+            const removeButton = document.createElement('div');
+            removeButton.classList.add('remove-design');
+            removeButton.innerText = '-';
+            removeButton.addEventListener('click', function() {
+                removeDesignField(lastRow);
+            });
+
+            const addButton = document.createElement('div');
+            addButton.classList.add('add-design');
+            addButton.innerText = '+';
+            addButton.addEventListener('click', addDesignField);
+
+            lastRow.appendChild(removeButton);
+            lastRow.appendChild(addButton);
+        }
+        updateRemoveButtonVisibility();
+    }
+
+    // 마지막 디자인 항목이 하나일 경우 - 버튼 숨기기
+    function updateRemoveButtonVisibility() {
+        const designRows = document.querySelectorAll('.design-row');
+        const removeButton = designRows[designRows.length - 1].querySelector('.remove-design');
+        if (designRows.length === 1) {
+            removeButton.style.display = 'none';
+        } else {
+            removeButton.style.display = 'inline-block';
+        }
+    }
+
+    // 처음 디자인 항목의 + 버튼에 기능 적용
+    document.getElementById('addDesign').addEventListener('click', addDesignField);
+
+    // 카테고리 선택 시 option 변화
+    document.getElementById("maincategory").addEventListener("change", function() {
+        const mainCategoryId = this.value;
+
+        const subCategorySelect = document.getElementById("subcategory");
+        subCategorySelect.innerHTML = '<option value="">서브카테고리를 선택하세요</option>'; // 초기화
+
+        if (mainCategoryId != "") {
+            fetch('/member/getSubCategories',{
+                method: "POST",
+                headers: {
+                    [csrfHeader]: csrfToken,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ mainCategoryId: mainCategoryId })
+            })
+            .then(response => response.json())
+            .then(data => {
+                data.forEach(subCategory => {
+                    const option = document.createElement("option");
+                    option.value = subCategory.id; // 소분류 ID
+                    option.textContent = subCategory.title; // 소분류 제목
+                    subCategorySelect.appendChild(option); // 소분류 선택 박스에 추가
+                });
+            })
+            .catch(error => {
+                console.error("소분류를 가져오는 중 에러 발생:", error);
+            });
+        }
+    });
+
+    // 파일 5개까지 선택할수 있도록 제한
+    product_img.addEventListener("change", function () {
+        // 선택된 파일의 개수를 확인합니다.
+        const files = product_img.files;
+
+        // 선택된 파일 개수가 5개를 초과하는 경우
+        if (files.length > 5) {
+            // 초과한 경우 파일 입력을 초기화합니다.
+            product_img.value = "";
+            // 사용자에게 경고 메시지를 표시합니다.
+            fileLimitMessage.textContent = "최대 5개의 파일만 업로드할 수 있습니다.";
+        } else {
+            // 제한 내에 있는 경우 메시지를 지웁니다.
+            fileLimitMessage.textContent = "";
+        }
+    });
+
+    function productCheck() {
+        let maincategory = document.getElementById("maincategory").value;
+        let subcategory = document.getElementById("subcategory").value;
+        let brand = document.getElementById("brand").value.trim();
+        let product_name = document.getElementById("product_name").value.trim();
+        let product_img = document.getElementById("product_img");
+        let product_img_detail = document.getElementById("product_img_detail");
+        let price = document.getElementById("price").value;
+        let stock = document.getElementById("stock").value;
+
+        // 디자인 항목 가져오기
+        let designInputs = document.querySelectorAll(".design-input");
+        let designs = [];
+
+        // 디자인 입력값을 배열에 추가
+        for (let i = 0; i < designInputs.length; i++) {
+            const input = designInputs[i];
+            // 공백 입력값은 추가하지 않도록 필터링
+            if (input.value.trim() !== "") {
+                designs.push(input.value.trim());
+            }
+        }
+
+        // 디자인을 JSON 문자열로 변형
+        const designsJson = JSON.stringify(designs);
+        document.getElementById('designData').value = designsJson;
+
+
+
+        // 상품이미지 처리
+        const productImgs = product_img.files; // FileList
+        const productImgDetails = product_img_detail.files[0]; // 단일 파일
+
+        // 상품 이미지 파일 처리
+        for (let i = 0; i < productImgs.length; i++) {
+            document.getElementById(`img${i + 1}`).value = productImgs[i].name;
+        }
+
+        // 상세 이미지 파일 처리
+        if (productImgDetails) {
+            console.log('선택한 상세 이미지:', productImgDetails.name);
+            console.log('파일 크기:', productImgDetails.size);
+        }
+
+        if(maincategory == "" || subcategory == ""){
+            alert("등록하고자하는 분류를 선택해주세요.");
+            return
+        }
+        else if(brand == ""){
+            alert("여러분의 고유의 브랜드명을 적어주세요.");
+            return
+        }
+        else if(product_name == ""){
+            alert("상품명을 입력해주세요.");
+            return
+        }
+        else if(price == ""){
+            alert("가격을 입력해주세요.");
+            return
+        }
+        else if(stock == ""){
+            alert("현재 물건의 수량을 입력해주세요.");
+            return
+        }
+        else if(designsJson == ""){
+            alert("판매하는 물품의 디자인명을 입력해주세요.");
+            return
+        }
+        else productForm.submit();
+
+
+        // 결과 확인 (디버깅 용도)
+        // console.log(designsJson);
+
+    }
+</script>
 </body>
 </html>

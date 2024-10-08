@@ -1,7 +1,12 @@
 package com.spring.goodsShop.service;
 
 import com.spring.goodsShop.vo.MemberVo;
+import com.spring.goodsShop.vo.ProductVo;
+import com.spring.goodsShop.vo.Product_imgVo;
+import com.spring.goodsShop.vo.SubcategoryVo;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 
 public interface MemberService {
@@ -27,4 +32,23 @@ public interface MemberService {
     List<MemberVo> getMember();
 
     void memberDelete(String mid, String email);
+
+    MemberVo getMember(String mid, String email);
+
+    List<SubcategoryVo> getSubCategoriesByMainCategory(String mainCategory);
+
+    void setAccount_num(String account_num, String mid);
+
+    void updateLevel(int level);
+
+    int getMemberIdBymid(String mid);
+
+
+    void setProduct_img(Product_imgVo imgVo, List<MultipartFile> files) throws IOException;
+
+    int getProductImgIdByImg1(String img1);
+
+    String setProduct_img_detail_saveName(MultipartFile product_img_detail) throws IOException;
+
+    void setProduct(ProductVo productVo, MultipartFile product_img_detail) throws IOException;
 }

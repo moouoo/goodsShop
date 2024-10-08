@@ -19,6 +19,10 @@
         select count(*) from sub_category where id = #{id} and title = #{before_title};
     </select>
 
+    <select id="getSubCategory2" resultType="com.spring.goodsShop.vo.SubcategoryVo">
+        select * from sub_category where main_category_id = #{mainCategoryId};
+    </select>
+
 
     <!--  insert  -->
     <insert id="setMainCategory">
@@ -48,5 +52,6 @@
     <update id="UpdateSubcategory">
         update sub_category set title = #{sub_update_title} where id = #{id};
     </update>
+
 
 </mapper>
