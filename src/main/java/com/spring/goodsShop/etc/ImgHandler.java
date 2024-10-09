@@ -14,8 +14,9 @@ public class ImgHandler {
         byte[] data = fName.getBytes();
 
         HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
-        String realPath = request.getSession().getServletContext().getRealPath("/resources/static/img/"+urlPath+"/");
-
+//        String realPath = request.getSession().getServletContext().getRealPath("/resources/static/img/"+urlPath+"/");
+        String realPath = "/Users/moo/IdeaProjects/goodsShop/src/main/resources/static/img/"+urlPath+"/";
+//        System.out.println("realPath------" + realPath);
         FileOutputStream fos = new FileOutputStream(realPath + saveFileName);
         fos.write(data);
         fos.close();

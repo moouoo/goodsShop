@@ -58,7 +58,7 @@
 
     <insert id="setProduct">
         insert into product (id, sub_category_id, brand, product_name, member_id, product_img_id, product_img_detail, price, stock, design)
-            values (default, #{productVo.sub_category_id}, #{brand}, #{product_name}, #{member_id}, #{product_img_id}, #{product_img_detail}, #{price}, #{stock}, #{design});
+            values (default, #{productVo.sub_category_id}, #{productVo.brand}, #{productVo.product_name}, #{productVo.member_id}, #{productVo.product_img_id}, #{productVo.product_img_detail}, #{productVo.price}, #{productVo.stock}, #{productVo.design});
     </insert>
 
 

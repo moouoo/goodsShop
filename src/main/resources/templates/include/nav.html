@@ -24,7 +24,11 @@
                         <a href="/admin/adminP">관리자 페이지</a>
                     </div>
                 </div>
-                <a href="#">찜한상품</a>
+                <div th:with="level=${session.sLevel}">
+                    <div th:if="${level >= 1}">
+                        <a href="#">찜한상품</a>
+                    </div>
+                </div>
             </div>
         </div>
 
