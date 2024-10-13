@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="nav.css" />
     <title>관리 대시보드</title>
 
     <style>
@@ -76,6 +77,8 @@
     </style>
 </head>
 <body>
+    <div th:replace="include/nav2 :: navbar2"></div>
+
     <div class="dashboard">
         <aside class="sidebar">
             <h2><a href="/admin/adminP">관리자 기능</a></h2>

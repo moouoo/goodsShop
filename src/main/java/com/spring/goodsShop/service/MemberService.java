@@ -51,4 +51,6 @@ public interface MemberService {
     String setProduct_img_detail_saveName(MultipartFile product_img_detail) throws IOException;
 
     void setProduct(ProductVo productVo, MultipartFile product_img_detail) throws IOException;
+
+    void pwdSet(String encodePwd, String mid);
 }

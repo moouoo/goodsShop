@@ -75,7 +75,6 @@ public class memberController {
         String code = (String) session.getAttribute("code");
         boolean check = bCryptPasswordEncoder.matches(emailOk, code);
 
-
         return "{\"available\": " + check + "}";
     }
 
@@ -210,6 +209,26 @@ public class memberController {
             // 유효하지 않은 경우 에러 메시지
             return "redirect:/message/no_account_num";
         }
+    }
+
+    @RequestMapping(value = "/pwdSet", method = RequestMethod.POST)
+    String pwdSet(String pwd, HttpSession session){
+        String mid = (String) session.getAttribute("sMid");
+        String PASSWORD_REGEX = "^[a-z\\d!@#$%^&*]{8,}$";
+        System.out.println("pwd--------" + pwd);
+
+        // 정규식 패턴 컴파일
+        Pattern pattern = Pattern.compile(PASSWORD_REGEX);
+        Matcher matcher = pattern.matcher(pwd);
+
+        if(matcher.matches()){
+            // 유효한 비밀번호인 경우 처리
+            String encodePwd = bCryptPasswordEncoder.encode(pwd);
+            memberService.pwdSet(encodePwd, mid);
+            return "redirect:/message/ok_pwdSet";
+        }
+        else return "redirect:/message/no_pwdSet";
+
     }
 
 }

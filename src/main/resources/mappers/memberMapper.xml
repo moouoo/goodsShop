@@ -75,6 +75,9 @@
         update member set level = #{level};
     </update>
 
+    <update id="pwdSet">
+        update member set pwd = #{encodePwd} where mid = #{mid};
+    </update>
 
 
     <!--  delete  -->

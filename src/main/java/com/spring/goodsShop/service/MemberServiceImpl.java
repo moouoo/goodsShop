@@ -205,5 +205,10 @@ public class MemberServiceImpl implements MemberService{
         memberDao.setProduct(productVo);
     }
 
+    @Override
+    public void pwdSet(String encodePwd, String mid) {
+        memberDao.pwdSet(encodePwd, mid);
+    }
+
 
 }

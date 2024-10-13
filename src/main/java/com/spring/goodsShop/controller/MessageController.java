@@ -87,6 +87,14 @@ public class MessageController {
             model.addAttribute("msg", "상품설명사진저장중 에러");
             model.addAttribute("url", "/member/memberP");
         }
+        else if(msgFlag.equals("ok_pwdSet")){
+            model.addAttribute("msg", "비밀번호를 수정하였습니다.");
+            model.addAttribute("url", "/member/memberP");
+        }
+        else if(msgFlag.equals("no_pwdSet")){
+            model.addAttribute("msg", "비밀번호를 수정 에러");
+            model.addAttribute("url", "/member/memberP");
+        }
 
 
         return "include/message";

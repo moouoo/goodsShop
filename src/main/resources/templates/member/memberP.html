@@ -7,6 +7,7 @@
     <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
     <title>내 페이지</title>
     <link rel="stylesheet" href="/nav.css">
+    <link rel="stylesheet" href="/modal.css">
     <link rel="stylesheet" href="/registerProduct.css">
     <style>
         /* 스타일 내용은 그대로 유지 */
@@ -115,7 +116,7 @@
     </style>
 </head>
 <body>
-<div th:replace="include/nav :: navbar"></div>
+<div th:replace="include/nav2 :: navbar2"></div>
 <div class="flex">
 
     <div class="sidebar">
@@ -128,6 +129,8 @@
         <h2>판매관리</h2>
         <a href="#" onclick="showSection('product_register')">상품등록</a>
         <a href="#" onclick="showSection('product_management')">판매관리</a>
+        <p><hr></p><br>
+        <h2>문의사항</h2>
     </div>
 
 
@@ -146,6 +149,25 @@
                 </div>
             </form>
             <button class="btn" type="button" onclick="editProfile()">계좌번호등록/수정</button>
+            <button class="btn" type="button" id="openPwdSetModalBtn" onclick="openPwdSetModal()">비밀번호 수정</button>
+        </div>
+
+        <!-- 비밀번호 수정 모달창 -->
+        <!-- Modal Structure -->
+        <div id="pwdSetModal" class="modal">
+            <div class="modal-content">
+                <span class="close-btn">&times;</span>
+                <form id="pwdSetModalForm" method="post" th:action="@{/member/pwdSet}">
+                    <h2 id="modalContent">비밀번호 재설정</h2>
+                    <p><span id="pwd1Msg" class="red"></span></p>
+                    <input type="password" placeholder="새로운 비밀번호" id="pwd1" name="pwd1"/>
+                    <p><span id="pwd2Msg" class="red"></span></p>
+                    <input type="password" placeholder="비밀번호 확인" id="pwd2" name="pwd2"/>
+                    <input type="hidden" name="pwd" id="pwd" />
+                    <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
+                    <button class="action-btn" onclick="pwdSet()">확인</button>
+                </form>
+            </div>
         </div>
 
         <div class="section" id="orders" style="display: none;">
@@ -319,6 +341,57 @@
 </div>
 
 <script>
+    'use strict'
+
+    // 모달 관련 요소 선택
+    const modal = document.getElementById("pwdSetModal");
+    const closeModalBtn = document.querySelector(".close-btn");
+
+    // 모달 닫기 함수 (닫기 버튼 클릭 시)
+    closeModalBtn.addEventListener("click", () => {
+        modal.style.display = "none";
+    });
+
+    // 모달 닫기 함수 (배경 클릭 시)
+    window.addEventListener("click", (e) => {
+        if (e.target === modal) {
+            modal.style.display = "none";
+        }
+    });
+
+    // 모달 열기
+    function openPwdSetModal(){
+         modal.style.display = "flex";
+    }
+
+    function pwdSet(){
+        let pwd1 = document.getElementById("pwd1").value.trim();
+        let pwd2 = document.getElementById("pwd2").value.trim();
+
+        if(pwd1 == "" || pwd2 == ""){
+            alert("모든칸을 채우셔야합니다.");
+        }
+        document.getElementById("pwd").value = pwd2;
+        pwdSetModalForm.submit();
+    }
+
+    // 비밀번호 수정
+    let pwd1 = document.getElementById("pwd1");
+    let pwd2 = document.getElementById("pwd2");
+    let pwd1Msg = document.getElementById("pwd1Msg");
+    let pwd2Msg = document.getElementById("pwd2Msg");
+    let pwdPattern = /^[a-z\d!@#$%^&*]{8,}$/;
+
+    pwd1.addEventListener('input', function() {
+        if(!pwdPattern.test(pwd1.value)) pwd1Msg.textContent = "비밀번호는 최소 8자 이상의 소문자와 숫자 그리고 특수문자들을 사용할 수 있습니다.";
+        else pwd1Msg.textContent = "";
+    });
+
+    pwd2.addEventListener('input', function() {
+        if (pwd2.value !== pwd1.value) pwd2Msg.textContent = "비밀번호가 일치하지 않습니다.";
+        else pwd2Msg.textContent = "";
+    });
+
     function showSection(section) {
         const sections = document.querySelectorAll('.section');
 
@@ -341,9 +414,9 @@
     function editProfile(){
         const accountNumDisplay = document.querySelector('.account_num_display');
         accountNumDisplay.style.display = 'block';
-    }
+        }
 
-    function editAccount_num(){
+        function editAccount_num(){
         let account_num = document.getElementById("account_num").value.trim();
         if(account_num == "") {
             alert("계좌번호를 적어주세요.");

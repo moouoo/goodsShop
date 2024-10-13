@@ -44,4 +44,6 @@ public interface MemberDao {
     int getProductImgIdByImg1(@Param("img1") String img1);
 
     void setProduct(@Param("productVo") ProductVo productVo);
+
+    void pwdSet(@Param("encodePwd") String encodePwd, @Param("mid") String mid);
 }
