@@ -2,6 +2,9 @@ package com.spring.goodsShop.vo;
 
 import lombok.Data;
 
+import java.text.NumberFormat;
+import java.util.Locale;
+
 @Data
 public class ProductVo {
     private int id; //pk
@@ -15,4 +18,9 @@ public class ProductVo {
     private int stock;
     private String Rdate;
     private String design; //json
+
+    public String getFormattedPrice() {
+        NumberFormat numberFormat = NumberFormat.getInstance(Locale.KOREA);
+        return numberFormat.format(this.price) + "원";
+    }
 }

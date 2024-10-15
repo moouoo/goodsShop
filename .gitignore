@@ -24,3 +24,6 @@ Thumbs.db
 *.class
 *.jar
 *.war
+
+# img 폴더 전체 제외
+img/

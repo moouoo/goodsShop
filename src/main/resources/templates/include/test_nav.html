@@ -1,4 +1,4 @@
-<div class="nav" th:fragment="navbar" xmlns:th="http://www.w3.org/1999/xhtml">
+<div class="nav" th:fragment="navbar_test" xmlns:th="http://www.w3.org/1999/xhtml">
     <nav class="navbar">
         <div class="navbar-top">
             <div class="navbar-logo">
@@ -18,7 +18,7 @@
                 </div>
                 <div th:with="level=${session.sLevel}">
                     <div th:if="${level >= 1 and level < 3}">
-                        <a href="/member/memberP">나의 페이지</a>
+                        <a href="member/memberP">나의 페이지</a>
                     </div>
                     <div th:if="${level == 99}">
                         <a href="/admin/adminP">관리자 페이지</a>
@@ -41,16 +41,22 @@
             <ul>
                 <li><a href="#">NEW</a></li>
                 <li class="dropdown">
-                    <a href="/product/allProduct">상품별</a>
+                    <a href="#">상품별</a>
                     <ul class="dropdown-content">
-                        <li class="dropdown-sub" th:each="main_list : ${main_list}">
-                            <a th:href="@{/product/{title}(title=${main_list.title})}" th:text="${main_list.title}">대분류 쭈르륵</a>
+                        <li class="dropdown-sub">
+                            <a href="#">웹툰 마우스패드</a>
                             <ul class="dropdown-sub-content">
-                                <li th:each="sub_list : ${sub_list}" th:if="${sub_list.main_category_id == main_list.id}">
-                                    <a th:href="@{/product/{title}/{id}(title=${main_list.title})(id=${sub_list.id})}" th:text="${sub_list.title}">소분류 쭈르륵</a>
-                                </li>
+                                <li><a href="#">사각 마우스패드</a></li>
+                                <li><a href="#">원형 마우스패드</a></li>
+                                <li><a href="#">하트 마우스패드</a></li>
+                                <li><a href="#">입체 마우스패드</a></li>
+                                <li><a href="#">데스크 장패드</a></li>
                             </ul>
                         </li>
+                        <li><a href="#">웹툰 케이스</a></li>
+                        <li><a href="#">핸드폰 거치대</a></li>
+                        <li><a href="#">웹툰 아크릴</a></li>
+                        <li><a href="#">텀블러</a></li>
                     </ul>
                 </li>
                 <li><a href="#">EVENT</a></li>

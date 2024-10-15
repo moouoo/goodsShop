@@ -1,15 +1,16 @@
 package com.spring.goodsShop.controller;
 
+import com.spring.goodsShop.service.AdminService;
 import com.spring.goodsShop.service.MemberService;
+import com.spring.goodsShop.service.ProductService;
+import com.spring.goodsShop.vo.MaincategoryVo;
 import com.spring.goodsShop.vo.ProductVo;
 import com.spring.goodsShop.vo.Product_imgVo;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -21,6 +22,12 @@ public class ProductController {
 
     @Autowired
     MemberService memberService;
+
+    @Autowired
+    AdminService adminService;
+
+    @Autowired
+    ProductService productService;
 
     @RequestMapping(value = "insertProduct", method = RequestMethod.POST)
     String product(@ModelAttribute Product_imgVo imgVo, HttpSession session,
@@ -64,7 +71,33 @@ public class ProductController {
             memberService.setProduct(productVo, product_img_detail);
             return "redirect:/message/ok_product";
         }
-
-
     }
+
+    @RequestMapping(value = "/allProduct", method = RequestMethod.GET)
+    String allProduct(Model model){
+        List<MaincategoryVo> main_list;
+        List<ProductVo> product_list;
+        List<Product_imgVo> product_img_list;
+
+        main_list = adminService.getMainCategory();
+        product_list = productService.getProduct();
+        product_img_list = productService.getProductImg();
+
+        model.addAttribute("main_list", main_list);
+        model.addAttribute("product_list", product_list);
+        model.addAttribute("product_img_list", product_img_list);
+        return "product/allProduct";
+    }
+
+    @RequestMapping(value = "/{title}", method = RequestMethod.GET)
+    String productTitle(@PathVariable("title") String title){
+        return "product/productPageMain";
+    }
+
+    @RequestMapping(value = "/{title}/{id}", method = RequestMethod.GET)
+    String productTitleId(@PathVariable("title") String title, @PathVariable("id") int id){
+        return "product/productPageSub";
+    }
+
+
 }
