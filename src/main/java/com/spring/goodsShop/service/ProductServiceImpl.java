@@ -33,4 +33,9 @@ public class ProductServiceImpl implements ProductService{
     public List<ProductVo> getProductBySubcategoyId(int id) {
         return productDao.getProductBySubcategoyId(id);
     }
+
+    @Override
+    public String getSubcategoryTitle(int id) {
+        return productDao.getSubcategoryTitle(id);
+    }
 }

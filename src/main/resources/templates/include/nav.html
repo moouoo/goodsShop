@@ -43,11 +43,11 @@
                 <li class="dropdown">
                     <a href="/product/allProduct">상품별</a>
                     <ul class="dropdown-content">
-                        <li class="dropdown-sub" th:each="main_list : ${main_list}">
-                            <a th:href="@{/product/{title}(title=${main_list.title})}" th:text="${main_list.title}">대분류 쭈르륵</a>
+                        <li class="dropdown-sub" th:each="all_main_list : ${all_main_list}">
+                            <a th:href="@{/product/{title}(title=${all_main_list.title})}" th:text="${all_main_list.title}">대분류 쭈르륵</a>
                             <ul class="dropdown-sub-content">
-                                <li th:each="sub_list : ${sub_list}" th:if="${sub_list.main_category_id == main_list.id}">
-                                    <a th:href="@{/product/{title}/{id}(title=${main_list.title})(id=${sub_list.id})}" th:text="${sub_list.title}">소분류 쭈르륵</a>
+                                <li th:each="all_sub_list : ${all_sub_list}" th:if="${all_sub_list.main_category_id == all_main_list.id}">
+                                    <a th:href="@{/product/{title}/{id}(title=${all_main_list.title}, id=${all_sub_list.id})}" th:text="${all_sub_list.title}">소분류 쭈르륵</a>
                                 </li>
                             </ul>
                         </li>

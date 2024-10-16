@@ -1,5 +1,6 @@
 package com.spring.goodsShop.controller;
 
+import com.spring.goodsShop.etc.NavbarHelper;
 import com.spring.goodsShop.service.AdminService;
 import com.spring.goodsShop.service.MemberService;
 import com.spring.goodsShop.service.ProductService;
@@ -30,6 +31,9 @@ public class ProductController {
 
     @Autowired
     ProductService productService;
+
+    @Autowired
+    NavbarHelper navbarHelper;
 
     @RequestMapping(value = "insertProduct", method = RequestMethod.POST)
     String product(@ModelAttribute Product_imgVo imgVo, HttpSession session,
@@ -85,9 +89,13 @@ public class ProductController {
         product_list = productService.getProduct();
         product_img_list = productService.getProductImg();
 
+
         model.addAttribute("main_list", main_list);
         model.addAttribute("product_list", product_list);
         model.addAttribute("product_img_list", product_img_list);
+
+        // 내비바 설정
+        navbarHelper.navbarSetup(model);
         return "product/allProduct";
     }
 
@@ -105,20 +113,45 @@ public class ProductController {
             List<ProductVo> temList = productService.getProductBySubcategoyId(id);
             product_list.addAll(temList);
         }
-
         product_img_list = productService.getProductImg();
 
         model.addAttribute("title", title);
         model.addAttribute("sub_list", sub_list);
         model.addAttribute("product_list", product_list);
         model.addAttribute("product_img_list", product_img_list);
+
+        navbarHelper.navbarSetup(model);
         return "product/productPageMain";
     }
 
     @RequestMapping(value = "/{title}/{id}", method = RequestMethod.GET)
-    String productTitleId(@PathVariable("title") String title, @PathVariable("id") int id){
+    String productTitleId(@PathVariable("title") String title, @PathVariable("id") int id, Model model){
+        List<SubcategoryVo> sub_list;
+        List<ProductVo> product_list;
+        List<Product_imgVo> product_img_list;
+
+        String sub_title = productService.getSubcategoryTitle(id);
+        int mainCategoryId = productService.getMainCategoryIdByTitle(title);
+        sub_list = adminService.getSubCategory(mainCategoryId);
+        product_img_list = productService.getProductImg();
+        product_list = productService.getProductBySubcategoyId(id);
+
+        model.addAttribute("sub_list", sub_list);
+        model.addAttribute("sub_title", sub_title);
+        model.addAttribute("title", title);
+        model.addAttribute("product_list", product_list);
+        model.addAttribute("product_img_list", product_img_list);
+
+        navbarHelper.navbarSetup(model);
         return "product/productPageSub";
     }
 
+    // 여기서부터. 상품상세페이지 만들어야함.
+    @RequestMapping(value = "/{product_name}/{id}/{productId}", method = RequestMethod.GET)
+    String productDetail(@PathVariable("id") int id, @PathVariable("productId") int productId, @PathVariable("product_name") String product_name, Model model){
+
+        navbarHelper.navbarSetup(model);
+        return "product/productDetail";
+    }
 
 }

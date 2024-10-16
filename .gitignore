@@ -26,4 +26,5 @@ Thumbs.db
 *.war
 
 # img 폴더 전체 제외
-img/
+img/product_img/*
+img/product_detail/*

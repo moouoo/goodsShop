@@ -19,6 +19,10 @@
         select * from product where sub_category_id = #{id} order by Rdate desc;
     </select>
 
+    <select id="getSubcategoryTitle" resultType="java.lang.String">
+        select title from sub_category where id = #{id};
+    </select>
+
     <!--  insert  -->
     <!--  update  -->
     <!--  delete  -->

@@ -1,24 +1,21 @@
-package com.spring.goodsShop.controller;
+package com.spring.goodsShop.etc;
 
 import com.spring.goodsShop.service.AdminService;
 import com.spring.goodsShop.vo.MaincategoryVo;
 import com.spring.goodsShop.vo.SubcategoryVo;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
+import org.springframework.stereotype.Component;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.util.List;
 
-@Controller
-public class HomeController {
-
+@Component
+public class NavbarHelper {
     @Autowired
     AdminService adminService;
 
-    @GetMapping("/")
-    String hello(Model model){
+    public void navbarSetup(Model model){
+        // nav - 상품명 설정
         List<MaincategoryVo> all_main_list;
         List<SubcategoryVo> all_sub_list;
 
@@ -27,7 +24,5 @@ public class HomeController {
 
         model.addAttribute("all_main_list", all_main_list);
         model.addAttribute("all_sub_list", all_sub_list);
-
-        return "index";
     }
 }

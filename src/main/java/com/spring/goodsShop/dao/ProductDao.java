@@ -14,4 +14,6 @@ public interface ProductDao {
     int getMainCategoryIdByTitle(@Param("title") String title);
 
     List<ProductVo> getProductBySubcategoyId(@Param("id") int id);
+
+    String getSubcategoryTitle(@Param("id") int id);
 }

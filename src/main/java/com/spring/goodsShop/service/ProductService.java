@@ -13,4 +13,6 @@ public interface ProductService {
     int getMainCategoryIdByTitle(String title);
 
     List<ProductVo> getProductBySubcategoyId(int id);
+
+    String getSubcategoryTitle(int id);
 }
