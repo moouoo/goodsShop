@@ -23,4 +23,14 @@ public class ProductServiceImpl implements ProductService{
     public List<Product_imgVo> getProductImg() {
         return productDao.getProductImg();
     }
+
+    @Override
+    public int getMainCategoryIdByTitle(String title) {
+        return productDao.getMainCategoryIdByTitle(title);
+    }
+
+    @Override
+    public List<ProductVo> getProductBySubcategoyId(int id) {
+        return productDao.getProductBySubcategoyId(id);
+    }
 }

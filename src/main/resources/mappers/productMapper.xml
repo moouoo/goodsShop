@@ -4,11 +4,19 @@
 <mapper namespace="com.spring.goodsShop.dao.ProductDao">
     <!--  select  -->
     <select id="getProduct" resultType="com.spring.goodsShop.vo.ProductVo">
-        select * from product;
+        select * from product order by Rdate desc;
     </select>
 
     <select id="getProductImg" resultType="com.spring.goodsShop.vo.Product_imgVo">
         select * from product_img;
+    </select>
+
+    <select id="getMainCategoryIdByTitle" resultType="java.lang.Integer">
+        select id from main_category where title = #{title};
+    </select>
+
+    <select id="getProductBySubcategoyId" resultType="com.spring.goodsShop.vo.ProductVo">
+        select * from product where sub_category_id = #{id} order by Rdate desc;
     </select>
 
     <!--  insert  -->

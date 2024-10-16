@@ -9,4 +9,8 @@ public interface ProductService {
     List<ProductVo> getProduct();
 
     List<Product_imgVo> getProductImg();
+
+    int getMainCategoryIdByTitle(String title);
+
+    List<ProductVo> getProductBySubcategoyId(int id);
 }

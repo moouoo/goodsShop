@@ -6,6 +6,7 @@ import com.spring.goodsShop.service.ProductService;
 import com.spring.goodsShop.vo.MaincategoryVo;
 import com.spring.goodsShop.vo.ProductVo;
 import com.spring.goodsShop.vo.Product_imgVo;
+import com.spring.goodsShop.vo.SubcategoryVo;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 @Controller
@@ -90,7 +92,26 @@ public class ProductController {
     }
 
     @RequestMapping(value = "/{title}", method = RequestMethod.GET)
-    String productTitle(@PathVariable("title") String title){
+    String productTitle(@PathVariable("title") String title, Model model, ProductVo productVo){
+        List<SubcategoryVo> sub_list;
+        List<ProductVo> product_list = new ArrayList<>();
+        List<Product_imgVo> product_img_list;
+
+        int mainCategoryId = productService.getMainCategoryIdByTitle(title);
+        sub_list = adminService.getSubCategory(mainCategoryId);
+
+        for (int i = 0; i < sub_list.size(); i++) {
+            int id = sub_list.get(i).getId();
+            List<ProductVo> temList = productService.getProductBySubcategoyId(id);
+            product_list.addAll(temList);
+        }
+
+        product_img_list = productService.getProductImg();
+
+        model.addAttribute("title", title);
+        model.addAttribute("sub_list", sub_list);
+        model.addAttribute("product_list", product_list);
+        model.addAttribute("product_img_list", product_img_list);
         return "product/productPageMain";
     }
 
