@@ -25,6 +25,10 @@ Thumbs.db
 *.jar
 *.war
 
-# img 폴더 전체 제외
+# img 폴더 내 모든 파일 무시
 img/product_img/*
 img/product_detail/*
+
+# 폴더는 추적하되, 파일들은 무시하기 위해 .gitkeep 사용
+!img/product_img/.gitkeep
+!img/product_detail/.gitkeep
