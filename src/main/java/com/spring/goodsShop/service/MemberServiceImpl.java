@@ -210,5 +210,10 @@ public class MemberServiceImpl implements MemberService{
         memberDao.pwdSet(encodePwd, mid);
     }
 
+    @Override
+    public String findEmailByMid(String mid) {
+        return memberDao.findEmailByMid(mid);
+    }
+
 
 }

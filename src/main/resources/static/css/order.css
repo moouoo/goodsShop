@@ -1,0 +1,65 @@
+.order-info {
+    margin: 20px;
+    padding: 20px;
+    border: 1px solid #eaeaea;
+}
+
+h3 {
+    font-size: 20px;
+    margin-bottom: 20px;
+}
+
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+.form-group label {
+    display: block;
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+.form-group input, .form-group select {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+.email-input, .phone-input, .address-input1, .address-input2 {
+    display: flex;
+    gap: 10px;
+}
+
+.email-input{
+    align-items: center;
+}
+
+.address-input2{
+    margin-top: 10px;
+}
+
+.email-input select {
+    width: auto;
+}
+
+.phone-input select {
+    width: 80px;
+}
+
+.input-width-big {
+    width: 35%; /* 또는 원하는 px 값 */
+    max-width: 500px; /* 너비 제한을 두고 싶을 경우 */
+}
+
+#search-address {
+    padding: 10px 15px;
+    background-color: #f5f5f5;
+    border: 1px solid #ccc;
+    cursor: pointer;
+    border-radius: 4px;
+}
+
+#search-address:hover {
+    background-color: #e0e0e0;
+}

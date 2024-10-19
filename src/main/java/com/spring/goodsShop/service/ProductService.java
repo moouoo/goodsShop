@@ -15,4 +15,14 @@ public interface ProductService {
     List<ProductVo> getProductBySubcategoyId(int id);
 
     String getSubcategoryTitle(int id);
+
+    int getProductImgIdByProductName(String productName);
+
+    List<Product_imgVo> getProductImgByProductImgId(int productImgId);
+
+    String getproductDesignByProductId(int productId);
+
+    List<ProductVo> getProductByProductId(int productId);
+
+    ProductVo getProductOneByProductId(int productId);
 }

@@ -1,5 +1,7 @@
 package com.spring.goodsShop.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.spring.goodsShop.etc.NavbarHelper;
 import com.spring.goodsShop.service.AdminService;
 import com.spring.goodsShop.service.MemberService;
@@ -146,12 +148,67 @@ public class ProductController {
         return "product/productPageSub";
     }
 
-    // 여기서부터. 상품상세페이지 만들어야함.
     @RequestMapping(value = "/{product_name}/{id}/{productId}", method = RequestMethod.GET)
-    String productDetail(@PathVariable("id") int id, @PathVariable("productId") int productId, @PathVariable("product_name") String product_name, Model model){
+    String productDetail(@PathVariable("id") int sub_id, @PathVariable("productId") int productId, @PathVariable("product_name") String product_name, Model model) throws JsonProcessingException {
+        List<ProductVo> product_list;
+        List<Product_imgVo> product_img_list;
+
+        product_list = productService.getProductByProductId(productId);
+        int productImgId = productService.getProductImgIdByProductName(product_name);
+        product_img_list = productService.getProductImgByProductImgId(productImgId);
+
+        // 디자인처리
+        ObjectMapper objectMapper = new ObjectMapper();
+        String designJson = productService.getproductDesignByProductId(productId);
+        List<String> designList = objectMapper.readValue(designJson, List.class);
+
+        model.addAttribute("product_list", product_list);
+        model.addAttribute("product_img_list", product_img_list);
+        model.addAttribute("title", product_name);
+        model.addAttribute("designList", designList);
+        model.addAttribute("productId", productId);
 
         navbarHelper.navbarSetup(model);
         return "product/productDetail";
     }
+
+    @RequestMapping(value = "/befOrder", method = RequestMethod.GET)
+    String befOrder(HttpSession session, int amount, int productId, String design, Model model){
+        String mid = (String) session.getAttribute("sMid");
+
+        if(mid == null || mid.isEmpty()){
+            return "redirect:/message/memberX";
+        }
+        else if(amount == 0 || productId == 0 || design == null || design.isEmpty()){
+            return "redirect:/message/err";
+        }
+        else{
+            ProductVo product = productService.getProductOneByProductId(productId);
+            String product_name = product.getProduct_name();
+            String product_brand = product.getBrand();
+
+            int product_img_id = product.getProduct_img_id();
+            List<Product_imgVo> product_img_all = productService.getProductImgByProductImgId(product_img_id);
+            String product_img_leader = product_img_all.get(0).getImg1();
+
+            String email = memberService.findEmailByMid(mid);
+            String data[] = email.split("@");
+            String email1 = data[0];
+            String email2 = data[1];
+
+            model.addAttribute("email1", email1);
+            model.addAttribute("email2", email2);
+            model.addAttribute("amount", amount);
+            model.addAttribute("design", design);
+            model.addAttribute("product_img_leader", product_img_leader);
+            model.addAttribute("product_name", product_name);
+            model.addAttribute("product_brand", product_brand);
+
+            navbarHelper.navbarSetup(model);
+
+            return "product/order";
+        }
+    }
+
 
 }

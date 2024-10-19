@@ -11,9 +11,9 @@ public class MessageController {
 
     @RequestMapping(value = "/message/{msgFlag}", method = RequestMethod.GET)
     public String listGet(@PathVariable String msgFlag, Model model){
-        if(msgFlag.equals("Ok")){
-            model.addAttribute("msg", "test성공");
-            model.addAttribute("url", "/item/test");
+        if(msgFlag.equals("err")){
+            model.addAttribute("msg", "err");
+            model.addAttribute("url", "/");
         }
         else if(msgFlag.equals("joinOk")){
             model.addAttribute("msg", "회원가입되었습니다.");
@@ -94,6 +94,10 @@ public class MessageController {
         else if(msgFlag.equals("no_pwdSet")){
             model.addAttribute("msg", "비밀번호를 수정 에러");
             model.addAttribute("url", "/member/memberP");
+        }
+        else if(msgFlag.equals("memberX")){
+            model.addAttribute("msg", "로그인후 주문가능합니다.");
+            model.addAttribute("url", "/member/login");
         }
 
 

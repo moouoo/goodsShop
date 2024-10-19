@@ -53,4 +53,6 @@ public interface MemberService {
     void setProduct(ProductVo productVo, MultipartFile product_img_detail) throws IOException;
 
     void pwdSet(String encodePwd, String mid);
+
+    String findEmailByMid(String mid);
 }

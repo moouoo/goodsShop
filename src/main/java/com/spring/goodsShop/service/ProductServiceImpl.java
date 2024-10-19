@@ -38,4 +38,30 @@ public class ProductServiceImpl implements ProductService{
     public String getSubcategoryTitle(int id) {
         return productDao.getSubcategoryTitle(id);
     }
+
+    @Override
+    public int getProductImgIdByProductName(String productName) {
+        return productDao.getProductImgIdByProductName(productName);
+    }
+
+    @Override
+    public List<Product_imgVo> getProductImgByProductImgId(int productImgId) {
+        return productDao.getProductImgByProductImgId(productImgId);
+    }
+
+    @Override
+    public String getproductDesignByProductId(int productId) {
+        return productDao.getproductDesignByProductId(productId);
+    }
+
+    @Override
+    public List<ProductVo> getProductByProductId(int productId) {
+        return productDao.getProductByProductId(productId);
+    }
+
+    @Override
+    public ProductVo getProductOneByProductId(int productId) {
+        return productDao.getProductOneByProductId(productId);
+    }
+
 }

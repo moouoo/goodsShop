@@ -46,6 +46,10 @@
         select id from product_img where img1 = #{img1};
     </select>
 
+    <select id="findEmailByMid" resultType="java.lang.String">
+        select email from member where mid = #{mid};
+    </select>
+
 
     <!--  insert  -->
     <insert id="memberJoin">

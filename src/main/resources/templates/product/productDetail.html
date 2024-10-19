@@ -1,13 +1,438 @@
 <!doctype html>
-<html lang="ko">
+<html lang="ko" xmlns:th="http://www.w3.org/1999/xhtml">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="_csrf" th:content="${_csrf.token}"/>
+    <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
     <link rel="stylesheet" href="/fontawesome/css/all.min.css">
     <link rel="stylesheet" href="/css/nav.css">
     <title>productDetail</title>
+    <style>
+        .detail_container {
+            display: flex;
+            background-color: #fff;
+            margin: 50px auto;
+            padding: 20px;
+            width: 80%;
+        }
+
+        .product-image {
+            flex: 1;
+            margin-right: 20px;
+        }
+
+        .product-image img {
+            width: 100%;
+            border-radius: 10px;
+        }
+
+        .product-info {
+            flex: 2;
+        }
+
+        .product-info h1 {
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+
+        .price {
+            font-size: 20px;
+            margin-bottom: 10px;
+        }
+
+        .price span {
+            font-weight: bold;
+            color: #e74c3c;
+        }
+
+        label {
+            display: block;
+            margin-top: 10px;
+        }
+
+        select {
+            width: 100%;
+            padding: 8px;
+            margin-top: 5px;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+        }
+
+        .quantity {
+            margin-top: 10px;
+        }
+
+        input[type="number"] {
+            width: 100%;
+            padding: 8px;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+        }
+
+        button {
+            width: 100%;
+            padding: 10px;
+            margin-top: 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .buy-now {
+            background-color: #27ae60;
+            color: white;
+        }
+
+        .add-cart {
+            background-color: #3498db;
+            color: white;
+        }
+
+        .wish-list {
+            background-color: #e67e22;
+            color: white;
+        }
+        .button-container {
+            display: flex;
+            justify-content: space-between; /* 버튼 간격을 동일하게 설정 */
+            margin-top: 20px; /* 버튼 간격 조정 */
+        }
+
+        button {
+            flex: 1; /* 버튼이 같은 너비로 나란히 배치됨 */
+            padding: 10px;
+            margin-right: 10px; /* 버튼 간격 추가 */
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        button:last-child {
+            margin-right: 0; /* 마지막 버튼은 오른쪽 여백 제거 */
+        }
+
+        /* 각 버튼 색상 */
+        .buy-now {
+            background-color: #27ae60;
+            color: white;
+        }
+
+        .add-cart {
+            background-color: #3498db;
+            color: white;
+        }
+
+        .wish-list {
+            background-color: #e67e22;
+            color: white;
+        }
+
+        /* 추가 스타일 */
+        .quantity {
+            margin-top: 10px;
+        }
+
+        /* input[type="number"] 스타일 */
+        input[type="number"] {
+            width: 100%;
+            padding: 8px;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+        }
+        /* 이미지 갤러리 스타일 */
+        .gallery {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        .gallery img {
+            width: 60px; /* 미리보기 이미지 크기 */
+            height: 60px; /* 미리보기 이미지 크기 */
+            border: 2px solid #ddd; /* 테두리 추가 */
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 0 5px; /* 간격 조정 */
+            transition: border-color 0.3s;
+        }
+
+        .gallery img:hover {
+            border-color: #3498db; /* hover 시 테두리 색상 변경 */
+        }
+
+        .selected-image {
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .selected-image img {
+            width: 400px; /* 큰 이미지 크기 */
+            height: 400px; /* 큰 이미지 크기 */
+            object-fit: cover; /* 이미지를 고정된 크기에 맞추면서 비율 유지 */
+            border-radius: 10px;
+        }
+        .tab-container {
+            width: 100%;
+            border: 1px solid #ddd;
+        }
+
+        .tab-header {
+            background-color: #f7f7f7;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .tab-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: flex;
+        }
+
+        .tab-item {
+            padding: 15px 20px;
+            cursor: pointer;
+            text-align: center;
+            flex: 1;
+            transition: background-color 0.3s;
+        }
+
+        .tab-item:hover {
+            background-color: #e7e7e7;
+        }
+
+        .tab-item.active {
+            background-color: white;
+            font-weight: bold;
+            border-bottom: 3px solid #007bff;
+        }
+
+        .tab-content {
+            padding: 20px;
+        }
+
+        .tab-pane {
+            display: none;
+        }
+
+        .tab-pane.active {
+            display: block;
+        }
+
+        .no-data {
+            text-align: center;
+            color: #999;
+        }
+
+        .guide_container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            padding: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .info-section {
+            width: 45%;
+            margin-bottom: 20px;
+        }
+        .info-section h2 {
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        .info-section p {
+            font-size: 14px;
+        }
+        .purchase-btn {
+            display: block;
+            width: 200px;
+            background-color: black;
+            color: white;
+            text-align: center;
+            padding: 15px;
+            font-size: 16px;
+            font-weight: bold;
+            margin: 0 auto;
+            cursor: pointer;
+            text-decoration: none;
+        }
+        @media (max-width: 768px) {
+            .info-section {
+                width: 100%;
+            }
+        }
+    </style>
 </head>
 <body>
-    <h2>productDetail</h2>
+    <div th:replace="include/nav :: navbar"></div>
+
+    <div class="detail_container">
+        <div class="product-image">
+            <!-- 이미지 갤러리 추가 -->
+            <div class="selected-image">
+                <div th:each="product_img_list : ${product_img_list}">
+                    <img th:src="@{/img/product_img/{img1}(img1=${product_img_list.img1})}" alt="선택된 이미지" id="main-image">
+                </div>
+            </div>
+            <div class="gallery">
+                <div th:each="product_img_list : ${product_img_list}">
+                    <img th:src="@{/img/product_img/{img1}(img1=${product_img_list.img1})}" th:if="${product_img_list.img1 != ''}" onclick="changeImage(this.src)">
+                    <img th:src="@{/img/product_img/{img2}(img2=${product_img_list.img2})}" th:if="${product_img_list.img2 != ''}" onclick="changeImage(this.src)">
+                    <img th:src="@{/img/product_img/{img3}(img3=${product_img_list.img3})}" th:if="${product_img_list.img3 != ''}" onclick="changeImage(this.src)">
+                    <img th:src="@{/img/product_img/{img4}(img4=${product_img_list.img4})}" th:if="${product_img_list.img4 != ''}" onclick="changeImage(this.src)">
+                    <img th:src="@{/img/product_img/{img5}(img5=${product_img_list.img5})}" th:if="${product_img_list.img5 != ''}" onclick="changeImage(this.src)">
+                </div>
+            </div>
+        </div>
+        <div class="product-info" th:each="product_list : ${product_list}">
+            [<span th:text="${product_list.brand}">브랜드이름</span>]<h3 th:text="${product_list.product_name}">상품이름</h3>
+            <p class="price">판매가 <span th:text="${product_list.price}">6,900원</span></p>
+<!--            <p class="points">적립금: <span>69원 (1%)</span></p>-->
+            <p class="shipping">배송비: <span>2,500원 (50,000원 이상 구매 시 무료)</span></p>
+            <p class="payment-methods">결제수단: 카드결제, 무통장 입금, 휴대폰 결제, 페이코(간편결제), 적립금, 실시간 계좌이체</p>
+            <form name="befOrderForm" method="get" action="/product/befOrder">
+                <label for="design">디자인</label>
+                <select id="design" name="design">
+                    <option value="" disabled selected>[필수] 굿즈을 선택해주세요 -</option>
+                    <option th:each="designList : ${designList}"
+                            th:value="${designList}" th:text="${designList}">디자인들
+                    </option>
+                </select>
+                <div class="quantity">
+                    <label for="amount">TOTAL (QUANTITY)</label>
+                    <input type="number" id="amount" name="amount" value="0" min="0">
+                </div>
+                <div class="button-container">
+                    <input type="hidden" name="productId" th:value="${productId}">
+                    <button type="button" class="buy-now" onclick="defOrderCheck()">바로 구매하기</button>
+                    <button class="add-cart">장바구니</button>
+                    <button class="wish-list">관심상품</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="tab-container">
+        <div class="tab-header">
+            <ul class="tab-list">
+                <li class="tab-item active" data-tab="detail">상세정보</li>
+                <li class="tab-item" data-tab="review">상품후기 <span>0</span></li>
+                <li class="tab-item" data-tab="qna">상품문의 <span>0</span></li>
+                <li class="tab-item" data-tab="guide">배송/교환/환불 안내</li>
+            </ul>
+        </div>
+        <div class="tab-content">
+            <div id="detail" class="tab-pane active">
+                <img src="/img/5.jpg" alt="상세정보 이미지" style="width: 100%; max-width: 860px; display: block; margin: 0 auto;">
+                <p>상세정보 내용을 여기에 추가하세요.</p>
+            </div>
+            <div id="review" class="tab-pane">
+                <h2>REVIEW</h2>
+                <div class="no-data">
+                    <p>게시물이 없습니다</p>
+                </div>
+            </div>
+            <div id="qna" class="tab-pane">
+                <h2>Q&A</h2>
+                <div class="no-data">
+                    <p>게시물이 없습니다</p>
+                </div>
+            </div>
+            <div id="guide" class="tab-pane">
+                <div class="guide_container">
+                    <div class="info-section">
+                        <h2>PAYMENT INFO</h2>
+                        고액결제의 경우 안전을 위해 카드사에서 확인전화를 드릴 수도 있습니다. <br>확인과정에서 도난 카드의 사용이나 타인 명의의 주문등
+                        정상적인 주문이 아니라고 판단될 경우 임의로 주문을 보류 또는 취소할 수 있습니다. &nbsp; <br>
+                        <br>
+                        무통장 입금은 상품 구매 대금은 PC뱅킹, 인터넷뱅킹, 텔레뱅킹 혹은 가까운 은행에서 직접 입금하시면 됩니다. &nbsp;<br>
+                        주문시 입력한&nbsp;입금자명과 실제입금자의 성명이 반드시 일치하여야 하며, 7일 이내로 입금을 하셔야 하며&nbsp;입금되지
+                        않은 주문은 자동취소 됩니다.<br><br><strong><br>무통장입금을 이용하실 경우,</strong><br><br>1) 주문시 입력한 입금자명과 실제입금자의 성명이 반드시 일치하여야 하며,
+                        <br>2) 7일 이내로 입금을 하셔야 하며 입금되지 않은 주문은 자동취소 됩니다.<br><br><strong>3) 예약판매기간의 경우 입금일이 아닌 "주문일" 기준으로 기간 내 결제가 진행되어야하며<br>
+                        판매 기간이 지난 후 입금된 주문건은 재고 부족으로 인해 취소 처리 될 수 있는 점 안내드립니다.</strong> <br>
+
+                    </div>
+                    <div class="info-section">
+                        <h2>DELIVERY INFO</h2>
+                        <ul class="info delivery">
+                            <li>배송 방법 : 택배</li>
+                            <li>배송 지역 : 전국지역</li>
+                            <li>배송 비용 : 2,500원</li>
+                            <li>배송 기간 : 3일 ~ 7일</li>
+                            <li>배송 안내 : <p><br></p><p>산간벽지나 도서지방은 별도의 추가금액을 지불하셔야 하는 경우가 있습니다.<br>
+                                고객님께서 주문하신 상품은 입금 확인후 배송해 드립니다. 다만, 상품종류에 따라서 상품의 배송이 다소 지연될 수 있습니다.</p><p><br></p><p><br>
+                            </p></li>
+                        </ul>
+                    </div>
+                    <div class="info-section">
+                        <h2>EXCHANGE INFO</h2>
+                        <p><strong>교환 및 반품이 가능한 경우</strong><br>
+                            - 상품을 공급 받으신 날로부터<strong> 7일이내</strong> </p><p>&nbsp; 단, 포장을 개봉하였거나 포장이 훼손되어 상품가치가 상실된 경우에는 교환/반품이 불가능합니다.<br>
+                        <br>
+                        <br>
+
+                        <strong>교환 및 반품이 불가능한 경우</strong><br>
+                        - 고객님의 책임 있는 사유로 상품등이 멸실 또는 훼손된 경우. 단, 상품의 내용을 확인하기 위하여 포장 등을 훼손한 경우는 제외<br>
+                        - 포장을 개봉하였거나 포장이 훼손되어 상품가치가 상실된 경우<br>
+                        - 고객님의 사용 또는 일부 소비에 의하여 상품의 가치가 현저히 감소한 경우<br>
+                        - 시간의 경과에 의하여 재판매가 곤란할 정도로 상품등의 가치가 현저히 감소한 경우<br>
+                        - 복제가 가능한 상품등의 포장을 훼손한 경우<br>
+                        &nbsp;</p><p>자세한 내용은 고객문의 또는 웹툰샵 카카오톡을 통해 상담을 이용해 주시기 바랍니다.<br>
+                        <br>
+                        ※ 단순변심으로인한 교환, 반품을 하실 경우 상품반송 비용은 고객님 부담입니다.&nbsp;(색상 교환, 사이즈 교환 등 포함)</p>
+                        <p><br></p>
+                        <p><strong></strong></p>
+                        <p><strong>제품을 받으신후 7일이내에 제품자체 불량이 아닌이상 제품의 환불 및 교환은 불가능합니다.</strong></p>
+                        <p><br></p>
+                    </div>
+                    <div class="info-section">
+                        <h2>SERVICE INFO</h2>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function changeImage(src) {
+            const mainImage = document.getElementById('main-image');
+            mainImage.src = src;
+        }
+
+        function defOrderCheck(){
+            let design = document.getElementById("design").value.trim();
+            let amount = document.getElementById("amount").value.trim();
+
+            if(design == "" || amount == "" || amount == 0){
+                alert("필수옵션 혹은 수량을 입력해주세요.");
+            }
+            else{
+                befOrderForm.submit();
+            }
+        }
+
+
+        document.querySelectorAll('.tab-item').forEach(item => {
+            item.addEventListener('click', () => {
+                const tab = item.getAttribute('data-tab');
+
+                // 탭 활성화
+                document.querySelectorAll('.tab-item').forEach(tabItem => {
+                    tabItem.classList.remove('active');
+                });
+                item.classList.add('active');
+
+                // 콘텐츠 표시
+                document.querySelectorAll('.tab-pane').forEach(pane => {
+                    pane.classList.remove('active');
+                    if (pane.id === tab) {
+                        pane.classList.add('active');
+                    }
+                });
+            });
+        });
+    </script>
 </body>
 </html>

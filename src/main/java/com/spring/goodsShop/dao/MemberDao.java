@@ -46,4 +46,6 @@ public interface MemberDao {
     void setProduct(@Param("productVo") ProductVo productVo);
 
     void pwdSet(@Param("encodePwd") String encodePwd, @Param("mid") String mid);
+
+    String findEmailByMid( @Param("mid") String mid);
 }

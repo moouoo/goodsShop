@@ -23,6 +23,26 @@
         select title from sub_category where id = #{id};
     </select>
 
+    <select id="getProductImgIdByProductName" resultType="java.lang.Integer">
+        select product_img_id from product where product_name = #{productName};
+    </select>
+
+    <select id="getProductImgByProductImgId" resultType="com.spring.goodsShop.vo.Product_imgVo">
+        select * from product_img where id = #{productImgId};
+    </select>
+
+    <select id="getproductDesignByProductId" resultType="java.lang.String">
+        select design from product where id = #{productId};
+    </select>
+
+    <select id="getProductByProductId" resultType="com.spring.goodsShop.vo.ProductVo">
+        select * from product where id = #{productId};
+    </select>
+
+    <select id="getProductOneByProductId" resultType="com.spring.goodsShop.vo.ProductVo">
+        select product_name, brand, product_img_id from product where id = #{productId};
+    </select>
+
     <!--  insert  -->
     <!--  update  -->
     <!--  delete  -->
