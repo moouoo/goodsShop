@@ -3,13 +3,11 @@ package com.spring.goodsShop.controller;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.spring.goodsShop.etc.NavbarHelper;
+import com.spring.goodsShop.etc.NumFormat;
 import com.spring.goodsShop.service.AdminService;
 import com.spring.goodsShop.service.MemberService;
 import com.spring.goodsShop.service.ProductService;
-import com.spring.goodsShop.vo.MaincategoryVo;
-import com.spring.goodsShop.vo.ProductVo;
-import com.spring.goodsShop.vo.Product_imgVo;
-import com.spring.goodsShop.vo.SubcategoryVo;
+import com.spring.goodsShop.vo.*;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -18,8 +16,9 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
+import java.math.BigDecimal;
+import java.text.NumberFormat;
+import java.util.*;
 
 @Controller
 @RequestMapping("/product")
@@ -37,6 +36,9 @@ public class ProductController {
     @Autowired
     NavbarHelper navbarHelper;
 
+    @Autowired
+    NumFormat numFormat;
+
     @RequestMapping(value = "insertProduct", method = RequestMethod.POST)
     String product(@ModelAttribute Product_imgVo imgVo, HttpSession session,
                    @RequestParam(value = "subcategory", required = false, defaultValue = "0") int subcategory,
@@ -49,7 +51,6 @@ public class ProductController {
                    @RequestParam("product_img") List<MultipartFile> files
                    ) throws IOException {
         if(subcategory == 0 || brand == "" || product_name == "" || product_img_detail.isEmpty() || price == 0 || stock == 0 || designData == ""){
-            System.out.println("데이터값 받아오는거 에러");
             return "redirect:/message/no_product";
         }
         else {
@@ -176,16 +177,37 @@ public class ProductController {
     String befOrder(HttpSession session, int amount, int productId, String design, Model model){
         String mid = (String) session.getAttribute("sMid");
 
-        if(mid == null || mid.isEmpty()){
+        Integer sLevelObj = (Integer) session.getAttribute("sLevel"); // null 안전하게 처리 가능
+        int sLevel = (sLevelObj != null) ? sLevelObj : 0;
+        String level = "level" + sLevel;
+
+        if(mid == null || mid.isEmpty() || sLevel == 0 ){
             return "redirect:/message/memberX";
         }
         else if(amount == 0 || productId == 0 || design == null || design.isEmpty()){
             return "redirect:/message/err";
         }
         else{
+            int discount_point = productService.getMemberDiscountPointByMid(mid);
+            String discount_point_format = numFormat.nemberFormat(discount_point);
+
             ProductVo product = productService.getProductOneByProductId(productId);
             String product_name = product.getProduct_name();
             String product_brand = product.getBrand();
+
+            int product_subCategory = product.getSub_category_id();
+            int product_mainCategory = productService.getMainCategoryIdBySubCategoryId(product_subCategory);
+
+            int product_price = product.getPrice();
+            int price = product_price * amount;
+
+            int delivery_fee;
+            if(price < 50000) delivery_fee = 2500;
+            else delivery_fee = 0;
+
+            String delivery_fee_String = numFormat.nemberFormat(delivery_fee);
+
+            String formatPrice = product.getFormatOneProductPrice(amount);
 
             int product_img_id = product.getProduct_img_id();
             List<Product_imgVo> product_img_all = productService.getProductImgByProductImgId(product_img_id);
@@ -196,6 +218,9 @@ public class ProductController {
             String email1 = data[0];
             String email2 = data[1];
 
+            List<CouponVo> couponList = productService.getCouponVos(level, product_mainCategory, product_subCategory);
+            int couponListCount = couponList.size();
+
             model.addAttribute("email1", email1);
             model.addAttribute("email2", email2);
             model.addAttribute("amount", amount);
@@ -203,10 +228,59 @@ public class ProductController {
             model.addAttribute("product_img_leader", product_img_leader);
             model.addAttribute("product_name", product_name);
             model.addAttribute("product_brand", product_brand);
+            model.addAttribute("formatPrice", formatPrice);
+            model.addAttribute("delivery_fee", delivery_fee);
+            model.addAttribute("delivery_fee_String", delivery_fee_String);
+            model.addAttribute("couponList", couponList);
+            model.addAttribute("price", price);
+            model.addAttribute("couponListCount", couponListCount);
+            model.addAttribute("discount_point", discount_point);
+            model.addAttribute("discount_point_format", discount_point_format);
 
             navbarHelper.navbarSetup(model);
 
-            return "product/order";
+            return "product/orderOne";
+        }
+    }
+
+    @ResponseBody
+    @RequestMapping(value = "/couponSelect", method = RequestMethod.POST)
+    Map<String, Object> couponSelect(@RequestBody Map<String, String> jCouponId){
+        int couponId = Integer.parseInt(jCouponId.get("couponId").toString());
+        int price = Integer.parseInt(jCouponId.get("price").toString());
+
+        if(couponId == 0 || price == 0) {
+            Map<String, Object> data = new HashMap<>();
+            data.put("success", false);
+            return data;
+        }
+        else{
+            boolean check = productService.getCouponCheck(couponId);
+            if(check){
+                BigDecimal coupon_rate = productService.getCouponRate(couponId);
+
+                // price를 BigDecimal로 변환
+                BigDecimal priceBigDecimal = BigDecimal.valueOf(price);
+
+                // price * coupon_rate를 계산
+                BigDecimal discountPriceBigDecimal = priceBigDecimal.multiply(coupon_rate);
+
+                // 소수점 이하 반올림 후 정수형으로 변환
+                int discountPriceInt = discountPriceBigDecimal.intValue();
+
+                // int를 String으로 변환
+                String discountPrice = String.valueOf(discountPriceInt);
+
+                Map<String, Object> data = new HashMap<>();
+                data.put("success", true);
+                data.put("discountedPrice", discountPrice);
+                return data;
+            }
+            else{
+                Map<String, Object> data = new HashMap<>();
+                data.put("success", false);
+                return data;
+            }
         }
     }
 

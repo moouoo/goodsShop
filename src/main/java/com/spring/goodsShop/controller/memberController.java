@@ -215,7 +215,6 @@ public class memberController {
     String pwdSet(String pwd, HttpSession session){
         String mid = (String) session.getAttribute("sMid");
         String PASSWORD_REGEX = "^[a-z\\d!@#$%^&*]{8,}$";
-        System.out.println("pwd--------" + pwd);
 
         // 정규식 패턴 컴파일
         Pattern pattern = Pattern.compile(PASSWORD_REGEX);

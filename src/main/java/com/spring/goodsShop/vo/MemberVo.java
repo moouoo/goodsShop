@@ -10,6 +10,7 @@ public class MemberVo {
     private String email;
     private String account_num;
     private int level;
+    private int discount_point;
 
     public String getAccount_num() {
         return account_num != null ? account_num : "등록하지 않았습니다."; // 기본값 설정

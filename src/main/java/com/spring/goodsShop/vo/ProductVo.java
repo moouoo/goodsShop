@@ -23,4 +23,9 @@ public class ProductVo {
         NumberFormat numberFormat = NumberFormat.getInstance(Locale.KOREA);
         return numberFormat.format(this.price) + "원";
     }
+
+    public String getFormatOneProductPrice(int amount){
+        NumberFormat numberFormat = NumberFormat.getInstance(Locale.KOREA);
+        return numberFormat.format(this.price * amount) + "원";
+    }
 }

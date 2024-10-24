@@ -1,9 +1,11 @@
 package com.spring.goodsShop.dao;
 
+import com.spring.goodsShop.vo.CouponVo;
 import com.spring.goodsShop.vo.ProductVo;
 import com.spring.goodsShop.vo.Product_imgVo;
 import org.apache.ibatis.annotations.Param;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 public interface ProductDao {
@@ -26,4 +28,14 @@ public interface ProductDao {
     List<ProductVo> getProductByProductId(@Param("productId") int productId);
 
     ProductVo getProductOneByProductId(@Param("productId") int productId);
+
+    List<CouponVo> getCouponAll();
+
+    int getMainCategoryIdBySubCategoryId(@Param("productSubCategory") int productSubCategory);
+
+    int getCouponCheck(@Param("couponId") int couponId);
+
+    BigDecimal getCouponRate(@Param("couponId") int couponId);
+
+    int getMemberDiscountPointByMid(@Param("mid") String mid);
 }

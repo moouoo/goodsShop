@@ -1,14 +1,11 @@
-.order-info {
-    margin: 20px;
-    padding: 20px;
-    border: 1px solid #eaeaea;
-}
-
 h3 {
     font-size: 20px;
     margin-bottom: 20px;
 }
 
+button{
+    padding: 5px;
+}
 
 .form-group {
     margin-bottom: 15px;
@@ -62,4 +59,168 @@ h3 {
 
 #search-address:hover {
     background-color: #e0e0e0;
+}
+
+/* 배송지 */
+.container {
+    width: 100%;
+    max-width: 800px;
+    margin: 0 auto;
+    background-color: white;
+    border: 1px solid #ddd;
+    padding: 20px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+.section-title {
+    font-size: 18px;
+    margin-bottom: 10px;
+    font-weight: bold;
+}
+.order-summary {
+    margin-top: 30px;
+}
+.order-summary img {
+    width: 50px;
+    height: 50px;
+    margin-right: 10px;
+}
+.order-summary .order-info {
+    display: flex;
+    align-items: center;
+}
+.order-summary .order-info .order-item {
+    flex: 1;
+}
+.order-summary .order-info .order-price {
+    margin-left: 20px;
+    font-weight: bold;
+}
+.deliveryFee-title{
+    display: flex;
+    justify-content: space-between; /* 각 끝에 요소 배치 */
+    align-items: center; /* 수직 정렬 */
+    padding: 11px 16px 11px 16px;
+    background: #F8F9FA;
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 20px;
+    color: #606060;
+}
+.fee{
+    font-size: 14px;
+    font-weight: 500;
+    color: #000;
+}
+
+/* 할인/부가결제 */
+.section-title-4 {
+    font-size: 18px;
+    font-weight: bold;
+    padding-bottom: 10px;
+    border-bottom: 2px solid #ddd;
+}
+.form-group-4 {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 0;
+    border-bottom: 1px solid #ddd;
+}
+.form-group-4:last-child {
+    border-bottom: none;
+}
+.form-group-4 label {
+    font-size: 14px;
+    flex: 1;
+}
+.form-group-4 span {
+    font-size: 16px;
+    font-weight: bold;
+}
+.form-group-4 .button-group-4 {
+    display: flex;
+    flex: 1;
+    justify-content: flex-end;
+}
+.form-group-4 .button-group button {
+    padding: 8px 12px;
+    background-color: #fff;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 14px;
+    cursor: pointer;
+}
+.info-text {
+    font-size: 12px;
+    color: #888;
+    margin-top: 5px;
+    text-align: right;
+}
+.applied-amount {
+    font-weight: bold;
+    font-size: 16px;
+    text-align: right;
+    margin-top: 20px;
+}
+.applied-amount span {
+    font-size: 18px;
+    color: #000;
+}
+.form-group-4 input{
+    padding: 5px;
+}
+
+
+/* 결제정보 */
+.payment-info {
+    padding: 20px 0;
+    border-bottom: 1px solid #ddd;
+}
+
+.payment-info div {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+}
+
+.payment-info div:last-child {
+    margin-bottom: 0;
+}
+
+.payment-info div span {
+    font-size: 16px;
+}
+
+.payment-info div .amount {
+    font-weight: bold;
+}
+
+.payment-info div .negative {
+    color: red;
+}
+
+.final-price {
+    background-color: #f1f8ff;
+    padding: 10px;
+    text-align: right;
+    font-size: 18px;
+    font-weight: bold;
+    margin-top: 10px;
+}
+
+.final-price span {
+    font-size: 24px;
+    color: #000;
+}
+
+.payment{
+    background-color: #111;
+    color: #fff;
+    height: 50px;
+    width: 100%;
+    font-size: 25px;
+}
+
+.payment:hover{
+    cursor: pointer;
 }

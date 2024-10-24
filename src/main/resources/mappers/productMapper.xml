@@ -40,7 +40,27 @@
     </select>
 
     <select id="getProductOneByProductId" resultType="com.spring.goodsShop.vo.ProductVo">
-        select product_name, brand, product_img_id from product where id = #{productId};
+        select * from product where id = #{productId};
+    </select>
+
+    <select id="getCouponAll" resultType="com.spring.goodsShop.vo.CouponVo">
+        select * from coupon;
+    </select>
+
+    <select id="getMainCategoryIdBySubCategoryId" resultType="java.lang.Integer">
+        select main_category_id from sub_category where id = #{productSubCategory};
+    </select>
+
+    <select id="getCouponCheck" resultType="java.lang.Integer">
+        select count(*) from coupon where id = #{couponId};
+    </select>
+
+    <select id="getCouponRate" resultType="java.math.BigDecimal">
+        select coupon_rate from coupon where id = #{couponId};
+    </select>
+
+    <select id="getMemberDiscountPointByMid" resultType="java.lang.Integer">
+        select discount_point from member where mid = #{mid};
     </select>
 
     <!--  insert  -->
