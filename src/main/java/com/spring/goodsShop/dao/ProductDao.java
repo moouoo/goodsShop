@@ -1,8 +1,6 @@
 package com.spring.goodsShop.dao;
 
-import com.spring.goodsShop.vo.CouponVo;
-import com.spring.goodsShop.vo.ProductVo;
-import com.spring.goodsShop.vo.Product_imgVo;
+import com.spring.goodsShop.vo.*;
 import org.apache.ibatis.annotations.Param;
 
 import java.math.BigDecimal;
@@ -38,4 +36,8 @@ public interface ProductDao {
     BigDecimal getCouponRate(@Param("couponId") int couponId);
 
     int getMemberDiscountPointByMid(@Param("mid") String mid);
+
+    void setOrderOne(@Param("order") OrderVo order);
+
+    void setPaymentOne(@Param("payment") PaymentVo payment);
 }

@@ -2,6 +2,7 @@ package com.spring.goodsShop.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.spring.goodsShop.enums.OrderStatus;
 import com.spring.goodsShop.etc.NavbarHelper;
 import com.spring.goodsShop.etc.NumFormat;
 import com.spring.goodsShop.service.AdminService;
@@ -10,14 +11,17 @@ import com.spring.goodsShop.service.ProductService;
 import com.spring.goodsShop.vo.*;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.*;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.math.BigDecimal;
-import java.text.NumberFormat;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 @Controller
@@ -236,6 +240,7 @@ public class ProductController {
             model.addAttribute("couponListCount", couponListCount);
             model.addAttribute("discount_point", discount_point);
             model.addAttribute("discount_point_format", discount_point_format);
+            model.addAttribute("productId", productId);
 
             navbarHelper.navbarSetup(model);
 
@@ -284,5 +289,118 @@ public class ProductController {
         }
     }
 
+    @ResponseBody
+    @RequestMapping(value = "/payment", method = RequestMethod.POST)
+    Map<String, Object> payment(@RequestBody Map<String, Object> JPaymentInfo, HttpSession session){
+        String email = JPaymentInfo.get("email").toString();
+        String phone = JPaymentInfo.get("phone").toString();
+        String name = JPaymentInfo.get("name").toString();
+        String address = JPaymentInfo.get("address").toString();
+        int postcode = Integer.parseInt(JPaymentInfo.get("postcode").toString());
+        int finalPrice = Integer.parseInt(JPaymentInfo.get("finalPrice").toString());
+        String product_name = JPaymentInfo.get("product_name").toString();
+        int price = Integer.parseInt(JPaymentInfo.get("price").toString());
+        int amount = Integer.parseInt(JPaymentInfo.get("amount").toString());
+        int product_id = Integer.parseInt(JPaymentInfo.get("productId").toString());
+        String design = JPaymentInfo.get("design").toString();
+
+        // 주문번호 생성
+        String uuid = UUID.randomUUID().toString().replace("-", "");
+        LocalDateTime today = LocalDateTime.now();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        String formattedDay = today.format(formatter).replace("-", "");
+        String orderCode = formattedDay + "-" + uuid;
+        JPaymentInfo.put("orderCode", orderCode);
+
+        // 아임포트 impUid
+        String impUid = "imp47844026";
+        JPaymentInfo.put("impUid", impUid);
+
+        Map<String, Object> data = new HashMap<>();
+        data.put("paymentInfo", JPaymentInfo);
+        data.put("success", true);
+
+        return data;
+    }
+
+    @ResponseBody
+    @RequestMapping(value = "/saveOrderPaymentOne", method = RequestMethod.POST)
+    void saveOrderPaymentOne(@RequestBody Map<String, Object> JPaymentInfo, HttpSession session){
+
+        // order테이블에 값 저장
+        String mid = session.getAttribute("sMid").toString();
+        int product_id = Integer.parseInt(JPaymentInfo.get("productId").toString());
+        int amount = Integer.parseInt(JPaymentInfo.get("amount").toString());
+        String address = JPaymentInfo.get("address").toString();
+        int  member_id = memberService.getMemberIdBymid(mid);
+        String status = OrderStatus.PAID.getDisplayName();
+
+        OrderVo order = new OrderVo();
+        order.setMember_id(member_id);
+        order.setProduct_id(product_id);
+        order.setAmount(amount);
+        order.setAddress(address);
+        order.setStatus(status);
+
+        productService.setOrderOne(order);
+
+        // patment테이블에 값 저장
+        LocalDateTime today = LocalDateTime.now();
+        String formattedDate = today.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+
+        int finalPrice = Integer.parseInt(JPaymentInfo.get("finalPrice").toString());
+        int price = Integer.parseInt(JPaymentInfo.get("price").toString());
+        int discountPrice = price * amount - finalPrice;
+
+        PaymentVo payment = new PaymentVo();
+        payment.setOrder_id(order.getId());
+        payment.setPayMethod("카드");
+        payment.setPayment_date(formattedDate);
+        payment.setDiscountPrice(discountPrice);
+        payment.setFinalPrice(finalPrice);
+
+        productService.setPaymentOne(payment);
+
+        // 현재 생각해봐야하는것
+        // 현재 단일상품 구매 및 카드결재니깐 이런식으로 코드를 짠거지 다량구매, 다른결재방식을 이용하게 된다면 코드가 달라져야한다.
+        // 다량 구매는 장바구니 페이지를 만들어서 따로 구현한다고 해도 결재방법에 따라서 저장하는 방식은 만들어야한다.
+        // 웹페이지에 스위치를 ㅅ추가하여 카드, 실시간계좌이체, 가상계좌, 휴대폰소액결제를 선택할 수 있게한다.
+        // 아임포트에 데이터를 넘셔서 볼 수 있어야함. -> 현재 결제성공해야 데이터베이스 로직 들어가는것까지성공, 디비에 저장시 500에러가 뜨거 있는 상태
+    }
+
+    @RequestMapping(value = "/saveImport", method = RequestMethod.POST)
+    ResponseEntity<String> saveImport(){
+        // 아임포트 API 키와 시크릿 입력 + impUuid
+        String impUid = "imp47844026";
+        String apiKey = "4604456016044856";
+        String apiSecret = "o0LfQTCdvfNpEGlv9w4sFrB8f2mkfZq8KCAHt07uzWJqz4M9DTaP8E1L8bbg64jxGpuyBf5z1jKMFdmS";
+
+        // 토큰 발급 요청
+        RestTemplate restTemplate = new RestTemplate();
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+
+        Map<String, String> authParams = Map.of("imp_key", apiKey, "imp_secret", apiSecret);
+        HttpEntity<Map<String, String>> authEntity = new HttpEntity<>(authParams, headers);
+
+        ResponseEntity<Map> authResponse = restTemplate.postForEntity(
+                "https://api.iamport.kr/users/getToken", authEntity, Map.class);
+        if (authResponse.getStatusCode() == HttpStatus.OK) {
+            String token = (String) ((Map) authResponse.getBody().get("response")).get("access_token");
+
+            // 토큰을 이용한 결제 내역 조회
+            headers.set("Authorization", token);
+            HttpEntity<?> entity = new HttpEntity<>(headers);
+            ResponseEntity<String> paymentResponse = restTemplate.exchange(
+                    "https://api.iamport.kr/payments/" + impUid,
+                    HttpMethod.GET,
+                    entity,
+                    String.class
+            );
+            return paymentResponse;
+        }
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("토큰 발급 실패");
+
+    }
 
 }

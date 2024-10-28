@@ -39,7 +39,7 @@
             </div>
 
             <div class="form-group">
-                <label for="phone">휴대전화 *</label>
+                <label for="phone-code">휴대전화 *</label>
                 <div class="phone-input">
                     <select id="phone-code">
                         <option value="010">010</option>
@@ -189,6 +189,30 @@
             </div>
         </div>
 
+        <div class="pay-method">
+            <button onclick="showPaymentForm('card')">카드 결제</button>
+            <button onclick="showPaymentForm('trans')">실시간 계좌 이체</button>
+            <button onclick="showPaymentForm('vbank')">가상 계좌</button>
+            <button onclick="showPaymentForm('phone')">휴대폰 소액 결제</button>
+        </div>
+        <div id="card" class="payment-form">
+            <h3>카드 결제</h3>
+        </div>
+
+        <div id="trans" class="payment-form" style="display: none;">
+            <h3>실시간 계좌 이체 정보</h3>
+            <label>예금주 명: <input type="text" name="bankOwnerName"></label>
+        </div>
+
+        <div id="vbank" class="payment-form" style="display: none;">
+            <h3>무통장 입금</h3>
+            <label>가상 계좌 번호: <input type="text" name="virtualAccount"></label><br>
+        </div>
+
+        <div id="phone" class="payment-form" style="display: none;">
+            <h3>휴대폰 소액 결제 정보</h3>
+        </div>
+
         <div class="final-price">
             최종 결제 금액 <span id="final_price">0원</span>
         </div>
@@ -198,8 +222,16 @@
 
     <script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
     <script src="/js/kakaoAddressSearch.js"></script>
+    <script src="https://cdn.iamport.kr/v1/iamport.js"></script>
+    <script src="/js/payment.js"></script>
     <script>
         'use strict'
+
+        let price = [[${price}]];
+        let delivery_fee = [[${delivery_fee}]];
+        let finalDiscountPrice = parseInt(document.getElementById('finalDiscountPrice').textContent);
+
+        document.getElementById('final_price').textContent = price + delivery_fee + finalDiscountPrice + '원';
 
         const csrfToken = document.querySelector('meta[name="_csrf"]').getAttribute('content');
         const csrfHeader = document.querySelector('meta[name="_csrf_header"]').getAttribute('content');
@@ -390,6 +422,84 @@
             let finalDiscountPrice = parseInt(document.getElementById('finalDiscountPrice').textContent);
 
             document.getElementById('final_price').textContent = price + delivery_fee + finalDiscountPrice + '원';
+        }
+
+        function payCheck(){
+            let email1 = document.getElementById('email1').value.trim();
+            let email2 = document.getElementById('email2').value.trim();
+            let email = email1 + '@' + email2;
+            let phone_code = document.getElementById('phone-code').value.trim();
+            let phone1 = document.getElementById('phone1').value.trim();
+            let phone2 = document.getElementById('phone2').value.trim();
+            let phone = phone_code + '-' + phone1 + '-' + phone2;
+            let name = document.getElementById('name').value.trim();
+            let sample6_address = document.getElementById('sample6_address').value.trim();
+            let sample6_detailAddress = document.getElementById('sample6_detailAddress').value.trim();
+            let sample6_extraAddress = document.getElementById('sample6_extraAddress').value.trim();
+
+            let address;
+            if(sample6_detailAddress == "") address = sample6_address + ' ' + sample6_extraAddress;
+            else if(sample6_extraAddress == "") address = sample6_address + ' ' + sample6_detailAddress;
+            else address = sample6_address + ' ' + sample6_detailAddress + ' ' + sample6_extraAddress;
+
+            let postcode = document.getElementById('sample6_postcode').value.trim();
+
+            let priceInWon = document.getElementById('final_price').textContent;
+            let finalPrice = parseInt(priceInWon.replace('원', ''));
+
+            let product_name = '[[${product_name}]]';
+            let price = [[${price}]];
+            let amount = [[${amount}]];
+            let productId = [[${productId}]];
+            let design = '[[${design}]]';
+
+            let item = {
+                email : email,
+                phone : phone,
+                name : name,
+                address : address,
+                postcode : postcode,
+                finalPrice : finalPrice,
+                product_name : product_name,
+                price : price,
+                amount : amount,
+                productId : productId,
+                design : design
+            };
+
+            fetch("/product/payment", {
+                method: "POST",
+                headers: {
+                    [csrfHeader]: csrfToken,
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(item)
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (data.success) {
+                    return payment(data.paymentInfo) // 결제 처리 완료를 기다림
+                }
+                else {
+                    alert("결제 실패");
+                }
+            })
+        }
+
+        function saveImport(){
+            fetch("/product/saveImport", {
+                method: "POST",
+                headers: {
+                    [csrfHeader]: csrfToken,
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify()
+            });
         }
     </script>
 </body>

@@ -1,8 +1,6 @@
 package com.spring.goodsShop.service;
 
-import com.spring.goodsShop.vo.CouponVo;
-import com.spring.goodsShop.vo.ProductVo;
-import com.spring.goodsShop.vo.Product_imgVo;
+import com.spring.goodsShop.vo.*;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -37,4 +35,8 @@ public interface ProductService {
     BigDecimal getCouponRate(int couponId);
 
     int getMemberDiscountPointByMid(String mid);
+
+    void setOrderOne(OrderVo order);
+
+    void setPaymentOne(PaymentVo payment);
 }

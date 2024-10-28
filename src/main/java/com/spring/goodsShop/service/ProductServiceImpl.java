@@ -1,9 +1,7 @@
 package com.spring.goodsShop.service;
 
 import com.spring.goodsShop.dao.ProductDao;
-import com.spring.goodsShop.vo.CouponVo;
-import com.spring.goodsShop.vo.ProductVo;
-import com.spring.goodsShop.vo.Product_imgVo;
+import com.spring.goodsShop.vo.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -148,6 +146,16 @@ public class ProductServiceImpl implements ProductService{
     @Override
     public int getMemberDiscountPointByMid(String mid) {
         return productDao.getMemberDiscountPointByMid(mid);
+    }
+
+    @Override
+    public void setOrderOne(OrderVo order) {
+        productDao.setOrderOne(order);
+    }
+
+    @Override
+    public void setPaymentOne(PaymentVo payment) {
+        productDao.setPaymentOne(payment);
     }
 
 }

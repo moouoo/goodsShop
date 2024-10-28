@@ -64,6 +64,13 @@
     </select>
 
     <!--  insert  -->
+    <insert id="setOrderOne">
+        insert into productOrder values (default, #{order.member_id}, #{order.product_id}, #{order.amount}, #{order.address}, default, #{order.status});
+    </insert>
+
+    <insert id="setPaymentOne">
+        insert into payment values (default, #{payment.order_id}, #{payment.payMethod}, #{payment.payment_date}, #{payment.discountPrice}, #{payment.finalPrice});
+    </insert>
     <!--  update  -->
     <!--  delete  -->
 </mapper>
