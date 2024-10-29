@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="ko" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="_csrf" th:content="${_csrf.token}"/>
+    <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
+    <link rel="stylesheet" href="/fontawesome/css/all.min.css">
+    <link rel="stylesheet" href="/css/cart.css">
+    <link rel="stylesheet" href="/css/nav.css">
+    <title>Cart</title>
+</head>
+<body>
+    <div th:replace="include/nav :: navbar"></div>
+
+    <div class="cart-container">
+        <h1 class="cart-title">장바구니</h1>
+
+        <div class="cart-item-container">
+            <h3>장바구니 상품</h3>
+
+            <div class="cart-item" th:each="${product_list : ${product_list}}">
+                <!-- 체크박스 -->
+                <input type="checkbox" class="cart-item-checkbox">
+
+                <!-- 상품 이미지 -->
+                <img th:src=@"/img/product_img/{img}(img=)" alt="상품 이미지" class="cart-item-image">
+
+                <div class="cart-item-details">
+                    <p class="cart-item-title" th:text="${product_list.product_name}">상품이름</p>
+                    <p class="cart-item-price" th:text="${product_list.price}">상품가격</p>
+                </div>
+
+                <div class="cart-item-quantity">
+                    <span class="mb-5">수량</span>
+                    <div class="quantity-controls">
+                        <button class="minus">-</button>
+                        <input type="text" value="1" class="quantity-input">
+                        <button class="plus">+</button>
+                        <button class="update">변경</button>
+                    </div>
+                </div>
+
+                <div class="cart-item-total">
+                    <p>7,500원</p>
+                </div>
+
+                <!-- 삭제 버튼 -->
+                <button class="delete-btn">x</button>
+            </div>
+        </div>
+
+        <div class="cart-summary">
+            <div class="summary-item">
+                <span>총 상품금액</span>
+                <span>7,500원</span>
+            </div>
+            <div class="summary-item">
+                <span>총 배송비</span>
+                <span>2,500원</span>
+            </div>
+            <div class="summary-total">
+                <span>결제예정금액</span>
+                <span>10,000원</span>
+            </div>
+        </div>
+
+        <div class="cart-buttons">
+            <button class="order-all">전체상품주문</button>
+            <button class="order-selected">선택상품주문</button>
+        </div>
+    </div>
+</body>
+</html>

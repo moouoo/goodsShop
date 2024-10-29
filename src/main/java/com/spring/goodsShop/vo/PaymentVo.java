@@ -8,6 +8,5 @@ public class PaymentVo {
     private int order_id;
     private String payMethod;
     private String payment_date;
-    private int discountPrice;
     private int finalPrice;
 }

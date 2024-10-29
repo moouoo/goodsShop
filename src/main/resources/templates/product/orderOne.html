@@ -448,7 +448,6 @@
             let finalPrice = parseInt(priceInWon.replace('원', ''));
 
             let product_name = '[[${product_name}]]';
-            let price = [[${price}]];
             let amount = [[${amount}]];
             let productId = [[${productId}]];
             let design = '[[${design}]]';
@@ -461,7 +460,6 @@
                 postcode : postcode,
                 finalPrice : finalPrice,
                 product_name : product_name,
-                price : price,
                 amount : amount,
                 productId : productId,
                 design : design
@@ -491,16 +489,6 @@
             })
         }
 
-        function saveImport(){
-            fetch("/product/saveImport", {
-                method: "POST",
-                headers: {
-                    [csrfHeader]: csrfToken,
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify()
-            });
-        }
     </script>
 </body>
 </html>

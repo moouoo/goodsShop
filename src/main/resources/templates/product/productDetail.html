@@ -307,7 +307,7 @@
                 <div class="button-container">
                     <input type="hidden" name="productId" th:value="${productId}">
                     <button type="button" class="buy-now" onclick="defOrderCheck()">바로 구매하기</button>
-                    <button class="add-cart">장바구니</button>
+                    <button type="button" class="add-cart" th:productId="${productId}" onclick="addToCart(this.getAttribute('productId'))">장바구니</button>
                     <button class="wish-list">관심상품</button>
                 </div>
             </form>
@@ -324,8 +324,8 @@
             </ul>
         </div>
         <div class="tab-content">
-            <div id="detail" class="tab-pane active">
-                <img src="/img/5.jpg" alt="상세정보 이미지" style="width: 100%; max-width: 860px; display: block; margin: 0 auto;">
+            <div id="detail" class="tab-pane active" th:each="product_list : ${product_list}">
+                <img th:src="@{/img/product_detail/{detail}(detail=${product_list.product_img_detail})}" alt="상세정보 이미지" style="width: 100%; max-width: 860px; display: block; margin: 0 auto;">
                 <p>상세정보 내용을 여기에 추가하세요.</p>
             </div>
             <div id="review" class="tab-pane">
@@ -396,6 +396,10 @@
     </div>
 
     <script>
+        'use strict'
+        const csrfToken = document.querySelector('meta[name="_csrf"]').getAttribute('content');
+        const csrfHeader = document.querySelector('meta[name="_csrf_header"]').getAttribute('content');
+
         function changeImage(src) {
             const mainImage = document.getElementById('main-image');
             mainImage.src = src;
@@ -412,7 +416,6 @@
                 befOrderForm.submit();
             }
         }
-
 
         document.querySelectorAll('.tab-item').forEach(item => {
             item.addEventListener('click', () => {
@@ -433,6 +436,45 @@
                 });
             });
         });
+
+        function addToCart(productId){
+            let design = document.getElementById("design").value.trim();
+            let amount = document.getElementById("amount").value.trim();
+
+            if(design == "" || amount == "" || amount == 0){
+                alert("필수옵션 혹은 수량을 입력해주세요.");
+            }
+            else{
+                let item = {
+                    productId : productId,
+                    design : design,
+                    amount : amount
+                }
+
+                fetch('/product/addToCart', {
+                    method: 'POST',
+                    headers: {
+                        [csrfHeader]: csrfToken,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(item)
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if(data.noLogin){
+                        alert("로그인이 필요한 서비스입니다.");
+                        window.location.href = "/member/login";
+                    }
+                    if(data.success) {
+                        window.location.href = "/product/cart";
+                    }
+                    else {
+                        alert('장바구니 등록 실패');
+                    }
+                })
+                .catch(error => console.error('Error:', error));
+            }
+        }
     </script>
 </body>
 </html>

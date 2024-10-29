@@ -292,17 +292,6 @@ public class ProductController {
     @ResponseBody
     @RequestMapping(value = "/payment", method = RequestMethod.POST)
     Map<String, Object> payment(@RequestBody Map<String, Object> JPaymentInfo, HttpSession session){
-        String email = JPaymentInfo.get("email").toString();
-        String phone = JPaymentInfo.get("phone").toString();
-        String name = JPaymentInfo.get("name").toString();
-        String address = JPaymentInfo.get("address").toString();
-        int postcode = Integer.parseInt(JPaymentInfo.get("postcode").toString());
-        int finalPrice = Integer.parseInt(JPaymentInfo.get("finalPrice").toString());
-        String product_name = JPaymentInfo.get("product_name").toString();
-        int price = Integer.parseInt(JPaymentInfo.get("price").toString());
-        int amount = Integer.parseInt(JPaymentInfo.get("amount").toString());
-        int product_id = Integer.parseInt(JPaymentInfo.get("productId").toString());
-        String design = JPaymentInfo.get("design").toString();
 
         // 주문번호 생성
         String uuid = UUID.randomUUID().toString().replace("-", "");
@@ -349,58 +338,101 @@ public class ProductController {
         String formattedDate = today.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
 
         int finalPrice = Integer.parseInt(JPaymentInfo.get("finalPrice").toString());
-        int price = Integer.parseInt(JPaymentInfo.get("price").toString());
-        int discountPrice = price * amount - finalPrice;
 
         PaymentVo payment = new PaymentVo();
         payment.setOrder_id(order.getId());
         payment.setPayMethod("카드");
         payment.setPayment_date(formattedDate);
-        payment.setDiscountPrice(discountPrice);
         payment.setFinalPrice(finalPrice);
 
         productService.setPaymentOne(payment);
-
-        // 현재 생각해봐야하는것
-        // 현재 단일상품 구매 및 카드결재니깐 이런식으로 코드를 짠거지 다량구매, 다른결재방식을 이용하게 된다면 코드가 달라져야한다.
-        // 다량 구매는 장바구니 페이지를 만들어서 따로 구현한다고 해도 결재방법에 따라서 저장하는 방식은 만들어야한다.
-        // 웹페이지에 스위치를 ㅅ추가하여 카드, 실시간계좌이체, 가상계좌, 휴대폰소액결제를 선택할 수 있게한다.
-        // 아임포트에 데이터를 넘셔서 볼 수 있어야함. -> 현재 결제성공해야 데이터베이스 로직 들어가는것까지성공, 디비에 저장시 500에러가 뜨거 있는 상태
     }
 
-    @RequestMapping(value = "/saveImport", method = RequestMethod.POST)
-    ResponseEntity<String> saveImport(){
-        // 아임포트 API 키와 시크릿 입력 + impUuid
-        String impUid = "imp47844026";
-        String apiKey = "4604456016044856";
-        String apiSecret = "o0LfQTCdvfNpEGlv9w4sFrB8f2mkfZq8KCAHt07uzWJqz4M9DTaP8E1L8bbg64jxGpuyBf5z1jKMFdmS";
+    @RequestMapping(value = "/paymentOk", method = RequestMethod.GET)
+    String paymentOk(Model model){
+        navbarHelper.navbarSetup(model);
+        return "product/paymentOk";
+    }
 
-        // 토큰 발급 요청
-        RestTemplate restTemplate = new RestTemplate();
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
+    @ResponseBody
+    @RequestMapping(value = "/addToCart", method = RequestMethod.POST)
+    Map<String, Object> addToCart(@RequestBody Map<String, Object> JCart, HttpSession session){
+        Map<String, Object> data = new HashMap<>();
 
-        Map<String, String> authParams = Map.of("imp_key", apiKey, "imp_secret", apiSecret);
-        HttpEntity<Map<String, String>> authEntity = new HttpEntity<>(authParams, headers);
-
-        ResponseEntity<Map> authResponse = restTemplate.postForEntity(
-                "https://api.iamport.kr/users/getToken", authEntity, Map.class);
-        if (authResponse.getStatusCode() == HttpStatus.OK) {
-            String token = (String) ((Map) authResponse.getBody().get("response")).get("access_token");
-
-            // 토큰을 이용한 결제 내역 조회
-            headers.set("Authorization", token);
-            HttpEntity<?> entity = new HttpEntity<>(headers);
-            ResponseEntity<String> paymentResponse = restTemplate.exchange(
-                    "https://api.iamport.kr/payments/" + impUid,
-                    HttpMethod.GET,
-                    entity,
-                    String.class
-            );
-            return paymentResponse;
+        String mid = session.getAttribute("sMid").toString();
+        if(mid == null) {
+            data.put("noLogin", true);
         }
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("토큰 발급 실패");
+        else data.put("noLogin", false);
 
+        try {
+            int productId = Integer.parseInt(JCart.get("productId").toString());
+            String design = JCart.get("design").toString();
+            int amount = Integer.parseInt(JCart.get("amount").toString());
+
+            // 세션에서 장바구니 가져오기 (없으면 새로운 리스트 생성)
+            List<CartVo> cart = (List<CartVo>) session.getAttribute("sCart");
+            if (cart == null) {
+                cart = new ArrayList<>();
+            }
+
+            // 장바구니에 상품 추가 (중복 방지)
+            boolean voExists = false;
+            for (int i = 0; i < cart.size(); i++) {
+                CartVo vo = cart.get(i);
+                if (vo.getProductId() == productId && vo.getDesign() == design) {
+                    voExists = true;
+                    // 이미 존재하면 수량만 업데이트 (amount)
+                    vo.setAmount(amount);
+                    break;
+                }
+            }
+
+            // 상품이 존재하지 않으면 새로 추가
+            if (!voExists) {
+                cart.add(new CartVo(productId, design, amount));
+            }
+
+            // 업데이트된 장바구니를 세션에 저장
+            session.setAttribute("sCart", cart);
+
+            data.put("success", true);
+        }
+        catch (Exception e) {
+            data.put("success", false);
+            throw new RuntimeException(e);
+        }
+        return data;
+    }
+
+    @RequestMapping(value = "/cart", method = RequestMethod.GET)
+    String cart(Model model, HttpSession session){
+        List<CartVo> cart = (List<CartVo>) session.getAttribute("sCart");
+        List<ProductVo> product_list = new ArrayList<>();
+
+        for (int i = 0; i < cart.size(); i++) {
+            CartVo item = cart.get(i);
+            int productId = item.getProductId();
+            List<ProductVo> product_list_tem = productService.getProductByProductId(productId);
+            product_list.addAll(product_list_tem);
+        }
+
+        // 지금 필요한게 메인사진, 물품의 가격(수량에 곱한 가격), 상품의 브랜드와 이름, 수량 필요.
+        // +,-에 대한 수량 증가 및 감소에 대한 js를 짜야함.
+        // 결제금액에 대한 js짜야함.
+        // x버튼 누르면 장바구니에서 삭제기능 구현
+        // 선택상품구매 기능 구현
+        // 전체상품구매 기능 구현
+
+
+        model.addAttribute("cartList", cart);
+        model.addAttribute("product_list", product_list);
+
+        // cartList -> productId, design, amount
+        // product_list -> id값이 일치하는 상품의 기본 정보 => 메인이미지, 상품의 이름을 가져올수있음.
+
+        navbarHelper.navbarSetup(model);
+        return "product/cart";
     }
 
 }

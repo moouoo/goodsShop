@@ -23,6 +23,13 @@ function payment(paymentInfo){
             alert(msg);
         }
         else{
+            let item = {
+                productId : paymentInfo.productId,
+                amount : paymentInfo.amount,
+                address : paymentInfo.address,
+                finalPrice : paymentInfo.finalPrice,
+                price : paymentInfo.price
+            }
             // 결제 정보를 데이터베이스에 저장
             fetch("/product/saveOrderPaymentOne", {
                 method: "POST",
@@ -30,21 +37,20 @@ function payment(paymentInfo){
                     [csrfHeader]: csrfToken,
                     "Content-Type": "application/json"
                 },
-                body: JSON.stringify(paymentInfo) // 결제 정보를 서버로 전송
+                body: JSON.stringify(item) // 결제 정보를 서버로 전송
             })
             .then(response => {
-                    if (response.ok) {
-                        // 결제 정보 저장이 성공적일 경우 아임포트 서버로 보냄
-                        saveImport();
-                    } else {
-                        alert("결제 정보를 저장하는 데 실패했습니다.");
-                    }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                });
-
-            alert("결재성공");
+                if (response.ok) {
+                    alert("결재성공");
+                    window.location.href = "/product/paymentOk";
+                }
+                else {
+                    alert("결제 정보를 저장하는 데 실패했습니다.");
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
         }
     });
 }
