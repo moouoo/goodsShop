@@ -158,4 +158,9 @@ public class ProductServiceImpl implements ProductService{
         productDao.setPaymentOne(payment);
     }
 
+    @Override
+    public String getProductImg1ByProductImgId(int productImgId) {
+        return productDao.getProductImg1ByProductImgId(productImgId);
+    }
+
 }

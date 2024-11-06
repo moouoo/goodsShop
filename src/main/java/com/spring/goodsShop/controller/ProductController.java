@@ -357,6 +357,7 @@ public class ProductController {
     @ResponseBody
     @RequestMapping(value = "/addToCart", method = RequestMethod.POST)
     Map<String, Object> addToCart(@RequestBody Map<String, Object> JCart, HttpSession session){
+
         Map<String, Object> data = new HashMap<>();
 
         String mid = session.getAttribute("sMid").toString();
@@ -369,6 +370,7 @@ public class ProductController {
             int productId = Integer.parseInt(JCart.get("productId").toString());
             String design = JCart.get("design").toString();
             int amount = Integer.parseInt(JCart.get("amount").toString());
+            int price = Integer.parseInt(JCart.get("price").toString());
 
             // 세션에서 장바구니 가져오기 (없으면 새로운 리스트 생성)
             List<CartVo> cart = (List<CartVo>) session.getAttribute("sCart");
@@ -380,7 +382,7 @@ public class ProductController {
             boolean voExists = false;
             for (int i = 0; i < cart.size(); i++) {
                 CartVo vo = cart.get(i);
-                if (vo.getProductId() == productId && vo.getDesign() == design) {
+                if (vo.getProductId() == productId && vo.getDesign().equals(design)) {
                     voExists = true;
                     // 이미 존재하면 수량만 업데이트 (amount)
                     vo.setAmount(amount);
@@ -390,7 +392,7 @@ public class ProductController {
 
             // 상품이 존재하지 않으면 새로 추가
             if (!voExists) {
-                cart.add(new CartVo(productId, design, amount));
+                cart.add(new CartVo(productId, design, amount, price));
             }
 
             // 업데이트된 장바구니를 세션에 저장
@@ -407,29 +409,43 @@ public class ProductController {
 
     @RequestMapping(value = "/cart", method = RequestMethod.GET)
     String cart(Model model, HttpSession session){
+        List<CartListVo> cartList = new ArrayList<>();
         List<CartVo> cart = (List<CartVo>) session.getAttribute("sCart");
-        List<ProductVo> product_list = new ArrayList<>();
+
+        if(cart == null){
+            return "redirect:/message/memberX";
+        }
 
         for (int i = 0; i < cart.size(); i++) {
             CartVo item = cart.get(i);
             int productId = item.getProductId();
             List<ProductVo> product_list_tem = productService.getProductByProductId(productId);
-            product_list.addAll(product_list_tem);
-        }
+            CartListVo cartListVo = new CartListVo();
 
-        // 지금 필요한게 메인사진, 물품의 가격(수량에 곱한 가격), 상품의 브랜드와 이름, 수량 필요.
+            String product_name = product_list_tem.get(0).getProduct_name();
+            String design = cart.get(i).getDesign();
+            int price =  cart.get(i).getPrice();
+            int amount = cart.get(i).getAmount();
+            int productImgId = product_list_tem.get(0).getProduct_img_id();
+            String img = productService.getProductImg1ByProductImgId(productImgId);
+
+            cartListVo.setProduct_name(product_name);
+            cartListVo.setDesign(design);
+            cartListVo.setPrice(price);
+            cartListVo.setAmount(amount);
+            cartListVo.setImg(img);
+
+            cartList.add(cartListVo);
+        }
+        model.addAttribute("cartList", cartList);
+
         // +,-에 대한 수량 증가 및 감소에 대한 js를 짜야함.
         // 결제금액에 대한 js짜야함.
+        // -> 장바구니 두번째 목록부터는 수량 버튼 및 금액 표시가 안됌, 아마도 js에 id값을 가져와서 사용하는데 반복되는거니 id값 중복으로 인한 오류로 보임
+
         // x버튼 누르면 장바구니에서 삭제기능 구현
         // 선택상품구매 기능 구현
         // 전체상품구매 기능 구현
-
-
-        model.addAttribute("cartList", cart);
-        model.addAttribute("product_list", product_list);
-
-        // cartList -> productId, design, amount
-        // product_list -> id값이 일치하는 상품의 기본 정보 => 메인이미지, 상품의 이름을 가져올수있음.
 
         navbarHelper.navbarSetup(model);
         return "product/cart";

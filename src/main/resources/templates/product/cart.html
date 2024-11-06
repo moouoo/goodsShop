@@ -19,30 +19,32 @@
         <div class="cart-item-container">
             <h3>장바구니 상품</h3>
 
-            <div class="cart-item" th:each="${product_list : ${product_list}}">
+            <div class="cart-item" th:each="cartList : ${cartList}">
+
                 <!-- 체크박스 -->
                 <input type="checkbox" class="cart-item-checkbox">
 
                 <!-- 상품 이미지 -->
-                <img th:src=@"/img/product_img/{img}(img=)" alt="상품 이미지" class="cart-item-image">
+                <img th:src="@{/img/product_img/{img1}(img1=${cartList.img})}" alt="상품 이미지" class="cart-item-image">
 
                 <div class="cart-item-details">
-                    <p class="cart-item-title" th:text="${product_list.product_name}">상품이름</p>
-                    <p class="cart-item-price" th:text="${product_list.price}">상품가격</p>
+                    <p class="cart-item-title" th:text="${cartList.product_name}">상품이름</p>
+                    <p class="cart-item-title" th:text="${cartList.design}">디자인이름</p>
+                    <p class="cart-item-price" th:text="${cartList.price}" id="price">상품가격</p>
                 </div>
 
                 <div class="cart-item-quantity">
                     <span class="mb-5">수량</span>
                     <div class="quantity-controls">
-                        <button class="minus">-</button>
-                        <input type="text" value="1" class="quantity-input">
-                        <button class="plus">+</button>
-                        <button class="update">변경</button>
+                        <button class="minus" id="minus">-</button>
+                        <input type="text" th:value="${cartList.amount}" id="amount" class="quantity-input">
+                        <button class="plus" id="plus">+</button>
+                        <button class="update" id="update">변경</button>
                     </div>
                 </div>
 
                 <div class="cart-item-total">
-                    <p>7,500원</p>
+                    <p id="item_price">상품가격 * 수량</p>
                 </div>
 
                 <!-- 삭제 버튼 -->
@@ -70,5 +72,47 @@
             <button class="order-selected">선택상품주문</button>
         </div>
     </div>
+
+    <script>
+        'use strict'
+
+        const minus = document.getElementById('minus');
+        const plus = document.getElementById('plus');
+        const update = document.getElementById('update');
+
+        let item_price = document.getElementById('item_price').textContent;
+        const price = parseInt(document.getElementById('price').textContent.trim());
+        let amount = parseInt(document.getElementById('amount').value.trim());
+        item_price_view();
+
+        minus.addEventListener('click', function(event) {
+            if(amount == 1){
+                alert('수량을 1개 미만으로 설정할 수 없습니다.');
+                return;
+            }
+            else amount = amount - 1;
+            document.getElementById('amount').value = amount;
+
+            item_price_view();
+        })
+
+        plus.addEventListener('click', function(event) {
+
+            // 현재 상품의 남아있는 수량을 체크해서 그 이상 숫자가 커질 수 없게 막아야한다.
+
+            amount = amount + 1;
+            document.getElementById('amount').value = amount;
+
+            item_price_view();
+        })
+
+        function item_price_view(){
+            if (!isNaN(price) && !isNaN(amount)) {
+                item_price = price * amount;
+                document.getElementById('item_price').textContent = item_price.toLocaleString() + ' 원';
+            }
+        }
+
+    </script>
 </body>
 </html>

@@ -40,4 +40,6 @@ public interface ProductDao {
     void setOrderOne(@Param("order") OrderVo order);
 
     void setPaymentOne(@Param("payment") PaymentVo payment);
+
+    String getProductImg1ByProductImgId(@Param("productImgId") int productImgId);
 }

@@ -39,4 +39,6 @@ public interface ProductService {
     void setOrderOne(OrderVo order);
 
     void setPaymentOne(PaymentVo payment);
+
+    String getProductImg1ByProductImgId(int productImgId);
 }

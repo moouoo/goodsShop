@@ -63,6 +63,10 @@
         select discount_point from member where mid = #{mid};
     </select>
 
+    <select id="getProductImg1ByProductImgId" resultType="java.lang.String">
+        select img1 from product_img where id = #{productImgId};
+    </select>
+
     <!--  insert  -->
     <insert id="setOrderOne" useGeneratedKeys="true" keyProperty="id">
         insert into productOrder values (default, #{order.member_id}, #{order.product_id}, #{order.amount}, #{order.address}, default, #{order.status});

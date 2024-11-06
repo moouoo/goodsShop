@@ -288,7 +288,7 @@
         </div>
         <div class="product-info" th:each="product_list : ${product_list}">
             [<span th:text="${product_list.brand}">브랜드이름</span>]<h3 th:text="${product_list.product_name}">상품이름</h3>
-            <p class="price">판매가 <span th:text="${product_list.price}">6,900원</span></p>
+            <p class="price">판매가 <span id="price" th:text="${product_list.price}">6,900원</span></p>
 <!--            <p class="points">적립금: <span>69원 (1%)</span></p>-->
             <p class="shipping">배송비: <span>2,500원 (50,000원 이상 구매 시 무료)</span></p>
             <p class="payment-methods">결제수단: 카드결제, 무통장 입금, 휴대폰 결제, 페이코(간편결제), 적립금, 실시간 계좌이체</p>
@@ -440,6 +440,7 @@
         function addToCart(productId){
             let design = document.getElementById("design").value.trim();
             let amount = document.getElementById("amount").value.trim();
+            let price = parseInt(document.getElementById("price").textContent);
 
             if(design == "" || amount == "" || amount == 0){
                 alert("필수옵션 혹은 수량을 입력해주세요.");
@@ -448,7 +449,8 @@
                 let item = {
                     productId : productId,
                     design : design,
-                    amount : amount
+                    amount : amount,
+                    price : price
                 }
 
                 fetch('/product/addToCart', {
