@@ -429,6 +429,7 @@ public class ProductController {
             int productImgId = product_list_tem.get(0).getProduct_img_id();
             String img = productService.getProductImg1ByProductImgId(productImgId);
 
+            cartListVo.setProductId(productId);
             cartListVo.setProduct_name(product_name);
             cartListVo.setDesign(design);
             cartListVo.setPrice(price);
@@ -437,18 +438,41 @@ public class ProductController {
 
             cartList.add(cartListVo);
         }
+
         model.addAttribute("cartList", cartList);
-
-        // +,-에 대한 수량 증가 및 감소에 대한 js를 짜야함.
-        // 결제금액에 대한 js짜야함.
-        // -> 장바구니 두번째 목록부터는 수량 버튼 및 금액 표시가 안됌, 아마도 js에 id값을 가져와서 사용하는데 반복되는거니 id값 중복으로 인한 오류로 보임
-
-        // x버튼 누르면 장바구니에서 삭제기능 구현
-        // 선택상품구매 기능 구현
-        // 전체상품구매 기능 구현
 
         navbarHelper.navbarSetup(model);
         return "product/cart";
     }
+
+    // ResponseEntity 사용해보기
+    @RequestMapping(value = "/deleteCartItem", method = RequestMethod.POST)
+    ResponseEntity<Map<String, Object>> deleteCartItem(@RequestBody Map<String, Object> item, HttpSession session){
+        int productId = !item.get("productId").toString().isEmpty() ? Integer.parseInt(item.get("productId").toString()) : 0;
+        String design = item.get("design").toString();
+
+        Map<String, Object> data = new HashMap<>();
+
+        if(productId == 0 || design.isEmpty()){
+            data.put("success", false);
+            return ResponseEntity.badRequest().body(data);  // 400 Bad Request 응답을 반환
+        }
+
+        List<CartVo> cart = (List<CartVo>) session.getAttribute("sCart");
+        if (cart != null) {
+            // cart에서 일치하는 항목 찾기
+            // -> 람다식 이라고 한다.
+            cart.removeIf(cartItem -> cartItem.getProductId() == productId && cartItem.getDesign().equals(design));
+
+            // cart 목록이 변경된 후 세션에 다시 저장
+            session.setAttribute("sCart", cart);
+        }
+
+        data.put("success", true);
+        return ResponseEntity.ok(data);  // 200 OK 응답을 반환
+    }
+
+    // 체크박스를 이용한 선택상품구매 기능 구현, 전체상품구매 기능 구현
+    // 상품구매 버튼 누르시 주문페이지로 이동.
 
 }

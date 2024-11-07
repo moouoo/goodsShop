@@ -19,10 +19,10 @@
         <div class="cart-item-container">
             <h3>장바구니 상품</h3>
 
-            <div class="cart-item" th:each="cartList : ${cartList}">
+            <div class="cart-item" th:each="cartList, iterStat : ${cartList}">
 
                 <!-- 체크박스 -->
-                <input type="checkbox" class="cart-item-checkbox">
+                <input type="checkbox" class="cart-item-checkbox" th:id="${iterStat.index}">
 
                 <!-- 상품 이미지 -->
                 <img th:src="@{/img/product_img/{img1}(img1=${cartList.img})}" alt="상품 이미지" class="cart-item-image">
@@ -30,88 +30,183 @@
                 <div class="cart-item-details">
                     <p class="cart-item-title" th:text="${cartList.product_name}">상품이름</p>
                     <p class="cart-item-title" th:text="${cartList.design}">디자인이름</p>
-                    <p class="cart-item-price" th:text="${cartList.price}" id="price">상품가격</p>
+                    <p class="cart-item-price" th:text="${cartList.price}" th:id="'price_' + ${iterStat.index}">상품가격</p>
                 </div>
 
                 <div class="cart-item-quantity">
                     <span class="mb-5">수량</span>
                     <div class="quantity-controls">
-                        <button class="minus" id="minus">-</button>
-                        <input type="text" th:value="${cartList.amount}" id="amount" class="quantity-input">
-                        <button class="plus" id="plus">+</button>
-                        <button class="update" id="update">변경</button>
+                        <button class="minus" th:id="'minus_' + ${iterStat.index}">-</button>
+                        <input type="text" th:value="${cartList.amount}" th:id="'amount_' + ${iterStat.index}" class="quantity-input">
+                        <button class="plus" th:id="'plus_' + ${iterStat.index}">+</button>
                     </div>
                 </div>
 
                 <div class="cart-item-total">
-                    <p id="item_price">상품가격 * 수량</p>
+                    <p th:id="'item_price_' + ${iterStat.index}">상품가격 * 수량</p>
                 </div>
 
                 <!-- 삭제 버튼 -->
-                <button class="delete-btn">x</button>
+                <button class="delete-btn" th:productId="${cartList.productId}" th:design="${cartList.design}"
+                        onclick="deleteCartItem(this.getAttribute('productId'), this.getAttribute('design'))">x</button>
             </div>
-        </div>
 
-        <div class="cart-summary">
-            <div class="summary-item">
-                <span>총 상품금액</span>
-                <span>7,500원</span>
+            <div class="cart-summary">
+                <div class="summary-item">
+                    <span>총 상품금액</span>
+                    <span id="totalPrice">1,000원</span>
+                </div>
+                <div class="summary-item">
+                    <span>총 배송비</span>
+                    <span id="delivery_fee">2,500원</span>
+                </div>
+                <div class="summary-total">
+                    <span>결제예정금액</span>
+                    <span id="finalPrice">상품금액 + 배송비</span>
+                </div>
             </div>
-            <div class="summary-item">
-                <span>총 배송비</span>
-                <span>2,500원</span>
-            </div>
-            <div class="summary-total">
-                <span>결제예정금액</span>
-                <span>10,000원</span>
-            </div>
-        </div>
 
-        <div class="cart-buttons">
-            <button class="order-all">전체상품주문</button>
-            <button class="order-selected">선택상품주문</button>
+            <div class="cart-buttons">
+                <button class="order-all" onclick="allCartItemOrder()">전체상품주문</button>
+                <button class="order-selected">선택상품주문</button>
+            </div>
         </div>
     </div>
 
     <script>
         'use strict'
+        const csrfToken = document.querySelector('meta[name="_csrf"]').getAttribute('content');
+        const csrfHeader = document.querySelector('meta[name="_csrf_header"]').getAttribute('content');
 
-        const minus = document.getElementById('minus');
-        const plus = document.getElementById('plus');
-        const update = document.getElementById('update');
+        const minus = document.querySelectorAll('.minus');
+        const plus = document.querySelectorAll('.plus');
 
-        let item_price = document.getElementById('item_price').textContent;
-        const price = parseInt(document.getElementById('price').textContent.trim());
-        let amount = parseInt(document.getElementById('amount').value.trim());
-        item_price_view();
+        const amountFields = document.querySelectorAll('.quantity-input');
 
-        minus.addEventListener('click', function(event) {
-            if(amount == 1){
-                alert('수량을 1개 미만으로 설정할 수 없습니다.');
-                return;
-            }
-            else amount = amount - 1;
-            document.getElementById('amount').value = amount;
-
-            item_price_view();
+        amountFields.forEach(field => {
+            const index = field.id.split('_')[1];
+            item_price_view(index);
         })
 
-        plus.addEventListener('click', function(event) {
+        totalPriceResult();
 
-            // 현재 상품의 남아있는 수량을 체크해서 그 이상 숫자가 커질 수 없게 막아야한다.
+        minus.forEach(button => {
+            button.addEventListener('click', function() {
+                const index = this.id.split('_')[1];
+                let amountField = document.getElementById(`amount_${index}`);
+                let amount = parseInt(amountField.value);
 
-            amount = amount + 1;
-            document.getElementById('amount').value = amount;
+                if (amount == 1) {
+                    alert('수량을 1개 미만으로 설정할 수 없습니다.');
+                    return;
+                }
+                amount = amount - 1;
+                amountField.value = amount;
 
-            item_price_view();
+                item_price_view(index);
+                totalPriceResult();
+            })
         })
 
-        function item_price_view(){
+        plus.forEach(button => {
+            button.addEventListener('click', function() {
+
+                // 현재 상품의 남아있는 수량을 체크해서 그 이상 숫자가 커질 수 없게 막아야한다.
+
+                const index = this.id.split('_')[1];
+                let amountField = document.getElementById(`amount_${index}`);
+                let amount = parseInt(amountField.value);
+
+                amount = amount + 1;
+                amountField.value = amount;
+
+                item_price_view(index);
+                totalPriceResult();
+            })
+        })
+
+        function item_price_view(index){
+            const price = parseInt(document.getElementById(`price_${index}`).textContent.trim());
+            const amount = parseInt(document.getElementById(`amount_${index}`).value.trim());
+
             if (!isNaN(price) && !isNaN(amount)) {
-                item_price = price * amount;
-                document.getElementById('item_price').textContent = item_price.toLocaleString() + ' 원';
+                const item_price = price * amount;
+                document.getElementById(`item_price_${index}`).textContent = item_price.toLocaleString() + ' 원';
             }
         }
+
+        function deleteCartItem(productId, design){
+            if(productId == '' || design == ''){
+                alert('onclick 데이터 받아오는거 실패');
+            }
+
+            let item = {
+                productId : productId,
+                design : design
+            }
+
+            fetch('/product/deleteCartItem', {
+                method: 'POST',
+                headers: {
+                    [csrfHeader]: csrfToken,
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(item)
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
+                if(data.success){
+
+                    location.reload();
+                }
+                else alert('장바구니삭제 실패');
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('장바구니 삭제 중 에러 발생');
+            });
+        }
+
+        function totalPriceResult(){
+            let totalPrice = 0;
+
+            document.querySelectorAll('.cart-item-total').forEach((item) => {
+                let itemPriceTem = item.textContent;
+                let itemPrice = parseInt(itemPriceTem.replace(/,/g, '').replace(' 원', ''));
+
+                if (!isNaN(itemPrice)) {  // NaN 값이 들어가는 것을 방지
+                    totalPrice += itemPrice;
+                }
+            })
+
+            if(totalPrice > 50000) document.getElementById('delivery_fee').textContent = '0 원';
+            else document.getElementById('delivery_fee').textContent = '2,500 원';
+
+            let delivery_feeTem = document.getElementById('delivery_fee').textContent;
+            let delivery_fee = parseInt(delivery_feeTem.replace(/,/g, '').replace(' 원', ''));
+
+            let finalPrice = totalPrice + delivery_fee;
+            document.getElementById('finalPrice').textContent = finalPrice.toLocaleString() + ' 원';
+
+            document.getElementById('totalPrice').textContent = totalPrice.toLocaleString() + ' 원';
+        }
+
+        function allCartItemOrder(){
+            // 'cart-item-checkbox' 클래스를 가진 모든 체크박스 선택
+            const checkboxes = document.querySelectorAll('.cart-item-checkbox');
+
+            // 모든 체크박스를 순회하며 checked를 true로 설정
+            checkboxes.forEach((checkbox) => {
+                checkbox.checked = true;
+            });
+        }
+
+
 
     </script>
 </body>
