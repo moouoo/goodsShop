@@ -23,6 +23,8 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @Controller
 @RequestMapping("/product")
@@ -360,11 +362,15 @@ public class ProductController {
 
         Map<String, Object> data = new HashMap<>();
 
-        String mid = session.getAttribute("sMid").toString();
-        if(mid == null) {
+        Object midObj = session.getAttribute("sMid");
+
+        if (midObj == null) {
             data.put("noLogin", true);
         }
-        else data.put("noLogin", false);
+        else {
+            String mid = midObj.toString();
+            data.put("noLogin", false);
+        }
 
         try {
             int productId = Integer.parseInt(JCart.get("productId").toString());
@@ -410,9 +416,14 @@ public class ProductController {
     @RequestMapping(value = "/cart", method = RequestMethod.GET)
     String cart(Model model, HttpSession session){
         List<CartListVo> cartList = new ArrayList<>();
-        List<CartVo> cart = (List<CartVo>) session.getAttribute("sCart");
 
+        List<CartVo> cart = (List<CartVo>) session.getAttribute("sCart");
         if(cart == null){
+            return "redirect:/message/cartX";
+        }
+
+        Object midObj = session.getAttribute("sMid");
+        if (midObj == null) {
             return "redirect:/message/memberX";
         }
 
@@ -472,7 +483,80 @@ public class ProductController {
         return ResponseEntity.ok(data);  // 200 OK 응답을 반환
     }
 
-    // 체크박스를 이용한 선택상품구매 기능 구현, 전체상품구매 기능 구현
-    // 상품구매 버튼 누르시 주문페이지로 이동.
+    @RequestMapping(value = "/orderPage", method = RequestMethod.GET)
+    String orderPage(
+            @RequestParam List<Integer> productId, @RequestParam List<String> design,  @RequestParam List<Integer> amount,
+            @RequestParam List<Integer> price, @RequestParam List<String> img, Model model, HttpSession session
+    ){
+        Object midObj = session.getAttribute("sMid");
+        String mid;
+        if (midObj == null) {
+            return "redirect:/message/memberX";
+        }
+        else {
+            mid = midObj.toString();
+        }
+
+        if(productId == null || design == null || amount == null || price == null || img == null){
+            return "redirect:/message/cartX";
+        }
+
+        // 상품 정보 가져오기
+        List<ProductVo> productVo = productService.getProductVoOfNameAndBrandByProductId(productId);
+
+        // 상품 ID를 키로 하는 Map으로 변환
+        Map<Integer, ProductVo> productMap = productVo.stream().collect(Collectors.toMap(ProductVo::getId, Function.identity()));
+
+        // 데이터를 묶어서 뷰로 전달
+        List<Map<String, Object>> purchaseItems = new ArrayList<>();
+        for (int i = 0; i < productId.size(); i++) {
+            Map<String, Object> item = new HashMap<>();
+            item.put("productId", productId.get(i));
+            item.put("design", design.get(i));
+            item.put("amount", amount.get(i));
+            item.put("price", price.get(i));
+            item.put("img", img.get(i));
+
+            // 상품 정보를 Map에서 빠르게 조회
+            ProductVo vo = productMap.get(productId.get(i));
+
+            if (vo != null) {
+                item.put("productName", vo.getProduct_name());
+                item.put("brand", vo.getBrand());
+                item.put("subcategoryId", vo.getSub_category_id());
+            }
+
+            purchaseItems.add(item);
+        }
+
+        // 적립금
+        int discount_point = productService.getMemberDiscountPointByMid(mid);
+
+        /*
+         상품마다 쿠폰적용 버튼을 만들어서 눌러서 각각 할인하는 모양으로 갈거임.
+         쿠폰적용 버튼 -> 모닱창 -> 사용할수있는 쿠폰 클릭 -> 깍인 가격으로 표시 이런 로직
+         쿠폰적용 클릭시 지금 만들어 둔 쿠폰 코드를 사용할거면 maincatecory_id, subcategory_id, level이 필요.
+         각각 int, int, "level1" or "level2"이런 형식
+         level은 세션을 이용하여 완성할 생각
+         카테고리들의 id는 위에 있는 코드로 의해서 sub_category_id를 db에서 가져오게 만들어서 각각의 id를 가져와서 뷰로 뿌릴생각
+        */
+
+
+        // 쿠폰
+        Integer sLevelObj = (Integer) session.getAttribute("sLevel"); // null 안전하게 처리 가능
+        int sLevel = (sLevelObj != null) ? sLevelObj : 0;
+        String level = "level" + sLevel;
+
+//        List<CouponVo> couponList = productService.getCouponVos(level, product_mainCategory, product_subCategory);
+//        int couponListCount = couponList.size();
+
+        model.addAttribute("item", purchaseItems);
+        model.addAttribute("discount_point", discount_point);
+
+        navbarHelper.navbarSetup(model);
+        return "product/orderPage";
+        // 필요한게 쿠폰, 배달비(js로 구현 후 결재 할때 비교처리로 확인)
+    }
+    // 체크박스를 이용한 선택상품구매 기능 구현, (전체상품구매 기능 구현 : 해결)
 
 }

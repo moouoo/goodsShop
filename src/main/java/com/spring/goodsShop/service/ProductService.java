@@ -41,4 +41,6 @@ public interface ProductService {
     void setPaymentOne(PaymentVo payment);
 
     String getProductImg1ByProductImgId(int productImgId);
+
+    List<ProductVo> getProductVoOfNameAndBrandByProductId(List<Integer> productId);
 }

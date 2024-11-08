@@ -42,4 +42,6 @@ public interface ProductDao {
     void setPaymentOne(@Param("payment") PaymentVo payment);
 
     String getProductImg1ByProductImgId(@Param("productImgId") int productImgId);
+
+    List<ProductVo> getProductVoOfNameAndBrandByProductId(@Param("productId") List<Integer> productId);
 }

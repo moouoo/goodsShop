@@ -22,7 +22,8 @@
             <div class="cart-item" th:each="cartList, iterStat : ${cartList}">
 
                 <!-- 체크박스 -->
-                <input type="checkbox" class="cart-item-checkbox" th:id="${iterStat.index}">
+                <input type="checkbox" class="cart-item-checkbox" th:id="${iterStat.index}"
+                       th:productId="${cartList.productId}" th:design="${cartList.design}" th:amount="${cartList.amount}" th:price="${cartList.price}" th:img="${cartList.img}">
 
                 <!-- 상품 이미지 -->
                 <img th:src="@{/img/product_img/{img1}(img1=${cartList.img})}" alt="상품 이미지" class="cart-item-image">
@@ -203,6 +204,41 @@
             // 모든 체크박스를 순회하며 checked를 true로 설정
             checkboxes.forEach((checkbox) => {
                 checkbox.checked = true;
+            });
+
+            const checkedItems = [];
+
+            document.querySelectorAll('.cart-item-checkbox:checked').forEach((checkbox) => {
+                const productId = checkbox.getAttribute('productId');
+                const design = checkbox.getAttribute('design');
+                const amount = checkbox.getAttribute('amount');
+                const price = checkbox.getAttribute('price');
+                const img = checkbox.getAttribute('img');
+
+                // 선택된 상품 데이터를 객체에 저장
+                checkedItems.push({
+                    productId : productId,
+                    design : design,
+                    amount : amount,
+                    price : price,
+                    img : img
+                });
+
+                if (checkedItems.length === 0) {
+                    alert('선택된 상품이 없습니다.');
+                    return;
+                }
+
+                let queryParams = checkedItems.map(item =>
+                    `productId=${encodeURIComponent(item.productId)}&` +
+                    `design=${encodeURIComponent(item.design)}&` +
+                    `amount=${encodeURIComponent(item.amount)}&` +
+                    `price=${encodeURIComponent(item.price)}&` +
+                    `img=${encodeURIComponent(item.img)}`
+                ).join('&');
+
+                // get형식으로 데이터를 url에 달아서 보낸다.
+                window.location.href = `/product/orderPage?${queryParams}`;
             });
         }
 

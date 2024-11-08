@@ -163,4 +163,9 @@ public class ProductServiceImpl implements ProductService{
         return productDao.getProductImg1ByProductImgId(productImgId);
     }
 
+    @Override
+    public List<ProductVo> getProductVoOfNameAndBrandByProductId(List<Integer> productId) {
+        return productDao.getProductVoOfNameAndBrandByProductId(productId);
+    }
+
 }

@@ -99,6 +99,10 @@ public class MessageController {
             model.addAttribute("msg", "로그인후 주문가능합니다.");
             model.addAttribute("url", "/member/login");
         }
+        else if(msgFlag.equals("cartX")){
+            model.addAttribute("msg", "장바구니가 비어있습니다.");
+            model.addAttribute("url", "/");
+        }
 
 
         return "include/message";

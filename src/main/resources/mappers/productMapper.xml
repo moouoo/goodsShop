@@ -67,6 +67,14 @@
         select img1 from product_img where id = #{productImgId};
     </select>
 
+    <select id="getProductVoOfNameAndBrandByProductId" resultType="com.spring.goodsShop.vo.ProductVo">
+        SELECT id, product_name, brand, sub_category_id FROM product
+        WHERE id IN
+        <foreach item="id" collection="productId" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </select>
+
     <!--  insert  -->
     <insert id="setOrderOne" useGeneratedKeys="true" keyProperty="id">
         insert into productOrder values (default, #{order.member_id}, #{order.product_id}, #{order.amount}, #{order.address}, default, #{order.status});

@@ -10,7 +10,7 @@ public class MyExceptionHandler {
 
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
     public ResponseEntity<String> exceptionHandler(){
-        return ResponseEntity.status(400).body("url창 타임 미스 매치 오류 발생");
+        return ResponseEntity.status(400).body("url창 타입 미스 매치 오류 발생");
     }
 
 //      모든오류에 걸림
