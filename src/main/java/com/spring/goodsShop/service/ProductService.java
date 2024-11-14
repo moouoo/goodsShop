@@ -43,4 +43,8 @@ public interface ProductService {
     String getProductImg1ByProductImgId(int productImgId);
 
     List<ProductVo> getProductVoOfNameAndBrandByProductId(List<Integer> productId);
+
+    int getProductImgIdByProductId(int productId);
+
+    int getProductPriceByProductId(int productId);
 }

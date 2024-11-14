@@ -230,3 +230,15 @@ button{
 .payment:hover{
     cursor: pointer;
 }
+
+.discountPriceRed{
+    color: red;
+}
+
+.pay-method{
+    margin-top: 10px;
+}
+
+.payment-form{
+    margin-top: 5px;
+}

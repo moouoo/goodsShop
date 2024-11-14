@@ -44,4 +44,8 @@ public interface ProductDao {
     String getProductImg1ByProductImgId(@Param("productImgId") int productImgId);
 
     List<ProductVo> getProductVoOfNameAndBrandByProductId(@Param("productId") List<Integer> productId);
+
+    int getProductImgIdByProductId(@Param("productId") int productId);
+
+    int getProductPriceByProductId(@Param("productId") int productId);
 }

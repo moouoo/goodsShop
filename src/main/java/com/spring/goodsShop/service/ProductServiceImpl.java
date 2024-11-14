@@ -168,4 +168,14 @@ public class ProductServiceImpl implements ProductService{
         return productDao.getProductVoOfNameAndBrandByProductId(productId);
     }
 
+    @Override
+    public int getProductImgIdByProductId(int productId) {
+        return productDao.getProductImgIdByProductId(productId);
+    }
+
+    @Override
+    public int getProductPriceByProductId(int productId) {
+        return productDao.getProductPriceByProductId(productId);
+    }
+
 }

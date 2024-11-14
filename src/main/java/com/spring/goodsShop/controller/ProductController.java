@@ -1,6 +1,7 @@
 package com.spring.goodsShop.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.spring.goodsShop.enums.OrderStatus;
 import com.spring.goodsShop.etc.NavbarHelper;
@@ -161,7 +162,7 @@ public class ProductController {
         List<Product_imgVo> product_img_list;
 
         product_list = productService.getProductByProductId(productId);
-        int productImgId = productService.getProductImgIdByProductName(product_name);
+        int productImgId = productService.getProductImgIdByProductId(productId);
         product_img_list = productService.getProductImgByProductImgId(productImgId);
 
         // 디자인처리
@@ -253,8 +254,8 @@ public class ProductController {
     @ResponseBody
     @RequestMapping(value = "/couponSelect", method = RequestMethod.POST)
     Map<String, Object> couponSelect(@RequestBody Map<String, String> jCouponId){
-        int couponId = Integer.parseInt(jCouponId.get("couponId").toString());
-        int price = Integer.parseInt(jCouponId.get("price").toString());
+        int couponId = !jCouponId.get("couponId").toString().isEmpty() ? Integer.parseInt(jCouponId.get("couponId").toString()) : 0;
+        int price = !jCouponId.get("price").toString().isEmpty() ? Integer.parseInt(jCouponId.get("price").toString()) : 0;
 
         if(couponId == 0 || price == 0) {
             Map<String, Object> data = new HashMap<>();
@@ -263,6 +264,7 @@ public class ProductController {
         }
         else{
             boolean check = productService.getCouponCheck(couponId);
+
             if(check){
                 BigDecimal coupon_rate = productService.getCouponRate(couponId);
 
@@ -281,11 +283,13 @@ public class ProductController {
                 Map<String, Object> data = new HashMap<>();
                 data.put("success", true);
                 data.put("discountedPrice", discountPrice);
+                data.put("price", price);
                 return data;
             }
             else{
                 Map<String, Object> data = new HashMap<>();
                 data.put("success", false);
+
                 return data;
             }
         }
@@ -294,6 +298,33 @@ public class ProductController {
     @ResponseBody
     @RequestMapping(value = "/payment", method = RequestMethod.POST)
     Map<String, Object> payment(@RequestBody Map<String, Object> JPaymentInfo, HttpSession session){
+        List<Integer> productIds = objectMapper.convertValue(JPaymentInfo.get("productId"), new TypeReference<List<Integer>>() {});
+        List<Integer> amounts = objectMapper.convertValue(JPaymentInfo.get("amount"), new TypeReference<List<Integer>>() {});
+
+        int finalPrice = !JPaymentInfo.get("finalPrice").toString().isEmpty() ? Integer.parseInt(JPaymentInfo.get("finalPrice").toString()) : 0;
+
+
+        // 여러 상품 들어왔을떄 검증로직처리 해야함
+
+
+        // 상품이 하나일때 orderOne.html.
+        int finalPrice = !JPaymentInfo.get("finalPrice").toString().isEmpty() ? Integer.parseInt(JPaymentInfo.get("finalPrice").toString()) : 0;
+        int productId = !JPaymentInfo.get("productId").toString().isEmpty() ? Integer.parseInt(JPaymentInfo.get("productId").toString()) : 0;
+        int amount = !JPaymentInfo.get("productId").toString().isEmpty() ? Integer.parseInt(JPaymentInfo.get("productId").toString()) : 0;
+        int couponId = !JPaymentInfo.get("couponId").toString().isEmpty() ? Integer.parseInt(JPaymentInfo.get("couponId").toString()) : 0;
+
+        int price = productService.getProductPriceByProductId(productId);
+        int totalPrice = price * amount;
+        BigDecimal discountRate = productService.getCouponRate(couponId);
+        BigDecimal priceBigDecimal = BigDecimal.valueOf(totalPrice);
+        BigDecimal finalPriceCheckTem = priceBigDecimal.multiply(discountRate);
+        int finalPriceCheck = finalPriceCheckTem.intValue();
+
+        if(finalPrice != finalPriceCheck){
+            Map<String, Object> data = new HashMap<>();
+            data.put("success", false);
+            return data;
+        }
 
         // 주문번호 생성
         String uuid = UUID.randomUUID().toString().replace("-", "");
@@ -524,6 +555,9 @@ public class ProductController {
                 item.put("productName", vo.getProduct_name());
                 item.put("brand", vo.getBrand());
                 item.put("subcategoryId", vo.getSub_category_id());
+                int maincategoryId = productService.getMainCategoryIdBySubCategoryId(vo.getSub_category_id());
+                item.put("maincategoryId", maincategoryId);
+
             }
 
             purchaseItems.add(item);
@@ -531,6 +565,14 @@ public class ProductController {
 
         // 적립금
         int discount_point = productService.getMemberDiscountPointByMid(mid);
+
+
+        model.addAttribute("item", purchaseItems);
+        model.addAttribute("discount_point", discount_point);
+
+        navbarHelper.navbarSetup(model);
+        return "product/orderPage";
+        // 필요한게 쿠폰, 배달비(js로 구현 후 결재 할때 비교처리로 확인)
 
         /*
          상품마다 쿠폰적용 버튼을 만들어서 눌러서 각각 할인하는 모양으로 갈거임.
@@ -541,22 +583,37 @@ public class ProductController {
          카테고리들의 id는 위에 있는 코드로 의해서 sub_category_id를 db에서 가져오게 만들어서 각각의 id를 가져와서 뷰로 뿌릴생각
         */
 
+    }
+    // 체크박스를 이용한 선택상품구매 기능 구현, (전체상품구매 기능 구현 : 해결)
 
-        // 쿠폰
+    @RequestMapping(value = "/selectCouponForItem", method = RequestMethod.POST)
+    ResponseEntity<Map<String, Object>> selectCouponForItem(@RequestBody Map<String, Object> item, HttpSession session){
+        int subcategoryId = !item.get("subcategoryId").toString().isEmpty() ? Integer.parseInt(item.get("subcategoryId").toString()) : 0;
+        int maincategoryId = !item.get("maincategoryId").toString().isEmpty() ? Integer.parseInt(item.get("maincategoryId").toString()) : 0;
+        String idTem = !item.get("id").toString().isEmpty() ? item.get("id").toString() : "";
+
         Integer sLevelObj = (Integer) session.getAttribute("sLevel"); // null 안전하게 처리 가능
         int sLevel = (sLevelObj != null) ? sLevelObj : 0;
         String level = "level" + sLevel;
 
-//        List<CouponVo> couponList = productService.getCouponVos(level, product_mainCategory, product_subCategory);
-//        int couponListCount = couponList.size();
+        Map<String, Object> data = new HashMap<>();
 
-        model.addAttribute("item", purchaseItems);
-        model.addAttribute("discount_point", discount_point);
+        if(subcategoryId == 0 || maincategoryId == 0 || sLevel == 0 || idTem.isEmpty()){
+            data.put("success", false);
+            return ResponseEntity.badRequest().body(data);
+        }
 
-        navbarHelper.navbarSetup(model);
-        return "product/orderPage";
-        // 필요한게 쿠폰, 배달비(js로 구현 후 결재 할때 비교처리로 확인)
+        //itemPrice_0
+        //01234567890
+        int id = Integer.parseInt(idTem.substring(10));
+
+        List<CouponVo> couponList = productService.getCouponVos(level, maincategoryId, subcategoryId);
+
+        data.put("success", true);
+        data.put("couponList", couponList);
+        data.put("id", id);
+
+        return ResponseEntity.ok(data);
     }
-    // 체크박스를 이용한 선택상품구매 기능 구현, (전체상품구매 기능 구현 : 해결)
 
 }

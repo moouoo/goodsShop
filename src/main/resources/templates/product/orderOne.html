@@ -144,7 +144,7 @@
                         <th>사용기간</th>
                     </tr>
                     <tr th:each="couponList : ${couponList}">
-                        <td><input type="radio" name="couponSelect" th:value="${couponList.id}"></td>
+                        <td><input type="radio" name="couponSelect" id="couponSelect" th:value="${couponList.id}"></td>
                         <td th:text="${couponList.coupon_name}"></td>
                         <td th:text="${couponList.coupon_rate}"></td>
                         <td th:text="${couponList.end_date}"></td>
@@ -343,7 +343,6 @@
 
                             finalPrice();
                         }
-
                     }
                     else{
                         alert("쿠폰적용실패");
@@ -452,6 +451,8 @@
             let productId = [[${productId}]];
             let design = '[[${design}]]';
 
+            let couponId =document.getElementById('couponSelect').value;
+
             let item = {
                 email : email,
                 phone : phone,
@@ -462,7 +463,8 @@
                 product_name : product_name,
                 amount : amount,
                 productId : productId,
-                design : design
+                design : design,
+                couponId : couponId
             };
 
             fetch("/product/payment", {
@@ -488,7 +490,6 @@
                 }
             })
         }
-
     </script>
 </body>
 </html>
