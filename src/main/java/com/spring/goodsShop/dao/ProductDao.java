@@ -48,4 +48,6 @@ public interface ProductDao {
     int getProductImgIdByProductId(@Param("productId") int productId);
 
     int getProductPriceByProductId(@Param("productId") int productId);
+
+    String getProductNameByProductId(@Param("productId") int productId);
 }

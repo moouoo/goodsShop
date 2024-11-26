@@ -25,11 +25,11 @@
             <div class="form-group">
                 <label for="email1">이메일 *</label>
                 <div class="email-input">
-                    <input type="text" id="email1" name="email1" required>
+                    <input type="text" id="email1" name="email1" required value="0109963">
                     <span>@</span>
                     <select name="email-domain" id="email2" onchange="checkCustomEmail()">
-                        <option value="" disabled selected>이메일주소를 선택해주세요</option>
-                        <option value="naver.com">naver.com</option>
+                        <option value="" disabled >이메일주소를 선택해주세요</option>
+                        <option value="naver.com" selected>naver.com</option>
                         <option value="gmail.com">gmail.com</option>
                         <option value="daum.net">daum.net</option>
                         <option value="custom">직접입력</option>
@@ -49,8 +49,8 @@
                         <option value="016">018</option>
                         <option value="011">019</option>
                     </select>
-                    <input type="text" id="phone1" name="phone1" maxlength="4" value="" required>
-                    <input type="text" id="phone2" name="phone2" maxlength="4" value="" required>
+                    <input type="text" id="phone1" name="phone1" maxlength="4" value="9963" required>
+                    <input type="text" id="phone2" name="phone2" maxlength="4" value="9180" required>
                 </div>
             </div>
         </form>
@@ -102,8 +102,11 @@
                     <p>디자인 : <span th:text="${item.design}">구매하는 상품의 디자인</span></p>
                     <p>수량 : <span th:text="${item.amount}">구매하는 상품의 수량</span></p>
                 </div>
-                <input type="button" th:level="${level}" th:subcategoryId="${item.subcategoryId}" th:maincategoryId="${item.subcategoryId}" th:idTem="'itemPrice_' + ${iterStat.index}"
-                       onclick="selectCouponForItem(this.getAttribute('subcategoryId'), this.getAttribute('maincategoryId'), this.getAttribute('idTem'))"
+                <input type="button" th:level="${level}"
+                       th:subcategoryId="${item.subcategoryId}" th:maincategoryId="${item.subcategoryId}"
+                       th:idTem="'itemPrice_' + ${iterStat.index}" th:productId="${item.productId}" th:design="${item.design}"
+                       onclick="selectCouponForItem(this.getAttribute('subcategoryId'), this.getAttribute('maincategoryId'),
+                       this.getAttribute('idTem'), this.getAttribute('productId'), this.getAttribute('design'))"
                        value="쿠폰적용">
                 <div class="order-price" th:text="${item.price * item.amount}" th:id="'itemPrice_' + ${iterStat.index}">
                     구매하는 상품의 가격
@@ -262,9 +265,8 @@
         }
 
         // 모달창
-        function couponModal(couponList, id) {
+        function couponModal(couponList, id, productId, design) {
             document.getElementById('couponModal').style.display = 'flex';
-
             // 쿠폰 테이블 가져오기
             const tableBody = document.querySelector('#couponModal table tbody');
 
@@ -288,7 +290,7 @@
             // '적용' 버튼을 동적으로 찾고, onclick 속성 설정
             const couponCheckBtn = document.querySelector('.action-btn');
             if (couponCheckBtn) {
-                couponCheckBtn.setAttribute('onclick', `couponCheck(${id})`);
+                couponCheckBtn.setAttribute('onclick', `couponCheck(${id}, ${productId}, '${design}')`);
             }
             else{
                 alert('radio버튼 오류');
@@ -312,7 +314,7 @@
         });
 
         // 각 상품에 사용할 수 있는 쿠폰 가져오기
-        function selectCouponForItem(subcategoryId, maincategoryId, idTem){
+        function selectCouponForItem(subcategoryId, maincategoryId, idTem, productId, design){
             fetch('/product/selectCouponForItem', {
                 method: 'POST',
                 headers: {
@@ -322,7 +324,9 @@
                 body: JSON.stringify({
                     subcategoryId : subcategoryId,
                     maincategoryId : maincategoryId,
-                    id : idTem
+                    id : idTem,
+                    productId : productId,
+                    design : design
                 })
             })
             .then(response => {
@@ -334,7 +338,7 @@
             })
             .then(data => {
                 if (data.success){
-                    couponModal(data.couponList, data.id);
+                    couponModal(data.couponList, data.id, data.productId, data.design);
                 }
                 else{
                     alert("쿠폰리스트불러오기 실패");
@@ -346,10 +350,14 @@
             });
         }
 
-        function couponCheck(id){
+        const couponData = []; // 쿠폰 결과를 담을 배열
+        function couponCheck(id, productId, design){
             // 선택된 라디오 버튼 가져오기
             const selectedCoupon = document.querySelector('input[name="couponSelect"]:checked');
             let couponId = selectedCoupon ? selectedCoupon.value.trim() : "";
+
+            couponData.push({productId, couponId, design});
+            //console.log('잘만들어지고있나?' + JSON.stringify(couponData));
 
             // 할인결과를 위한 선언
             const availablePoints = [[${discount_point}]];
@@ -547,10 +555,10 @@
                 alert('휴대폰을 입력해주세요.');
                 return;
             }
-            else if(sample6_address == "" || postcode == ""){
-                alert('주소를 적어주세요.');
-                return;
-            }
+            //else if(sample6_address == "" || postcode == ""){
+            //    alert('주소를 적어주세요.');
+            //    return;
+            //}
 
             let item = {
                 email : email,
@@ -561,7 +569,7 @@
                 finalPrice : finalPrice,
                 amount : amount,
                 productId : productId,
-                couponId : couponId,
+                couponData : couponData,
                 design : design
             };
 

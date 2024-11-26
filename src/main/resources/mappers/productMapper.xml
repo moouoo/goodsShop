@@ -83,6 +83,10 @@
         select price from product where id = #{productId};
     </select>
 
+    <select id="getProductNameByProductId" resultType="java.lang.String">
+        select product_name from product where id = #{productId};
+    </select>
+
     <!--  insert  -->
     <insert id="setOrderOne" useGeneratedKeys="true" keyProperty="id">
         insert into productOrder values (default, #{order.member_id}, #{order.product_id}, #{order.amount}, #{order.address}, default, #{order.status});
