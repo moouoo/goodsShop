@@ -1,11 +1,8 @@
 package com.spring.goodsShop.service;
 
 import com.spring.goodsShop.etc.ImgHandler;
-import com.spring.goodsShop.vo.MemberVo;
+import com.spring.goodsShop.vo.*;
 import com.spring.goodsShop.dao.MemberDao;
-import com.spring.goodsShop.vo.ProductVo;
-import com.spring.goodsShop.vo.Product_imgVo;
-import com.spring.goodsShop.vo.SubcategoryVo;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -213,6 +210,16 @@ public class MemberServiceImpl implements MemberService{
     @Override
     public String findEmailByMid(String mid) {
         return memberDao.findEmailByMid(mid);
+    }
+
+    @Override
+    public List<Integer> getProductIdsByMemberId(int memberId) {
+        return memberDao.getProductIdsByMemberId(memberId);
+    }
+
+    @Override
+    public List<OrderVo> getOrderVoByProductId(int productId) {
+        return memberDao.getOrderVoByProductId(productId);
     }
 
 

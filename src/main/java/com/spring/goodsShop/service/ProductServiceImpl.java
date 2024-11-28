@@ -183,4 +183,9 @@ public class ProductServiceImpl implements ProductService{
         return productDao.getProductNameByProductId(productId);
     }
 
+    @Override
+    public String getOrderMemberNameByMemberId(int memberId) {
+        return productDao.getOrderMemberNameByMemberId(memberId);
+    }
+
 }

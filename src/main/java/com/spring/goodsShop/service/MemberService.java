@@ -1,9 +1,6 @@
 package com.spring.goodsShop.service;
 
-import com.spring.goodsShop.vo.MemberVo;
-import com.spring.goodsShop.vo.ProductVo;
-import com.spring.goodsShop.vo.Product_imgVo;
-import com.spring.goodsShop.vo.SubcategoryVo;
+import com.spring.goodsShop.vo.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -43,7 +40,6 @@ public interface MemberService {
 
     int getMemberIdBymid(String mid);
 
-
     void setProduct_img(Product_imgVo imgVo, List<MultipartFile> files) throws IOException;
 
     int getProductImgIdByImg1(String img1);
@@ -55,4 +51,8 @@ public interface MemberService {
     void pwdSet(String encodePwd, String mid);
 
     String findEmailByMid(String mid);
+
+    List<Integer> getProductIdsByMemberId(int memberId);
+
+    List<OrderVo> getOrderVoByProductId(int productId);
 }

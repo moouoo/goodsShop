@@ -306,7 +306,7 @@
                 </div>
                 <div class="button-container">
                     <input type="hidden" name="productId" th:value="${productId}">
-                    <button type="button" class="buy-now" onclick="defOrderCheck()">바로 구매하기</button>
+                    <button type="button" class="buy-now" th:productId="${productId}" onclick="addToCart(this.getAttribute('productId'))">바로 구매하기</button>
                     <button type="button" class="add-cart" th:productId="${productId}" onclick="addToCart(this.getAttribute('productId'))">장바구니</button>
                     <button class="wish-list">관심상품</button>
                 </div>

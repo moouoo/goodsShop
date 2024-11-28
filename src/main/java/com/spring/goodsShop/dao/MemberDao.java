@@ -1,9 +1,6 @@
 package com.spring.goodsShop.dao;
 
-import com.spring.goodsShop.vo.MemberVo;
-import com.spring.goodsShop.vo.ProductVo;
-import com.spring.goodsShop.vo.Product_imgVo;
-import com.spring.goodsShop.vo.SubcategoryVo;
+import com.spring.goodsShop.vo.*;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
@@ -47,5 +44,9 @@ public interface MemberDao {
 
     void pwdSet(@Param("encodePwd") String encodePwd, @Param("mid") String mid);
 
-    String findEmailByMid( @Param("mid") String mid);
+    String findEmailByMid(@Param("mid") String mid);
+
+    List<Integer> getProductIdsByMemberId(@Param("memberId") int memberId);
+
+    List<OrderVo> getOrderVoByProductId(@Param("productId") int productId);
 }

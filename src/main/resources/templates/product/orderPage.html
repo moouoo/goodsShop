@@ -451,6 +451,17 @@
             let discountPrice = parseInt(discountPriceStr.replace(/[^0-9]/g, ''), 10);
 
             document.getElementById('final_price').textContent = (totalPrice + delivery_fee - discountPrice).toLocaleString() + ' 원';
+
+            // 할인요인에 따른 배송비의 변화 재계산.
+            let finalPriceStr = document.getElementById('final_price').textContent;
+            let finalPrice = parseInt(finalPriceStr.replace(/[^0-9]/g, ''), 10);
+
+            if(finalPrice < 50000) document.getElementById('delivery_fee').textContent = '2,500 원';
+            else document.getElementById('delivery_fee').textContent = '0 원';
+
+            let delivery_feeStr2 = document.getElementById('delivery_fee').textContent;
+            let delivery_fee2 =  parseInt(delivery_feeStr2.replace(/[^0-9]/g, ''), 10);
+            document.getElementById('final_price').textContent = (totalPrice + delivery_fee2 - discountPrice).toLocaleString() + ' 원';
         }
         finalPrice();
 
@@ -499,9 +510,10 @@
             const availablePoints = [[${discount_point}]];
             document.getElementById("reward-points").value = availablePoints;
 
-            let couponDiscountPrice = parseInt(document.getElementById('couponDiscountPrice').textContent) || 0;
+            let couponDiscountPriceStr = document.getElementById('couponDiscountPrice').textContent;
+            let couponDiscountPrice = parseInt(couponDiscountPriceStr.replace(/[^0-9]/g, ''), 10);
 
-            document.getElementById('finalDiscountPrice').textContent = '- ' + (couponDiscountPrice - availablePoints).toLocaleString() + ' 원';
+            document.getElementById('finalDiscountPrice').textContent = (couponDiscountPrice + availablePoints).toLocaleString() + ' 원';
             finalPrice();
         }
 
@@ -542,6 +554,8 @@
             let priceInWon = document.getElementById('final_price').textContent;
             let finalPrice = parseInt(priceInWon.replace(/[^0-9]/g, ''));
 
+            let rewardPoint = document.getElementById('reward-points').value.trim();
+
             const url = new URL(window.location.href); // 현재 페이지의 URL 가져오기
             let productId = url.searchParams.getAll('productId'); // 'productId'에 해당하는 모든 값 가져오기
             let amount = url.searchParams.getAll('amount');
@@ -551,14 +565,18 @@
                 alert('이메일을 입력해주세요');
                 return;
             }
-            else if(phone1 == "" || phone1 == ""){
+            else if(phone1 == "" || phone2 == ""){
                 alert('휴대폰을 입력해주세요.');
                 return;
             }
-            //else if(sample6_address == "" || postcode == ""){
-            //    alert('주소를 적어주세요.');
-            //    return;
-            //}
+            else if(sample6_address == "" || postcode == ""){
+                alert('주소를 적어주세요.');
+                return;
+            }
+            else if(name == ""){
+                alert('이름을 적어주세요');
+                return;
+            }
 
             let item = {
                 email : email,
@@ -570,7 +588,8 @@
                 amount : amount,
                 productId : productId,
                 couponData : couponData,
-                design : design
+                design : design,
+                rewardPoint : rewardPoint
             };
 
             fetch("/product/payment", {

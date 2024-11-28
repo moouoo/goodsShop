@@ -113,6 +113,25 @@
         .flex {
             display: flex;
         }
+        .space_between {
+            display: flex;
+            justify-content: space-between; /* 좌우로 요소 분배 */
+            align-items: center; /* 세로 중앙 정렬 */
+        }
+        .refund_information {
+            padding: 8px 12px;
+            font-size: 16px;
+            background-color: #007bff; /* 버튼 색상 */
+            color: #fff; /* 텍스트 색상 */
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .refund_information:hover {
+            background-color: #0056b3; /* 호버 시 색상 */
+        }
+
     </style>
 </head>
 <body>
@@ -123,12 +142,11 @@
         <h2>개인관리</h2>
         <a href="#" onclick="showSection('profile')">회원 정보</a>
         <a href="#" onclick="showSection('orders')">주문 내역</a>
-        <a href="#" onclick="showSection('cart')">장바구니</a>
         <a href="#" onclick="showSection('wishlist')">찜 목록</a>
         <p><hr></p><br>
         <h2>판매관리</h2>
         <a href="#" onclick="showSection('product_register')">상품등록</a>
-        <a href="#" onclick="showSection('product_management')">판매관리</a>
+        <a href="#" onclick="showSection('productOrder')">판매관리</a>
         <p><hr></p><br>
         <h2>문의사항</h2>
     </div>
@@ -171,63 +189,49 @@
         </div>
 
         <div class="section" id="orders" style="display: none;">
-            <h2>주문 내역</h2>
+            <div class="space_between">
+                <h2 style="border-bottom: none;">주문 내역</h2>
+                <button class="refund_information">환불정보</button>
+            </div>
             <table>
                 <thead>
-                <tr>
-                    <th>주문 번호</th>
-                    <th>상품명</th>
-                    <th>가격</th>
-                    <th>주문일</th>
-                    <th>상태</th>
-                </tr>
+                    <tr>
+                        <th>주문 번호</th>
+                        <th>상품명</th>
+                        <th>가격</th>
+                        <th>주문일</th>
+                        <th>상태</th>
+                        <th>관리</th>
+                    </tr>
                 </thead>
-                <tbody id="orderList">
-                <tr>
-                    <td>1</td>
-                    <td>상품 A</td>
-                    <td>₩10,000</td>
-                    <td>2024-01-01</td>
-                    <td>배송중</td>
-                </tr>
-                <tr>
-                    <td>2</td>
-                    <td>상품 B</td>
-                    <td>₩20,000</td>
-                    <td>2024-01-02</td>
-                    <td>완료</td>
-                </tr>
+                <tbody th:each="paymentList : ${paymentList}">
+                    <tr>
+                        <td th:text="${paymentList.id}">주문번호</td>
+                        <td>[<span th:text="${paymentList.design}">]<p th:text="${paymentList.productName}"></p></span>[디자인]상품이름</td>
+                        <td th:text="${paymentList.price}">₩10,000</td>
+                        <td th:text="${paymentList.order_date}">구입날짜</td>
+                        <td th:text="${paymentList.orderStaus}">배송전/배송중/결정완료/환불중</td>
+                        <td>
+                            <button class="btn" onclick="completeOrder()">구매결정</button>
+                            <button class="btn" onclick="refundRequest()">환불신청</button>
+                        </td>
+                    </tr>
                 </tbody>
             </table>
         </div>
 
-        <div class="section" id="cart" style="display: none;">
-            <h2>장바구니</h2>
-            <table>
-                <thead>
-                <tr>
-                    <th>상품명</th>
-                    <th>가격</th>
-                    <th>수량</th>
-                    <th>합계</th>
-                </tr>
-                </thead>
-                <tbody id="cartList">
-                <tr>
-                    <td>상품 C</td>
-                    <td>₩15,000</td>
-                    <td>2</td>
-                    <td>₩30,000</td>
-                </tr>
-                <tr>
-                    <td>상품 D</td>
-                    <td>₩25,000</td>
-                    <td>1</td>
-                    <td>₩25,000</td>
-                </tr>
-                </tbody>
-            </table>
-            <button class="btn" onclick="checkout()">결제하기</button>
+        <!-- 환불요청시 요청사유 나오는 창 -->
+        <div id="refundModal" class="modal" style="display:none;">
+            <span class="close-btn">&times;</span>
+            <form id="sendRefundForm" method="post" th:action="@{/member/refund}">
+                <div class="modal-content">
+                    <p>환불사유</p>
+                    <textarea rows="4" cols="50"></textarea>
+                </div>
+                <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
+                <button onclick="sendRefund()">환불</button>
+                <button class="closeModal">닫기</button>
+            </form>
         </div>
 
         <div class="section" id="wishlist" style="display: none;">
@@ -240,7 +244,7 @@
                     <th>상태</th>
                 </tr>
                 </thead>
-                <tbody id="wishList">
+                <tbody>
                 <tr>
                     <td>상품 E</td>
                     <td>₩30,000</td>
@@ -310,30 +314,32 @@
             </form>
         </div>
 
-        <div class="section" id="product_management" style="display: none;">
+        <div class="section" id="productOrder" style="display: none;">
             <h2>판매관리</h2>
             <table>
                 <thead>
-                <tr>
-                    <th>상품명</th>
-                    <th>가격</th>
-                    <th>상태</th>
-                    <th>관리</th>
-                </tr>
+                    <tr>
+                        <th>상품명</th>
+                        <th>디자인</th>
+                        <th>구입수량</th>
+                        <th>구입자이름</th>
+                        <th>구입자주소</th>
+                        <th>구입가격</th>
+                        <th>상태</th>
+                        <th>관리</th>
+                    </tr>
                 </thead>
-                <tbody id="productList">
-                <tr>
-                    <td>상품 A</td>
-                    <td>₩10,000</td>
-                    <td>판매중</td>
-                    <td><button class="btn" onclick="removeProduct(this)">삭제</button></td>
-                </tr>
-                <tr>
-                    <td>상품 B</td>
-                    <td>₩20,000</td>
-                    <td>판매중</td>
-                    <td><button class="btn" onclick="removeProduct(this)">삭제</button></td>
-                </tr>
+                <tbody th:each="productOrderList : ${productOrderList}">
+                    <tr>
+                        <td th:text="${productOrderList.productName}">상품이름</td>
+                        <td th:text="${productOrderList.design}">디자인</td>
+                        <td th:text="${productOrderList.amount}">주문한수량</td>
+                        <td th:text="${productOrderList.orderMemberName}">구입자이름</td>
+                        <td th:text="${productOrderList.address}">구입자주소</td>
+                        <td th:text="${productOrderList.price}">구입한 가격</td>
+                        <td th:text="${productOrderList.status}">결재상태</td>
+                        <td><button class="btn" onclick="removeProduct(this)">삭제</button></td>
+                    </tr>
                 </tbody>
             </table>
         </div>
@@ -345,24 +351,41 @@
 
     // 모달 관련 요소 선택
     const modal = document.getElementById("pwdSetModal");
+    const refundModal = document.getElementById("refundModal");
     const closeModalBtn = document.querySelector(".close-btn");
+    const closeModal = document.querySelector(".closeModal");
 
     // 모달 닫기 함수 (닫기 버튼 클릭 시)
     closeModalBtn.addEventListener("click", () => {
-        modal.style.display = "none";
+        modal.style.display = 'none';
+        refundModal.style.dispaly = 'none';
     });
 
     // 모달 닫기 함수 (배경 클릭 시)
     window.addEventListener("click", (e) => {
         if (e.target === modal) {
-            modal.style.display = "none";
+            modal.style.display = 'none';
         }
+        else if(e.target === refundModal) {
+            refundModal.style.display = 'none';
+        }
+    });
+
+    // 모달내부 닫기버튼
+    closeModal.addEventListener('click', function () {
+        refundModal.style.dispaly = 'none';
     });
 
     // 모달 열기
     function openPwdSetModal(){
          modal.style.display = "flex";
     }
+
+    function refundRequest(){
+        refundModal.style.display = "flex";
+    }
+
+
 
     function pwdSet(){
         let pwd1 = document.getElementById("pwd1").value.trim();

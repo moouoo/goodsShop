@@ -1,10 +1,9 @@
 package com.spring.goodsShop.controller;
 
 import com.spring.goodsShop.service.AdminService;
-import com.spring.goodsShop.vo.MaincategoryVo;
-import com.spring.goodsShop.vo.MemberVo;
+import com.spring.goodsShop.service.ProductService;
+import com.spring.goodsShop.vo.*;
 import com.spring.goodsShop.service.MemberService;
-import com.spring.goodsShop.vo.SubcategoryVo;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -12,15 +11,13 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 @Controller
 @RequestMapping("/member")
-public class memberController {
+public class MemberController {
 
     @Autowired
     MemberService memberService;
@@ -30,6 +27,9 @@ public class memberController {
 
     @Autowired
     AdminService adminService;
+
+    @Autowired
+    ProductService productService;
 
     @RequestMapping(value = "/join", method = RequestMethod.GET)
     String memberJoinGet(){
@@ -174,6 +174,41 @@ public class memberController {
         vos_maincategory = adminService.getMainCategory();
 
         model.addAttribute("vos_mainCategory", vos_maincategory);
+
+        // section - productOrder
+        List<Object> productOrderList = new ArrayList<>();
+
+        int memberId = memberService.getMemberIdBymid(mid); // 상품등록한 유저 번호.
+        List<Integer> productIds = memberService.getProductIdsByMemberId(memberId);
+
+        for (int i = 0; i < productIds.size(); i++) {
+            int productId = Integer.parseInt(productIds.get(i).toString());
+            List<OrderVo> orderVosTem = memberService.getOrderVoByProductId(productId);
+
+            if(orderVosTem.isEmpty()) continue;
+
+            for (int j = 0; j < orderVosTem.size(); j++) {
+                int member_id = orderVosTem.get(j).getMember_id();
+                String orderMemberName = productService.getOrderMemberNameByMemberId(member_id);
+
+                OrderVo vo = new OrderVo();
+                vo.setProductName(orderVosTem.get(j).getProductName());
+                vo.setDesign(orderVosTem.get(j).getDesign());
+                vo.setAmount(orderVosTem.get(j).getAmount());
+                vo.setOrderMemberName(orderMemberName);
+                vo.setAddress(orderVosTem.get(j).getAddress());
+                vo.setPrice(orderVosTem.get(j).getPrice());
+                vo.setStatus(orderVosTem.get(j).getStatus());
+
+                productOrderList.add(vo);
+            }
+        }
+        model.addAttribute("productOrderList", productOrderList);
+
+        // section - orders
+        List<OrderVo> sectionOrdersList = new ArrayList<>();
+        sectionOrdersList = memberService.getOrderVoByMemberId(mid); // 여기 만드는것부터 + 노트에 적은거 참고해서 이어서..
+        model.addAttribute("sectionOrdersList", sectionOrdersList);
 
         return "member/memberP";
     }

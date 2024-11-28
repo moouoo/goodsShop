@@ -87,9 +87,14 @@
         select product_name from product where id = #{productId};
     </select>
 
+    <select id="getOrderMemberNameByMemberId" resultType="java.lang.String">
+        select mid from member where id = #{memberId};
+    </select>
+
     <!--  insert  -->
     <insert id="setOrderOne" useGeneratedKeys="true" keyProperty="id">
-        insert into productOrder values (default, #{order.member_id}, #{order.product_id}, #{order.amount}, #{order.address}, default, #{order.status});
+        insert into productOrder (id, member_id, product_id, design, amount, address, order_date, status, price, productName, orderStaus)
+        values (default, #{order.member_id}, #{order.product_id}, #{order.design}, #{order.amount}, #{order.address}, default, #{order.status}, #{order.price}, #{order.productName}, default);
     </insert>
 
     <insert id="setPaymentOne">

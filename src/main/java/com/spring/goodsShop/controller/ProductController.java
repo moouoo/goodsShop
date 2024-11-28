@@ -248,7 +248,6 @@ public class ProductController {
             model.addAttribute("productId", productId);
 
             navbarHelper.navbarSetup(model);
-
             return "product/orderOne";
         }
     }
@@ -298,52 +297,15 @@ public class ProductController {
     }
 
     @ResponseBody
-    @RequestMapping(value = "/paymentOne", method = RequestMethod.POST)
-    Map<String, Object> paymentOne(@RequestBody Map<String, Object> JPaymentInfo, HttpSession session){
-        // 상품이 하나일때 orderOne.html.
-        int finalPrice = !JPaymentInfo.get("finalPrice").toString().isEmpty() ? Integer.parseInt(JPaymentInfo.get("finalPrice").toString()) : 0;
-        int productId = !JPaymentInfo.get("productId").toString().isEmpty() ? Integer.parseInt(JPaymentInfo.get("productId").toString()) : 0;
-        int amount = !JPaymentInfo.get("productId").toString().isEmpty() ? Integer.parseInt(JPaymentInfo.get("productId").toString()) : 0;
-        int couponId = !JPaymentInfo.get("couponId").toString().isEmpty() ? Integer.parseInt(JPaymentInfo.get("couponId").toString()) : 0;
-
-        int price = productService.getProductPriceByProductId(productId);
-        int totalPrice = price * amount;
-        BigDecimal discountRate = productService.getCouponRate(couponId);
-        BigDecimal priceBigDecimal = BigDecimal.valueOf(totalPrice);
-        BigDecimal finalPriceCheckTem = priceBigDecimal.multiply(discountRate);
-        int finalPriceCheck = finalPriceCheckTem.intValue();
-
-        if(finalPrice != finalPriceCheck){
-            Map<String, Object> data = new HashMap<>();
-            data.put("success", false);
-            return data;
-        }
-
-        // 주문번호 생성
-        String uuid = UUID.randomUUID().toString().replace("-", "");
-        LocalDateTime today = LocalDateTime.now();
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-        String formattedDay = today.format(formatter).replace("-", "");
-        String orderCode = formattedDay + "-" + uuid;
-        JPaymentInfo.put("orderCode", orderCode);
-
-        // 아임포트 impUid
-        String impUid = "imp47844026";
-        JPaymentInfo.put("impUid", impUid);
-
-        Map<String, Object> data = new HashMap<>();
-        data.put("paymentInfo", JPaymentInfo);
-        data.put("success", true);
-
-        return data;
-    }
-
-    @ResponseBody
     @RequestMapping(value = "/payment", method = RequestMethod.POST)
-    Map<String, Object> payment(@RequestBody Map<String, Object> JPaymentInfo, HttpSession session) {
+    Map<String, Object> payment(@RequestBody Map<String, Object> JPaymentInfo) {
         Map<String, Object> data = new HashMap<>();
-        Map<String, Object> paymentDetails = new HashMap<>();
-        System.out.println(JPaymentInfo);
+        Map<String, Object> paymentInfo = new HashMap<>();
+
+        List<Object> amountsObj = (List<Object>) JPaymentInfo.get("amount");
+        List<Object> productIdsObj = (List<Object>) JPaymentInfo.get("productId");
+        List<Map<String, Object>> couponData = (List<Map<String, Object>>) JPaymentInfo.get("couponData");
+        List<Object> designsObj = (List<Object>) JPaymentInfo.get("design");
 
         int finalPrice = !JPaymentInfo.get("finalPrice").toString().isEmpty() ? Integer.parseInt(JPaymentInfo.get("finalPrice").toString()) : 0;
         String email = !JPaymentInfo.get("email").toString().isEmpty() ? JPaymentInfo.get("email").toString() : null;
@@ -351,20 +313,19 @@ public class ProductController {
         String name = !JPaymentInfo.get("name").toString().isEmpty() ? JPaymentInfo.get("name").toString() : null;
         String address = !JPaymentInfo.get("address").toString().isEmpty() ? JPaymentInfo.get("address").toString() : null;
         int postcode = !JPaymentInfo.get("postcode").toString().isEmpty() ? Integer.parseInt(JPaymentInfo.get("postcode").toString()) : 0;
-
-        List<Object> amountsObj = (List<Object>) JPaymentInfo.get("amount");
-        List<Object> productIdsObj = (List<Object>) JPaymentInfo.get("productId");
-        List<Map<String, Object>> couponData = (List<Map<String, Object>>) JPaymentInfo.get("couponData");
-        List<Object> designsObj = (List<Object>) JPaymentInfo.get("design");
+        int rewardPoint = !JPaymentInfo.get("rewardPoint").toString().isEmpty() ? Integer.parseInt(JPaymentInfo.get("rewardPoint").toString()) : 0;
 
         int finalDiscountPrice = 0;
-        int finalPriceCheck = 0;
         int check = 0;
+        List<String> productNames = new ArrayList<>();
         for (int i = 0; i < productIdsObj.size(); i++) {
             int productId = Integer.parseInt(productIdsObj.get(i).toString());
-            int amount = Integer.parseInt(amountsObj.get(i).toString());
             String design = designsObj.get(i).toString();
-            int price = productService.getProductPriceByProductId(productId);
+            int priceTem = productService.getProductPriceByProductId(productId);
+            int price = priceTem * Integer.parseInt(amountsObj.get(i).toString());
+
+            String productNameTem = productService.getProductNameByProductId(productId);
+            productNames.add(productNameTem);
 
             int couponId = 0;
             for (int j = 0; j < couponData.size(); j++) {
@@ -385,70 +346,100 @@ public class ProductController {
                 finalDiscountPrice = finalDiscountPrice + check; // 총할인금액
             }
             else {
-                finalDiscountPrice += 0;
+                finalDiscountPrice = finalDiscountPrice + price;
             }
         }
 
-        if(finalPrice != finalDiscountPrice){
+        int delivery_fee;
+        if(finalPrice >= 50000) delivery_fee = 0;
+        else delivery_fee = 2500;
+
+        if(finalPrice != (finalDiscountPrice - rewardPoint + delivery_fee)){
             data.put("success", false);
-            //throw new RuntimeException("강제로 발생시킨 오류: 뷰에서 받아온 최종가격과 검증결과의 최종가격이 일치하지 않음.");
+//            throw new RuntimeException("강제로 발생시킨 오류: 뷰에서 받아온 최종가격과 검증결과의 최종가격이 일치하지 않음.");
             return data;
         }
 
-        paymentDetails.put("email", email);
-        paymentDetails.put("phone", phone);
-        paymentDetails.put("name", name);
-        paymentDetails.put("address", address);
-        paymentDetails.put("postcode", postcode);
-
         PaymentHelper paymentHelper = new PaymentHelper();
-        List<Map<String, Object>> paymentInfo = new ArrayList<>();
-        for (int i = 0; i < productIdsObj.size(); i++) {
-            int productId = Integer.parseInt(productIdsObj.get(i).toString());
-            int amount = Integer.parseInt(amountsObj.get(i).toString());
-            String design = designsObj.get(i).toString();
-            String productName = productService.getProductNameByProductId(productId);
+        String orderCode = paymentHelper.orderCodeCreate();
+        String impUid = paymentHelper.impUidCreate();
 
-            String orderCode = paymentHelper.orderCodeCreate();
-            String impUid = paymentHelper.impUidCreate();
+        paymentInfo.put("impUid", impUid);
+        paymentInfo.put("orderCode", orderCode);
+        paymentInfo.put("designsObj", designsObj);
+        paymentInfo.put("productNames", productNames);
+        paymentInfo.put("finalPrice", finalPrice);
+        paymentInfo.put("email", email);
+        paymentInfo.put("name", name);
+        paymentInfo.put("phone", phone);
+        paymentInfo.put("address", address);
+        paymentInfo.put("postcode", postcode);
+        paymentInfo.put("productIdsObj", productIdsObj);
+        paymentInfo.put("amountsObj", amountsObj);
+        paymentInfo.put("couponData", couponData);
 
-            paymentDetails.put("orderCode", orderCode);
-            paymentDetails.put("impUid", impUid);
-            paymentDetails.put("product_name", productName);
-            paymentDetails.put("productIdInfo", productId);
-            paymentDetails.put("amountInfo", amount);
-            paymentDetails.put("designInfo", design);
-
-            paymentInfo.add(paymentDetails);
-            // 결재는 한번엫하고 db에 저장하는건 따로따로하는것을 하고싶음 지금 생각나는건 걍 제목이라든지 전부 몰빵해서 결제후 저장 부분에서 다 뗴어넣고 따로 저장하는것.
-
-        }
         data.put("success", true);
         data.put("paymentInfo", paymentInfo);
         return data;
-
     }
 
     @ResponseBody
-    @RequestMapping(value = "/saveOrderPaymentOne", method = RequestMethod.POST)
+    @RequestMapping(value = "/saveOrderPayment", method = RequestMethod.POST)
     void saveOrderPaymentOne(@RequestBody Map<String, Object> JPaymentInfo, HttpSession session){
+
+        List<Object> amountsObj = (List<Object>) JPaymentInfo.get("amountsObj");
+        List<Object> productIdsObj = (List<Object>) JPaymentInfo.get("productIdsObj");
+        List<Object> designsObj = (List<Object>) JPaymentInfo.get("designsObj");
+        List<Map<String, Object>> couponData = (List<Map<String, Object>>) JPaymentInfo.get("couponData");
 
         // order테이블에 값 저장
         String mid = session.getAttribute("sMid").toString();
-        int product_id = Integer.parseInt(JPaymentInfo.get("productId").toString());
-        int amount = Integer.parseInt(JPaymentInfo.get("amount").toString());
-        String address = JPaymentInfo.get("address").toString();
         int  member_id = memberService.getMemberIdBymid(mid);
+        String address = JPaymentInfo.get("address").toString();
         String status = OrderStatus.PAID.getDisplayName();
 
         OrderVo order = new OrderVo();
         order.setMember_id(member_id);
-        order.setProduct_id(product_id);
-        order.setAmount(amount);
         order.setAddress(address);
         order.setStatus(status);
 
-        productService.setOrderOne(order);
+        int check = 0;
+        for (int i = 0; i < productIdsObj.size(); i++) {
+            int productId = Integer.parseInt(productIdsObj.get(i).toString());
+            int price = productService.getProductPriceByProductId(productId);
+            int amount = Integer.parseInt(amountsObj.get(i).toString());
+            String design = designsObj.get(i).toString();
+            String productName = productService.getProductNameByProductId(productId);
+
+            order.setProduct_id(productId);
+            order.setAmount(amount);
+            order.setDesign(design);
+            order.setProductName(productName);
+
+            int couponId = 0;
+            for (int j = 0; j < couponData.size(); j++) {
+                Map<String, Object> coupon = couponData.get(j);
+                // couponData에서 productId가 일치하는 couponId 찾기
+                if ((int) coupon.get("productId") == productId && coupon.get("design").equals(design)) {
+                    Object couponIdObj = coupon.get("couponId");
+                    couponId = Integer.parseInt(couponIdObj.toString());
+                }
+            }
+
+            if (couponId != 0){
+                BigDecimal discountRate = productService.getCouponRate(couponId);
+                BigDecimal priceBigDecimal = BigDecimal.valueOf(price);
+                BigDecimal finalPriceCheckTem = priceBigDecimal.multiply(discountRate);
+                int finalPriceCheckInt = finalPriceCheckTem.intValue(); // 할인금액
+                check = price - finalPriceCheckInt;
+            }
+            else {
+                check = price;
+            }
+            order.setPrice(check);
+
+            productService.setOrderOne(order);
+        }
 
         // patment테이블에 값 저장
         LocalDateTime today = LocalDateTime.now();
@@ -643,32 +634,19 @@ public class ProductController {
                 item.put("maincategoryId", maincategoryId);
 
             }
-
             purchaseItems.add(item);
         }
 
         // 적립금
         int discount_point = productService.getMemberDiscountPointByMid(mid);
 
-
         model.addAttribute("item", purchaseItems);
         model.addAttribute("discount_point", discount_point);
 
         navbarHelper.navbarSetup(model);
         return "product/orderPage";
-        // 필요한게 쿠폰, 배달비(js로 구현 후 결재 할때 비교처리로 확인)
-
-        /*
-         상품마다 쿠폰적용 버튼을 만들어서 눌러서 각각 할인하는 모양으로 갈거임.
-         쿠폰적용 버튼 -> 모닱창 -> 사용할수있는 쿠폰 클릭 -> 깍인 가격으로 표시 이런 로직
-         쿠폰적용 클릭시 지금 만들어 둔 쿠폰 코드를 사용할거면 maincatecory_id, subcategory_id, level이 필요.
-         각각 int, int, "level1" or "level2"이런 형식
-         level은 세션을 이용하여 완성할 생각
-         카테고리들의 id는 위에 있는 코드로 의해서 sub_category_id를 db에서 가져오게 만들어서 각각의 id를 가져와서 뷰로 뿌릴생각
-        */
 
     }
-    // 체크박스를 이용한 선택상품구매 기능 구현, (전체상품구매 기능 구현 : 해결)
 
     @RequestMapping(value = "/selectCouponForItem", method = RequestMethod.POST)
     ResponseEntity<Map<String, Object>> selectCouponForItem(@RequestBody Map<String, Object> item, HttpSession session){

@@ -6,7 +6,7 @@ function payment(paymentInfo){
         pg : 'html5_inicis',
         pay_method : 'card',
         merchant_uid: paymentInfo.orderCode, //상점에서 생성한 고유 주문번호
-        name : '[' + paymentInfo.design + ']' + paymentInfo.product_name,
+        name : '[' + paymentInfo.designsObj + ']' + paymentInfo.productNames,
         amount : paymentInfo.finalPrice,
         buyer_email : paymentInfo.email,
         buyer_name : paymentInfo.name,
@@ -24,14 +24,15 @@ function payment(paymentInfo){
         }
         else{
             let item = {
-                productId : paymentInfo.productId,
-                amount : paymentInfo.amount,
+                productIdsObj : paymentInfo.productIdsObj,
+                amountsObj : paymentInfo.amountsObj,
                 address : paymentInfo.address,
                 finalPrice : paymentInfo.finalPrice,
-                price : paymentInfo.price
+                designsObj : paymentInfo.designsObj,
+                couponData : paymentInfo.couponData
             }
             // 결제 정보를 데이터베이스에 저장
-            fetch("/product/saveOrderPaymentOne", {
+            fetch("/product/saveOrderPayment", {
                 method: "POST",
                 headers: {
                     [csrfHeader]: csrfToken,

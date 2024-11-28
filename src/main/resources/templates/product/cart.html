@@ -23,7 +23,7 @@
 
                 <!-- 체크박스 -->
                 <input type="checkbox" class="cart-item-checkbox" th:id="${iterStat.index}"
-                       th:productId="${cartList.productId}" th:design="${cartList.design}" th:amount="${cartList.amount}" th:price="${cartList.price}" th:img="${cartList.img}">
+                       th:productId="${cartList.productId}" th:design="${cartList.design}" th:price="${cartList.price}" th:img="${cartList.img}">
 
                 <!-- 상품 이미지 -->
                 <img th:src="@{/img/product_img/{img1}(img1=${cartList.img})}" alt="상품 이미지" class="cart-item-image">
@@ -69,7 +69,7 @@
 
             <div class="cart-buttons">
                 <button class="order-all" onclick="allCartItemOrder()">전체상품주문</button>
-                <button class="order-selected">선택상품주문</button>
+                <button class="order-selected" onclick="selectCartItemOrder()">선택상품주문</button>
             </div>
         </div>
     </div>
@@ -185,7 +185,7 @@
                 }
             })
 
-            if(totalPrice > 50000) document.getElementById('delivery_fee').textContent = '0 원';
+            if(totalPrice >= 50000) document.getElementById('delivery_fee').textContent = '0 원';
             else document.getElementById('delivery_fee').textContent = '2,500 원';
 
             let delivery_feeTem = document.getElementById('delivery_fee').textContent;
@@ -209,11 +209,14 @@
             const checkedItems = [];
 
             document.querySelectorAll('.cart-item-checkbox:checked').forEach((checkbox) => {
+                const index = checkbox.getAttribute('id');
                 const productId = checkbox.getAttribute('productId');
                 const design = checkbox.getAttribute('design');
-                const amount = checkbox.getAttribute('amount');
+                const amount = document.getElementById(`amount_${index}`).value.trim();
                 const price = checkbox.getAttribute('price');
                 const img = checkbox.getAttribute('img');
+
+                console.log(amount);
 
                 // 선택된 상품 데이터를 객체에 저장
                 checkedItems.push({
@@ -242,8 +245,48 @@
             });
         }
 
+        function selectCartItemOrder(){
+            // 'cart-item-checkbox' 클래스를 가진 모든 체크박스 선택
+            const checkboxes = document.querySelectorAll('.cart-item-checkbox');
 
+            const checkedItems = [];
 
+            document.querySelectorAll('.cart-item-checkbox:checked').forEach((checkbox) => {
+                const index = checkbox.getAttribute('id');
+                const productId = checkbox.getAttribute('productId');
+                const design = checkbox.getAttribute('design');
+                const amount = document.getElementById(`amount_${index}`).value.trim();
+                const price = checkbox.getAttribute('price');
+                const img = checkbox.getAttribute('img');
+
+                console.log(amount);
+
+                // 선택된 상품 데이터를 객체에 저장
+                checkedItems.push({
+                    productId : productId,
+                    design : design,
+                    amount : amount,
+                    price : price,
+                    img : img
+                });
+
+                if (checkedItems.length === 0) {
+                    alert('선택된 상품이 없습니다.');
+                    return;
+                }
+
+                let queryParams = checkedItems.map(item =>
+                    `productId=${encodeURIComponent(item.productId)}&` +
+                    `design=${encodeURIComponent(item.design)}&` +
+                    `amount=${encodeURIComponent(item.amount)}&` +
+                    `price=${encodeURIComponent(item.price)}&` +
+                    `img=${encodeURIComponent(item.img)}`
+                ).join('&');
+
+                // get형식으로 데이터를 url에 달아서 보낸다.
+                window.location.href = `/product/orderPage?${queryParams}`;
+            });
+        }
     </script>
 </body>
 </html>

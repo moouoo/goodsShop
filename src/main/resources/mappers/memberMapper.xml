@@ -50,6 +50,14 @@
         select email from member where mid = #{mid};
     </select>
 
+    <select id="getProductIdsByMemberId" resultType="java.lang.Integer">
+        select id from product where member_id = #{memberId};
+    </select>
+
+    <select id="getOrderVoByProductId" resultType="com.spring.goodsShop.vo.OrderVo">
+        select * from productOrder where product_id = #{productId};
+    </select>
+
 
     <!--  insert  -->
     <insert id="memberJoin">

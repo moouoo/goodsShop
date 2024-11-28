@@ -49,4 +49,6 @@ public interface ProductService {
     int getProductPriceByProductId(int productId);
 
     String getProductNameByProductId(int productId);
+
+    String getOrderMemberNameByMemberId(int memberId);
 }

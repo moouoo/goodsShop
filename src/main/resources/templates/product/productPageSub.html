@@ -102,7 +102,7 @@
 
     <div class="product-grid">
         <div class="product-card" th:each="product_list : ${product_list}">
-            <a href="#">
+            <a th:href="@{/product/{product_name}/{id}/{productId}(product_name=${product_list.product_name}, id=${product_list.sub_category_id}, productId=${product_list.id})}">
                 <div th:each="product_img_list : ${product_img_list}"
                      th:if="${product_list.product_img_id == product_img_list.id}">
                     <img th:src="@{/img/product_img/{img1}(img1=${product_img_list.img1})}" alt="상품 이미지">
