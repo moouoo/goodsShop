@@ -68,8 +68,8 @@
             border: 1px solid #ddd;
         }
         th, td {
-            padding: 12px;
-            text-align: left;
+            padding: 10px;
+            text-align: center;
         }
         th {
             background-color: #3b5998;
@@ -131,540 +131,596 @@
         .refund_information:hover {
             background-color: #0056b3; /* 호버 시 색상 */
         }
+        .flex_btn{
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
 
     </style>
 </head>
 <body>
-<div th:replace="include/nav2 :: navbar2"></div>
-<div class="flex">
+    <div th:replace="include/nav2 :: navbar2"></div>
+    <div class="flex">
 
-    <div class="sidebar">
-        <h2>개인관리</h2>
-        <a href="#" onclick="showSection('profile')">회원 정보</a>
-        <a href="#" onclick="showSection('orders')">주문 내역</a>
-        <a href="#" onclick="showSection('wishlist')">찜 목록</a>
-        <p><hr></p><br>
-        <h2>판매관리</h2>
-        <a href="#" onclick="showSection('product_register')">상품등록</a>
-        <a href="#" onclick="showSection('productOrder')">판매관리</a>
-        <p><hr></p><br>
-        <h2>문의사항</h2>
-    </div>
-
-
-    <div class="container">
-        <div class="section" id="profile" style="display: none;">
-            <h2>회원 정보</h2>
-            <p>닉네임: <span id="userName" th:text="${mid}">홍길동</span></p>
-            <p>닉네임: <span id="level" th:text="${level_name}">등급</span></p>
-            <p>이메일: <span id="userEmail" th:text="${email}">example@example.com</span></p>
-            <p>계좌번호: <span id="userAccount_num" th:text="${account_num}">352-0869-2631-53</span></p>
-            <form name="accountForm" method="post" th:action="@{/member/editAccount_num}">
-                <div class="account_num_display">
-                    <input type="text" id="account_num" name="account_num">
-                    <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
-                    <button type="button" class="btn" onclick="editAccount_num()">등록/수정하기</button>
-                </div>
-            </form>
-            <button class="btn" type="button" onclick="editProfile()">계좌번호등록/수정</button>
-            <button class="btn" type="button" id="openPwdSetModalBtn" onclick="openPwdSetModal()">비밀번호 수정</button>
+        <div class="sidebar">
+            <h2>개인관리</h2>
+            <a href="#profile" onclick="showSection('profile')">회원 정보</a>
+            <a href="#orders" onclick="showSection('orders')">주문 내역</a>
+            <a href="#wishlist" onclick="showSection('wishlist')">찜 목록</a>
+            <p><hr></p><br>
+            <h2>판매관리</h2>
+            <a href="#product_register" onclick="showSection('product_register')">상품등록</a>
+            <a href="#productOrder" onclick="showSection('productOrder')">판매관리</a>
+            <p><hr></p><br>
+            <h2>문의사항</h2>
         </div>
 
-        <!-- 비밀번호 수정 모달창 -->
-        <!-- Modal Structure -->
-        <div id="pwdSetModal" class="modal">
-            <div class="modal-content">
+        <div class="container">
+            <div class="section" id="profile" style="display: none;">
+                <h2>회원 정보</h2>
+                <p>닉네임: <span id="userName" th:text="${mid}">홍길동</span></p>
+                <p>닉네임: <span id="level" th:text="${level_name}">등급</span></p>
+                <p>이메일: <span id="userEmail" th:text="${email}">example@example.com</span></p>
+                <p>계좌번호: <span id="userAccount_num" th:text="${account_num}">352-0869-2631-53</span></p>
+                <form name="accountForm" method="post" th:action="@{/member/editAccount_num}">
+                    <div class="account_num_display">
+                        <input type="text" id="account_num" name="account_num">
+                        <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
+                        <button type="button" class="btn" onclick="editAccount_num()">등록/수정하기</button>
+                    </div>
+                </form>
+                <button class="btn" type="button" onclick="editProfile()">계좌번호등록/수정</button>
+                <button class="btn" type="button" id="openPwdSetModalBtn" onclick="openPwdSetModal()">비밀번호 수정</button>
+            </div>
+
+            <!-- 비밀번호 수정 모달창 -->
+            <!-- Modal Structure -->
+            <div id="pwdSetModal" class="modal">
+                <div class="modal-content">
+                    <span class="close-btn">&times;</span>
+                    <form id="pwdSetModalForm" method="post" th:action="@{/member/pwdSet}">
+                        <h2 id="modalContent">비밀번호 재설정</h2>
+                        <p><span id="pwd1Msg" class="red"></span></p>
+                        <input type="password" placeholder="새로운 비밀번호" id="pwd1" name="pwd1"/>
+                        <p><span id="pwd2Msg" class="red"></span></p>
+                        <input type="password" placeholder="비밀번호 확인" id="pwd2" name="pwd2"/>
+                        <input type="hidden" name="pwd" id="pwd" />
+                        <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
+                        <button class="action-btn" onclick="pwdSet()">확인</button>
+                    </form>
+                </div>
+            </div>
+
+            <div class="section" id="orders" style="display: none;">
+                <div class="space_between">
+                    <h2 style="border-bottom: none;">주문 내역</h2>
+                    <button class="refund_information">환불정보</button>
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>주문 번호</th>
+                            <th>상품명</th>
+                            <th>가격</th>
+                            <th>주문일</th>
+                            <th>상태</th>
+                            <th>관리</th>
+                        </tr>
+                    </thead>
+                    <tbody th:each="sectionOrdersList : ${sectionOrdersList}">
+                        <tr>
+                            <td th:text="${sectionOrdersList.id}">주문번호</td>
+                            <td>
+                                [<span th:text="${sectionOrdersList.design}"></span>]<p th:text="${sectionOrdersList.productName}"></p>
+                            </td>
+                            <td th:text="${sectionOrdersList.price}">주문가격</td>
+                            <td th:text="${sectionOrdersList.order_date}">구입날짜</td>
+                            <td th:text="${sectionOrdersList.orderStatus}">배송전/배송중/결정완료/환불중</td>
+                            <td class="flex_btn">
+                                <button class="btn" th:productOrderId="${sectionOrdersList.id}" onclick="completeOrder(this.getAttribute('productOrderId'))" >구매결정</button>
+                                <button class="btn" th:productOrderId="${sectionOrdersList.id}" onclick="refundRequest(this.getAttribute('productOrderId'))">환불신청</button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- 환불요청시 요청사유 나오는 창 -->
+            <div id="refundModal" class="modal" style="display:none;">
                 <span class="close-btn">&times;</span>
-                <form id="pwdSetModalForm" method="post" th:action="@{/member/pwdSet}">
-                    <h2 id="modalContent">비밀번호 재설정</h2>
-                    <p><span id="pwd1Msg" class="red"></span></p>
-                    <input type="password" placeholder="새로운 비밀번호" id="pwd1" name="pwd1"/>
-                    <p><span id="pwd2Msg" class="red"></span></p>
-                    <input type="password" placeholder="비밀번호 확인" id="pwd2" name="pwd2"/>
-                    <input type="hidden" name="pwd" id="pwd" />
+                <form id="sendRefundForm" method="post" th:action="@{/member/refund}">
+                    <div class="modal-content">
+                        <p>환불사유</p>
+                        <textarea rows="7" cols="40" maxlength="50" oninput="updateCharCount()" id="refundTextarea" name="refundTextarea"></textarea>
+                        <p>남은 글자 수: <span id="charCount">50</span></p>
+                        <button class="btn" onclick="sendRefund()">환불</button>
+                        <button class="closeModal btn" type="button">닫기</button>
+                    </div>
                     <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
-                    <button class="action-btn" onclick="pwdSet()">확인</button>
+                    <input type="hidden" name="productOrderId" id="productOrderId">
                 </form>
             </div>
-        </div>
 
-        <div class="section" id="orders" style="display: none;">
-            <div class="space_between">
-                <h2 style="border-bottom: none;">주문 내역</h2>
-                <button class="refund_information">환불정보</button>
-            </div>
-            <table>
-                <thead>
+            <div class="section" id="wishlist" style="display: none;">
+                <h2>찜 목록</h2>
+                <table>
+                    <thead>
                     <tr>
-                        <th>주문 번호</th>
                         <th>상품명</th>
                         <th>가격</th>
-                        <th>주문일</th>
                         <th>상태</th>
-                        <th>관리</th>
                     </tr>
-                </thead>
-                <tbody th:each="paymentList : ${paymentList}">
+                    </thead>
+                    <tbody>
                     <tr>
-                        <td th:text="${paymentList.id}">주문번호</td>
-                        <td>[<span th:text="${paymentList.design}">]<p th:text="${paymentList.productName}"></p></span>[디자인]상품이름</td>
-                        <td th:text="${paymentList.price}">₩10,000</td>
-                        <td th:text="${paymentList.order_date}">구입날짜</td>
-                        <td th:text="${paymentList.orderStaus}">배송전/배송중/결정완료/환불중</td>
-                        <td>
-                            <button class="btn" onclick="completeOrder()">구매결정</button>
-                            <button class="btn" onclick="refundRequest()">환불신청</button>
-                        </td>
+                        <td>상품 E</td>
+                        <td>₩30,000</td>
+                        <td>찜하기</td>
                     </tr>
-                </tbody>
-            </table>
-        </div>
+                    </tbody>
+                </table>
+            </div>
 
-        <!-- 환불요청시 요청사유 나오는 창 -->
-        <div id="refundModal" class="modal" style="display:none;">
-            <span class="close-btn">&times;</span>
-            <form id="sendRefundForm" method="post" th:action="@{/member/refund}">
-                <div class="modal-content">
-                    <p>환불사유</p>
-                    <textarea rows="4" cols="50"></textarea>
-                </div>
-                <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
-                <button onclick="sendRefund()">환불</button>
-                <button class="closeModal">닫기</button>
-            </form>
-        </div>
-
-        <div class="section" id="wishlist" style="display: none;">
-            <h2>찜 목록</h2>
-            <table>
-                <thead>
-                <tr>
-                    <th>상품명</th>
-                    <th>가격</th>
-                    <th>상태</th>
-                </tr>
-                </thead>
-                <tbody>
-                <tr>
-                    <td>상품 E</td>
-                    <td>₩30,000</td>
-                    <td>찜하기</td>
-                </tr>
-                </tbody>
-            </table>
-        </div>
-
-        <div class="section" id="product_register" style="display: none;">
-            <h2>상품등록</h2>
-            <form name="productForm" method="post" th:action="@{/product/insertProduct}" enctype="multipart/form-data">
-                <div class="form-group">
-                    <label for="maincategory">대분류카테고리 선택</label>
-                    <select id="maincategory" name="maincategory" required>
-                        <option value="">대분류카테고리를 선택하세요</option>
-                        <option th:each="vos_mainCategory : ${vos_mainCategory}" th:value="${vos_mainCategory.id}" th:text="${vos_mainCategory.title}"></option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label for="subcategory">서브카테고리 선택</label>
-                    <select id="subcategory" name="subcategory" required>
-                        <option value="">서브카테고리를 선택하세요</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label for="brand">브랜드</label>
-                    <input type="text" id="brand" name="brand" required>
-                </div>
-                <div class="form-group">
-                    <label for="product_name">상품 이름</label>
-                    <input type="text" id="product_name" name="product_name" required>
-                </div>
-                <div class="form-group">
-                    <label for="product_img">상품 이미지</label>
-                    <input type="file" id="product_img" name="product_img" accept=".jpg, .jpeg, .png" multiple required>
-                    <p id="fileLimitMessage" style="color: red;"></p>
-                    <input type="hidden" id="img1" name="img1">
-                    <input type="hidden" id="img2" name="img2">
-                    <input type="hidden" id="img3" name="img3">
-                    <input type="hidden" id="img4" name="img4">
-                    <input type="hidden" id="img5" name="img5">
-                </div>
-                <div class="form-group">
-                    <label for="product_img_detail">상세 이미지</label>
-                    <input type="file" id="product_img_detail" name="product_img_detail" accept=".jpg, .jpeg, .png" required>
-                </div>
-                <div class="form-group">
-                    <label for="price">가격</label>
-                    <input type="number" id="price" name="price" required>
-                </div>
-                <div class="form-group">
-                    <label for="stock">재고 수</label>
-                    <input type="number" id="stock" name="stock" required>
-                </div>
-
-                <div id="designFields">
-                    <label for="design">디자인</label>
-                    <div class="form-group design-row">
-                        <input type="text" id="design" class="design-input" placeholder="최대 5항목" required>
-                        <input type="hidden" id="designData" name="designData">
-                        <div class="add-design" id="addDesign">+</div>
+            <div class="section" id="product_register" style="display: none;">
+                <h2>상품등록</h2>
+                <form name="productForm" method="post" th:action="@{/product/insertProduct}" enctype="multipart/form-data">
+                    <div class="form-group">
+                        <label for="maincategory">대분류카테고리 선택</label>
+                        <select id="maincategory" name="maincategory" required>
+                            <option value="">대분류카테고리를 선택하세요</option>
+                            <option th:each="vos_mainCategory : ${vos_mainCategory}" th:value="${vos_mainCategory.id}" th:text="${vos_mainCategory.title}"></option>
+                        </select>
                     </div>
-                </div>
-                <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
-                <input type="button" onclick="productCheck()" value="상품 등록">
-            </form>
-        </div>
+                    <div class="form-group">
+                        <label for="subcategory">서브카테고리 선택</label>
+                        <select id="subcategory" name="subcategory" required>
+                            <option value="">서브카테고리를 선택하세요</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="brand">브랜드</label>
+                        <input type="text" id="brand" name="brand" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="product_name">상품 이름</label>
+                        <input type="text" id="product_name" name="product_name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="product_img">상품 이미지</label>
+                        <input type="file" id="product_img" name="product_img" accept=".jpg, .jpeg, .png" multiple required>
+                        <p id="fileLimitMessage" style="color: red;"></p>
+                        <input type="hidden" id="img1" name="img1">
+                        <input type="hidden" id="img2" name="img2">
+                        <input type="hidden" id="img3" name="img3">
+                        <input type="hidden" id="img4" name="img4">
+                        <input type="hidden" id="img5" name="img5">
+                    </div>
+                    <div class="form-group">
+                        <label for="product_img_detail">상세 이미지</label>
+                        <input type="file" id="product_img_detail" name="product_img_detail" accept=".jpg, .jpeg, .png" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="price">가격</label>
+                        <input type="number" id="price" name="price" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="stock">재고 수</label>
+                        <input type="number" id="stock" name="stock" required>
+                    </div>
 
-        <div class="section" id="productOrder" style="display: none;">
-            <h2>판매관리</h2>
-            <table>
-                <thead>
-                    <tr>
-                        <th>상품명</th>
-                        <th>디자인</th>
-                        <th>구입수량</th>
-                        <th>구입자이름</th>
-                        <th>구입자주소</th>
-                        <th>구입가격</th>
-                        <th>상태</th>
-                        <th>관리</th>
-                    </tr>
-                </thead>
-                <tbody th:each="productOrderList : ${productOrderList}">
-                    <tr>
-                        <td th:text="${productOrderList.productName}">상품이름</td>
-                        <td th:text="${productOrderList.design}">디자인</td>
-                        <td th:text="${productOrderList.amount}">주문한수량</td>
-                        <td th:text="${productOrderList.orderMemberName}">구입자이름</td>
-                        <td th:text="${productOrderList.address}">구입자주소</td>
-                        <td th:text="${productOrderList.price}">구입한 가격</td>
-                        <td th:text="${productOrderList.status}">결재상태</td>
-                        <td><button class="btn" onclick="removeProduct(this)">삭제</button></td>
-                    </tr>
-                </tbody>
-            </table>
+                    <div id="designFields">
+                        <label for="design">디자인</label>
+                        <div class="form-group design-row">
+                            <input type="text" id="design" class="design-input" placeholder="최대 5항목" required>
+                            <input type="hidden" id="designData" name="designData">
+                            <div class="add-design" id="addDesign">+</div>
+                        </div>
+                    </div>
+                    <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
+                    <input type="button" onclick="productCheck()" value="상품 등록">
+                </form>
+            </div>
+
+            <div class="section" id="productOrder" style="display: none;">
+                <h2>판매관리</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>상품명</th>
+                            <th>디자인</th>
+                            <th>구입수량</th>
+                            <th>구입자이름</th>
+                            <th>구입자주소</th>
+                            <th>구입가격</th>
+                            <th>상태</th>
+                            <th>관리</th>
+                        </tr>
+                    </thead>
+                    <tbody th:each="productOrderList : ${productOrderList}">
+                        <tr>
+                            <td th:text="${productOrderList.productName}">상품이름</td>
+                            <td th:text="${productOrderList.design}">디자인</td>
+                            <td th:text="${productOrderList.amount}">주문한수량</td>
+                            <td th:text="${productOrderList.orderMemberName}">구입자이름</td>
+                            <td th:text="${productOrderList.address}">구입자주소</td>
+                            <td th:text="${productOrderList.price}">구입한 가격</td>
+                            <td th:text="${productOrderList.status}">결재상태</td>
+                            <td><button class="btn" onclick="removeProduct(this)">삭제</button></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
-</div>
 
-<script>
-    'use strict'
+    <script>
+        'use strict'
 
-    // 모달 관련 요소 선택
-    const modal = document.getElementById("pwdSetModal");
-    const refundModal = document.getElementById("refundModal");
-    const closeModalBtn = document.querySelector(".close-btn");
-    const closeModal = document.querySelector(".closeModal");
+        // 모달 관련 요소 선택
+        const modal = document.getElementById('pwdSetModal');
+        const refundModal = document.getElementById('refundModal');
+        const closeModalBtn = document.querySelector('.close-btn');
+        const closeModal = document.querySelector('.closeModal');
 
-    // 모달 닫기 함수 (닫기 버튼 클릭 시)
-    closeModalBtn.addEventListener("click", () => {
-        modal.style.display = 'none';
-        refundModal.style.dispaly = 'none';
-    });
-
-    // 모달 닫기 함수 (배경 클릭 시)
-    window.addEventListener("click", (e) => {
-        if (e.target === modal) {
+        // 모달 닫기 함수 (닫기 버튼 클릭 시)
+        closeModalBtn.addEventListener("click", () => {
             modal.style.display = 'none';
-        }
-        else if(e.target === refundModal) {
-            refundModal.style.display = 'none';
-        }
-    });
-
-    // 모달내부 닫기버튼
-    closeModal.addEventListener('click', function () {
-        refundModal.style.dispaly = 'none';
-    });
-
-    // 모달 열기
-    function openPwdSetModal(){
-         modal.style.display = "flex";
-    }
-
-    function refundRequest(){
-        refundModal.style.display = "flex";
-    }
-
-
-
-    function pwdSet(){
-        let pwd1 = document.getElementById("pwd1").value.trim();
-        let pwd2 = document.getElementById("pwd2").value.trim();
-
-        if(pwd1 == "" || pwd2 == ""){
-            alert("모든칸을 채우셔야합니다.");
-        }
-        document.getElementById("pwd").value = pwd2;
-        pwdSetModalForm.submit();
-    }
-
-    // 비밀번호 수정
-    let pwd1 = document.getElementById("pwd1");
-    let pwd2 = document.getElementById("pwd2");
-    let pwd1Msg = document.getElementById("pwd1Msg");
-    let pwd2Msg = document.getElementById("pwd2Msg");
-    let pwdPattern = /^[a-z\d!@#$%^&*]{8,}$/;
-
-    pwd1.addEventListener('input', function() {
-        if(!pwdPattern.test(pwd1.value)) pwd1Msg.textContent = "비밀번호는 최소 8자 이상의 소문자와 숫자 그리고 특수문자들을 사용할 수 있습니다.";
-        else pwd1Msg.textContent = "";
-    });
-
-    pwd2.addEventListener('input', function() {
-        if (pwd2.value !== pwd1.value) pwd2Msg.textContent = "비밀번호가 일치하지 않습니다.";
-        else pwd2Msg.textContent = "";
-    });
-
-    function showSection(section) {
-        const sections = document.querySelectorAll('.section');
-
-        // 선택된 섹션의 ID를 확인합니다.
-        let isProductSection = section === 'product_register' || section === 'product_management';
-
-        if(isProductSection){
-            let sLevel = [[${level}]];
-            if(sLevel < 2) {
-                alert("계좌를 등록하시면 이용 할 수 있습니다.");
-                return
-            }
-        }
-        sections.forEach((sec) => {
-            sec.style.display = 'none';
         });
-        document.getElementById(section).style.display = 'block';
-    }
 
-    function editProfile(){
-        const accountNumDisplay = document.querySelector('.account_num_display');
-        accountNumDisplay.style.display = 'block';
+        // 모달내부 닫기버튼
+        closeModal.addEventListener('click', function () {
+            refundModal.style.display = 'none';
+        });
+
+        // 모달 닫기 함수 (배경 클릭 시)
+        window.addEventListener("click", (e) => {
+            if (e.target === modal) {
+                modal.style.display = 'none';
+            }
+            else if(e.target === refundModal) {
+                refundModal.style.display = 'none';
+            }
+        });
+
+        // 모달 열기
+        function openPwdSetModal(){
+             modal.style.display = "flex";
+        }
+
+        function refundRequest(productOrderId){
+            refundModal.style.display = "flex";
+
+            document.getElementById('productOrderId').value = productOrderId;
+        }
+
+        function pwdSet(){
+            let pwd1 = document.getElementById("pwd1").value.trim();
+            let pwd2 = document.getElementById("pwd2").value.trim();
+
+            if(pwd1 == "" || pwd2 == ""){
+                alert("모든칸을 채우셔야합니다.");
+            }
+            document.getElementById("pwd").value = pwd2;
+            pwdSetModalForm.submit();
+        }
+
+        // 비밀번호 수정
+        let pwd1 = document.getElementById("pwd1");
+        let pwd2 = document.getElementById("pwd2");
+        let pwd1Msg = document.getElementById("pwd1Msg");
+        let pwd2Msg = document.getElementById("pwd2Msg");
+        let pwdPattern = /^[a-z\d!@#$%^&*]{8,}$/;
+
+        pwd1.addEventListener('input', function() {
+            if(!pwdPattern.test(pwd1.value)) pwd1Msg.textContent = "비밀번호는 최소 8자 이상의 소문자와 숫자 그리고 특수문자들을 사용할 수 있습니다.";
+            else pwd1Msg.textContent = "";
+        });
+
+        pwd2.addEventListener('input', function() {
+            if (pwd2.value !== pwd1.value) pwd2Msg.textContent = "비밀번호가 일치하지 않습니다.";
+            else pwd2Msg.textContent = "";
+        });
+
+        function showSection(section) {
+            const sections = document.querySelectorAll('.section');
+
+            // 선택된 섹션의 ID를 확인합니다.
+            let isProductSection = section === 'product_register' || section === 'product_management';
+
+            if(isProductSection){
+                let sLevel = [[${level}]];
+                if(sLevel < 2) {
+                    alert("계좌를 등록하시면 이용 할 수 있습니다.");
+                    return;
+                }
+            }
+
+            sections.forEach((sec) => {
+                    sec.style.display = 'none';
+            });
+
+            const targetSection = document.getElementById(section);
+            if (targetSection) {
+                targetSection.style.display = 'block';
+            }
+            document.getElementById(section).style.display = 'block';
+
+            // URL 해시를 변경하여 현재 섹션 상태를 저장합니다.
+            window.location.hash = section;
+        }
+
+        // 페이지가 로드될 때, URL 해시를 확인하여 해당 섹션을 자동으로 표시합니다.
+        window.addEventListener('load', () => {
+            const hash = window.location.hash.substring(1); // 해시 값에서 #을 제거합니다.
+            if (hash) {
+                showSection(hash);
+            }
+        });
+
+        function editProfile(){
+            const accountNumDisplay = document.querySelector('.account_num_display');
+            accountNumDisplay.style.display = 'block';
         }
 
         function editAccount_num(){
-        let account_num = document.getElementById("account_num").value.trim();
-        if(account_num == "") {
-            alert("계좌번호를 적어주세요.");
-            return
+            let account_num = document.getElementById("account_num").value.trim();
+            if(account_num == "") {
+                alert("계좌번호를 적어주세요.");
+                return
+            }
+            accountForm.submit();
         }
-        accountForm.submit();
-    }
-</script>
+    </script>
+    <script>
+        'use strict';
+        const csrfToken = document.querySelector('meta[name="_csrf"]').getAttribute('content');
+        const csrfHeader = document.querySelector('meta[name="_csrf_header"]').getAttribute('content');
 
+        let designCount = 1;
+        const maxDesignCount = 5;
 
-<script>
-    'use strict';
-    const csrfToken = document.querySelector('meta[name="_csrf"]').getAttribute('content');
-    const csrfHeader = document.querySelector('meta[name="_csrf_header"]').getAttribute('content');
+        // 디자인 항목 추가 버튼 기능
+        function addDesignField() {
+            if (designCount >= maxDesignCount) return; // 디자인 항목 최대치 제한
+            designCount++;
 
-    let designCount = 1;
-    const maxDesignCount = 5;
+            // 기존에 있던 + 버튼과 - 버튼 제거
+            const currentAddButton = document.querySelector('.add-design');
+            if (currentAddButton) {
+                currentAddButton.remove();
+            }
 
-    // 디자인 항목 추가 버튼 기능
-    function addDesignField() {
-        if (designCount >= maxDesignCount) return; // 디자인 항목 최대치 제한
-        designCount++;
+            const currentRemoveButton = document.querySelector('.remove-design');
+            if (currentRemoveButton) {
+                currentRemoveButton.remove();
+            }
 
-        // 기존에 있던 + 버튼과 - 버튼 제거
-        const currentAddButton = document.querySelector('.add-design');
-        if (currentAddButton) {
-            currentAddButton.remove();
-        }
+            // 새로운 디자인 항목 추가
+            const designDiv = document.createElement('div');
+            designDiv.classList.add('form-group', 'design-row');
+            designDiv.innerHTML = `
+                <input type="text" class="design-input" placeholder="디자인 ${designCount}" required>
+                <div class="remove-design">-</div>
+                <div class="add-design">+</div>
+            `;
 
-        const currentRemoveButton = document.querySelector('.remove-design');
-        if (currentRemoveButton) {
-            currentRemoveButton.remove();
-        }
-
-        // 새로운 디자인 항목 추가
-        const designDiv = document.createElement('div');
-        designDiv.classList.add('form-group', 'design-row');
-        designDiv.innerHTML = `
-            <input type="text" class="design-input" placeholder="디자인 ${designCount}" required>
-            <div class="remove-design">-</div>
-            <div class="add-design">+</div>
-        `;
-
-        // 새로 추가된 디자인 항목의 +, - 버튼에 기능 적용
-        designDiv.querySelector('.add-design').addEventListener('click', addDesignField);
-        designDiv.querySelector('.remove-design').addEventListener('click', function() {
-            removeDesignField(designDiv);
-        });
-
-        document.getElementById('designFields').appendChild(designDiv);
-
-        updateRemoveButtonVisibility();
-    }
-
-    // 디자인 항목 제거 기능
-    function removeDesignField(designDiv) {
-        designDiv.remove();
-        designCount--;
-
-        // 모든 디자인 항목에서 +, - 버튼 제거
-        const allAddButtons = document.querySelectorAll('.add-design');
-        const allRemoveButtons = document.querySelectorAll('.remove-design');
-        allAddButtons.forEach(button => button.remove());
-        allRemoveButtons.forEach(button => button.remove());
-
-        // 마지막 디자인 항목에만 +, - 버튼 추가
-        const lastDesignRow = document.querySelectorAll('.design-row');
-        if (lastDesignRow.length > 0) {
-            const lastRow = lastDesignRow[lastDesignRow.length - 1];
-
-            const removeButton = document.createElement('div');
-            removeButton.classList.add('remove-design');
-            removeButton.innerText = '-';
-            removeButton.addEventListener('click', function() {
-                removeDesignField(lastRow);
+            // 새로 추가된 디자인 항목의 +, - 버튼에 기능 적용
+            designDiv.querySelector('.add-design').addEventListener('click', addDesignField);
+            designDiv.querySelector('.remove-design').addEventListener('click', function() {
+                removeDesignField(designDiv);
             });
 
-            const addButton = document.createElement('div');
-            addButton.classList.add('add-design');
-            addButton.innerText = '+';
-            addButton.addEventListener('click', addDesignField);
+            document.getElementById('designFields').appendChild(designDiv);
 
-            lastRow.appendChild(removeButton);
-            lastRow.appendChild(addButton);
+            updateRemoveButtonVisibility();
         }
-        updateRemoveButtonVisibility();
-    }
 
-    // 마지막 디자인 항목이 하나일 경우 - 버튼 숨기기
-    function updateRemoveButtonVisibility() {
-        const designRows = document.querySelectorAll('.design-row');
-        const removeButton = designRows[designRows.length - 1].querySelector('.remove-design');
-        if (designRows.length === 1) {
-            removeButton.style.display = 'none';
-        } else {
-            removeButton.style.display = 'inline-block';
+        // 디자인 항목 제거 기능
+        function removeDesignField(designDiv) {
+            designDiv.remove();
+            designCount--;
+
+            // 모든 디자인 항목에서 +, - 버튼 제거
+            const allAddButtons = document.querySelectorAll('.add-design');
+            const allRemoveButtons = document.querySelectorAll('.remove-design');
+            allAddButtons.forEach(button => button.remove());
+            allRemoveButtons.forEach(button => button.remove());
+
+            // 마지막 디자인 항목에만 +, - 버튼 추가
+            const lastDesignRow = document.querySelectorAll('.design-row');
+            if (lastDesignRow.length > 0) {
+                const lastRow = lastDesignRow[lastDesignRow.length - 1];
+
+                const removeButton = document.createElement('div');
+                removeButton.classList.add('remove-design');
+                removeButton.innerText = '-';
+                removeButton.addEventListener('click', function() {
+                    removeDesignField(lastRow);
+                });
+
+                const addButton = document.createElement('div');
+                addButton.classList.add('add-design');
+                addButton.innerText = '+';
+                addButton.addEventListener('click', addDesignField);
+
+                lastRow.appendChild(removeButton);
+                lastRow.appendChild(addButton);
+            }
+            updateRemoveButtonVisibility();
         }
-    }
 
-    // 처음 디자인 항목의 + 버튼에 기능 적용
-    document.getElementById('addDesign').addEventListener('click', addDesignField);
+        // 마지막 디자인 항목이 하나일 경우 - 버튼 숨기기
+        function updateRemoveButtonVisibility() {
+            const designRows = document.querySelectorAll('.design-row');
+            const removeButton = designRows[designRows.length - 1].querySelector('.remove-design');
+            if (designRows.length === 1) {
+                removeButton.style.display = 'none';
+            } else {
+                removeButton.style.display = 'inline-block';
+            }
+        }
 
-    // 카테고리 선택 시 option 변화
-    document.getElementById("maincategory").addEventListener("change", function() {
-        const mainCategoryId = this.value;
+        // 처음 디자인 항목의 + 버튼에 기능 적용
+        document.getElementById('addDesign').addEventListener('click', addDesignField);
 
-        const subCategorySelect = document.getElementById("subcategory");
-        subCategorySelect.innerHTML = '<option value="">서브카테고리를 선택하세요</option>'; // 초기화
+        // 카테고리 선택 시 option 변화
+        document.getElementById("maincategory").addEventListener("change", function() {
+            const mainCategoryId = this.value;
 
-        if (mainCategoryId != "") {
-            fetch('/member/getSubCategories',{
+            const subCategorySelect = document.getElementById("subcategory");
+            subCategorySelect.innerHTML = '<option value="">서브카테고리를 선택하세요</option>'; // 초기화
+
+            if (mainCategoryId != "") {
+                fetch('/member/getSubCategories',{
+                    method: "POST",
+                    headers: {
+                        [csrfHeader]: csrfToken,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ mainCategoryId: mainCategoryId })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    data.forEach(subCategory => {
+                        const option = document.createElement("option");
+                        option.value = subCategory.id; // 소분류 ID
+                        option.textContent = subCategory.title; // 소분류 제목
+                        subCategorySelect.appendChild(option); // 소분류 선택 박스에 추가
+                    });
+                })
+                .catch(error => {
+                    console.error("소분류를 가져오는 중 에러 발생:", error);
+                });
+            }
+        });
+
+        // 파일 5개까지 선택할수 있도록 제한
+        product_img.addEventListener("change", function () {
+            // 선택된 파일의 개수를 확인합니다.
+            const files = product_img.files;
+
+            // 선택된 파일 개수가 5개를 초과하는 경우
+            if (files.length > 5) {
+                // 초과한 경우 파일 입력을 초기화합니다.
+                product_img.value = "";
+                // 사용자에게 경고 메시지를 표시합니다.
+                fileLimitMessage.textContent = "최대 5개의 파일만 업로드할 수 있습니다.";
+            } else {
+                // 제한 내에 있는 경우 메시지를 지웁니다.
+                fileLimitMessage.textContent = "";
+            }
+        });
+
+        function productCheck() {
+            let maincategory = document.getElementById("maincategory").value;
+            let subcategory = document.getElementById("subcategory").value;
+            let brand = document.getElementById("brand").value.trim();
+            let product_name = document.getElementById("product_name").value.trim();
+            let product_img = document.getElementById("product_img");
+            let product_img_detail = document.getElementById("product_img_detail");
+            let price = document.getElementById("price").value;
+            let stock = document.getElementById("stock").value;
+
+            // 디자인 항목 가져오기
+            let designInputs = document.querySelectorAll(".design-input");
+            let designs = [];
+
+            // 디자인 입력값을 배열에 추가
+            for (let i = 0; i < designInputs.length; i++) {
+                const input = designInputs[i];
+                // 공백 입력값은 추가하지 않도록 필터링
+                if (input.value.trim() !== "") {
+                    designs.push(input.value.trim());
+                }
+            }
+
+            // 디자인을 JSON 문자열로 변형
+            const designsJson = JSON.stringify(designs);
+            document.getElementById('designData').value = designsJson;
+
+            // 상품이미지 처리
+            const productImgs = product_img.files; // FileList
+            const productImgDetails = product_img_detail.files[0]; // 단일 파일
+
+            // 상품 이미지 파일 처리
+            for (let i = 0; i < productImgs.length; i++) {
+                document.getElementById(`img${i + 1}`).value = productImgs[i].name;
+            }
+
+            // 상세 이미지 파일 처리
+            if (productImgDetails) {
+                console.log('선택한 상세 이미지:', productImgDetails.name);
+                console.log('파일 크기:', productImgDetails.size);
+            }
+
+            if(maincategory == "" || subcategory == ""){
+                alert("등록하고자하는 분류를 선택해주세요.");
+                return
+            }
+            else if(brand == ""){
+                alert("여러분의 고유의 브랜드명을 적어주세요.");
+                return
+            }
+            else if(product_name == ""){
+                alert("상품명을 입력해주세요.");
+                return
+            }
+            else if(price == ""){
+                alert("가격을 입력해주세요.");
+                return
+            }
+            else if(stock == ""){
+                alert("현재 물건의 수량을 입력해주세요.");
+                return
+            }
+            else if(designsJson == ""){
+                alert("판매하는 물품의 디자인명을 입력해주세요.");
+                return
+            }
+            else productForm.submit();
+
+
+            // 결과 확인 (디버깅 용도)
+            // console.log(designsJson);
+        }
+    </script>
+    <script>
+        'use strict'
+
+        function completeOrder(productOrderId){
+            fetch('/member/completeOrder',{
                 method: "POST",
                 headers: {
                     [csrfHeader]: csrfToken,
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({ mainCategoryId: mainCategoryId })
+                body: JSON.stringify({ productOrderId : productOrderId })
             })
             .then(response => response.json())
             .then(data => {
-                data.forEach(subCategory => {
-                    const option = document.createElement("option");
-                    option.value = subCategory.id; // 소분류 ID
-                    option.textContent = subCategory.title; // 소분류 제목
-                    subCategorySelect.appendChild(option); // 소분류 선택 박스에 추가
-                });
+                if(data.success) {
+                    alert('주문완료처리되었습니다.');
+                    location.reload();
+                }
             })
             .catch(error => {
-                console.error("소분류를 가져오는 중 에러 발생:", error);
+                console.error(error);
             });
         }
-    });
 
-    // 파일 5개까지 선택할수 있도록 제한
-    product_img.addEventListener("change", function () {
-        // 선택된 파일의 개수를 확인합니다.
-        const files = product_img.files;
-
-        // 선택된 파일 개수가 5개를 초과하는 경우
-        if (files.length > 5) {
-            // 초과한 경우 파일 입력을 초기화합니다.
-            product_img.value = "";
-            // 사용자에게 경고 메시지를 표시합니다.
-            fileLimitMessage.textContent = "최대 5개의 파일만 업로드할 수 있습니다.";
-        } else {
-            // 제한 내에 있는 경우 메시지를 지웁니다.
-            fileLimitMessage.textContent = "";
-        }
-    });
-
-    function productCheck() {
-        let maincategory = document.getElementById("maincategory").value;
-        let subcategory = document.getElementById("subcategory").value;
-        let brand = document.getElementById("brand").value.trim();
-        let product_name = document.getElementById("product_name").value.trim();
-        let product_img = document.getElementById("product_img");
-        let product_img_detail = document.getElementById("product_img_detail");
-        let price = document.getElementById("price").value;
-        let stock = document.getElementById("stock").value;
-
-        // 디자인 항목 가져오기
-        let designInputs = document.querySelectorAll(".design-input");
-        let designs = [];
-
-        // 디자인 입력값을 배열에 추가
-        for (let i = 0; i < designInputs.length; i++) {
-            const input = designInputs[i];
-            // 공백 입력값은 추가하지 않도록 필터링
-            if (input.value.trim() !== "") {
-                designs.push(input.value.trim());
-            }
+        function updateCharCount() {
+            let textarea = document.getElementById('refundTextarea');
+            let charCount = document.getElementById('charCount');
+            charCount.textContent = 50 - textarea.value.length;
         }
 
-        // 디자인을 JSON 문자열로 변형
-        const designsJson = JSON.stringify(designs);
-        document.getElementById('designData').value = designsJson;
+        function sendRefund(){
+            let refundTextarea = document.getElementById('refundTextarea').value.trim();
+            if(refundTextarea == '') alert('환불사유를 입력해주세요.');
 
-
-
-        // 상품이미지 처리
-        const productImgs = product_img.files; // FileList
-        const productImgDetails = product_img_detail.files[0]; // 단일 파일
-
-        // 상품 이미지 파일 처리
-        for (let i = 0; i < productImgs.length; i++) {
-            document.getElementById(`img${i + 1}`).value = productImgs[i].name;
+            refundModal.submit();
         }
-
-        // 상세 이미지 파일 처리
-        if (productImgDetails) {
-            console.log('선택한 상세 이미지:', productImgDetails.name);
-            console.log('파일 크기:', productImgDetails.size);
-        }
-
-        if(maincategory == "" || subcategory == ""){
-            alert("등록하고자하는 분류를 선택해주세요.");
-            return
-        }
-        else if(brand == ""){
-            alert("여러분의 고유의 브랜드명을 적어주세요.");
-            return
-        }
-        else if(product_name == ""){
-            alert("상품명을 입력해주세요.");
-            return
-        }
-        else if(price == ""){
-            alert("가격을 입력해주세요.");
-            return
-        }
-        else if(stock == ""){
-            alert("현재 물건의 수량을 입력해주세요.");
-            return
-        }
-        else if(designsJson == ""){
-            alert("판매하는 물품의 디자인명을 입력해주세요.");
-            return
-        }
-        else productForm.submit();
-
-
-        // 결과 확인 (디버깅 용도)
-        // console.log(designsJson);
-
-    }
-</script>
+    </script>
 </body>
 </html>

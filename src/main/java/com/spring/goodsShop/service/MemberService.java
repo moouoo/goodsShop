@@ -55,4 +55,14 @@ public interface MemberService {
     List<Integer> getProductIdsByMemberId(int memberId);
 
     List<OrderVo> getOrderVoByProductId(int productId);
+
+    List<OrderVo> getOrderVoByMemberId(int memberId);
+
+    void updateOrderStatusByProductOrderId(int productOrderId, String orderStatus);
+
+    int getProductIdByProductOrderId(int productOrderId);
+
+    void setRefundMessage(int memberId, String refundTextarea, int productId);
+
+    void updateOrderStatusSwitchRefund(String refundProcessingOrderStatusStr, int productOrderId);
 }

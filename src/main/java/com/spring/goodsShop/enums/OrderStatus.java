@@ -1,24 +1,20 @@
 package com.spring.goodsShop.enums;
 
 public enum OrderStatus {
-    PENDING("대기 중"),
-    PROCESSING("처리 중"),
-    COMPLETED("완료됨"),
-    CANCELED("취소됨"),
-    REFUNDED("환불 완료"),
-    RETURNED("반품됨"),
-    AWAITING_PAYMENT("결제 대기 중"),
-    PAID("결제 완료"),
-    SHIPPED("배송 중"),
-    DELIVERED("배송 완료");
+    PREPARING("배송전"),
+    SHIPPING("배송중"),
+    DELIVERED("배송완료"),
+    REFUND_PROCESSING("환불처리중");
 
-    private String displayName;
+    private final String orderStatusStr;
 
-    OrderStatus(String displayName) {
-        this.displayName = displayName;
+    // 생성자
+    OrderStatus(String orderStatusStr) {
+        this.orderStatusStr = orderStatusStr;
     }
 
-    public String getDisplayName() {
-        return displayName;
+    // 설명 반환 메서드
+    public String getOrderStatusStr() {
+        return orderStatusStr;
     }
 }

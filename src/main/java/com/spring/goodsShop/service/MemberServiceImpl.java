@@ -222,5 +222,30 @@ public class MemberServiceImpl implements MemberService{
         return memberDao.getOrderVoByProductId(productId);
     }
 
+    @Override
+    public List<OrderVo> getOrderVoByMemberId(int memberId) {
+        return memberDao.getOrderVoByMemberId(memberId);
+    }
+
+    @Override
+    public void updateOrderStatusByProductOrderId(int productOrderId, String orderStatus) {
+        memberDao.updateOrderStatusByProductOrderId(productOrderId, orderStatus);
+    }
+
+    @Override
+    public int getProductIdByProductOrderId(int productOrderId) {
+        return memberDao.getProductIdByProductOrderId(productOrderId);
+    }
+
+    @Override
+    public void setRefundMessage(int memberId, String refundTextarea, int productId) {
+        memberDao.setRefundMessage(memberId, refundTextarea, productId);
+    }
+
+    @Override
+    public void updateOrderStatusSwitchRefund(String refundProcessingOrderStatusStr, int productOrderId) {
+        memberDao.updateOrderStatusSwitchRefund(refundProcessingOrderStatusStr, productOrderId);
+    }
+
 
 }

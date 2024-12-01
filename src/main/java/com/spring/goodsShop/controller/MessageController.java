@@ -103,6 +103,14 @@ public class MessageController {
             model.addAttribute("msg", "장바구니가 비어있습니다.");
             model.addAttribute("url", "/");
         }
+        else if(msgFlag.equals("refund")){
+            model.addAttribute("msg", "환불처리되었습니다.");
+            model.addAttribute("url", "/member/memberP#order");
+        }
+        else if(msgFlag.equals("refundX")){
+            model.addAttribute("msg", "환불처리중 오류(주문번호 혹은 메모내용 없음)");
+            model.addAttribute("url", "/member/memberP#order");
+        }
 
 
         return "include/message";

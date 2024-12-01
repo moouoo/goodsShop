@@ -1,11 +1,13 @@
 package com.spring.goodsShop.controller;
 
+import com.spring.goodsShop.enums.OrderStatus;
 import com.spring.goodsShop.service.AdminService;
 import com.spring.goodsShop.service.ProductService;
 import com.spring.goodsShop.vo.*;
 import com.spring.goodsShop.service.MemberService;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -206,16 +208,17 @@ public class MemberController {
         model.addAttribute("productOrderList", productOrderList);
 
         // section - orders
-        List<OrderVo> sectionOrdersList = new ArrayList<>();
-        sectionOrdersList = memberService.getOrderVoByMemberId(mid); // 여기 만드는것부터 + 노트에 적은거 참고해서 이어서..
+        // int memberId = memberService.getMemberIdBymid(mid); -> 이미 위에 int memberId 만든게 존재함.(section-productOrder)
+        List<OrderVo> sectionOrdersList = memberService.getOrderVoByMemberId(memberId);
+
         model.addAttribute("sectionOrdersList", sectionOrdersList);
 
         return "member/memberP";
     }
 
     @ResponseBody
-    @RequestMapping(value = "/getSubCategories") // POST 요청으로 대분류 ID를 받습니다.
-    public List<SubcategoryVo> getSubCategories(@RequestBody Map<String, Integer> requestBody) {
+    @RequestMapping(value = "/getSubCategories", method = RequestMethod.POST) // POST 요청으로 대분류 ID를 받습니다.
+    List<SubcategoryVo> getSubCategories(@RequestBody Map<String, Integer> requestBody) {
         int mainCategoryId = requestBody.get("mainCategoryId");
         List<SubcategoryVo> subCategory = adminService.getSubCategory(mainCategoryId);
         return subCategory;
@@ -265,4 +268,54 @@ public class MemberController {
 
     }
 
+    @RequestMapping(value = "/completeOrder", method = RequestMethod.POST)
+    ResponseEntity<Map<String, Object>> completeOrder(@RequestBody Map<String, Object> item){
+        Map<String, Object> data = new HashMap<>();
+        int productOrderId = !item.get("productOrderId").toString().isEmpty() ? Integer.parseInt(item.get("productOrderId").toString()) : 0;
+
+        if(productOrderId == 0){
+            data.put("success", false);
+            return ResponseEntity.badRequest().body(data);
+        }
+        String orderStatus = OrderStatus.DELIVERED.getOrderStatusStr();
+        memberService.updateOrderStatusByProductOrderId(productOrderId, orderStatus);
+
+        data.put("success", true);
+
+        return ResponseEntity.ok(data);
+    }
+
+    @RequestMapping(value = "/refund", method = RequestMethod.POST)
+    String refund(int productOrderId, String refundTextarea, HttpSession session){
+        Object midObj = session.getAttribute("sMid");
+        String mid;
+        if (midObj == null) {
+            return "redirect:/message/memberX";
+        }
+        else {
+            mid = midObj.toString();
+        }
+
+        if(productOrderId == 0 || refundTextarea.isEmpty()){
+            return "redirect:/message/refundX";
+        }
+
+        int memberId = memberService.getMemberIdBymid(mid);
+        int productId = memberService.getProductIdByProductOrderId(productOrderId);
+
+        try {
+            memberService.setRefundMessage(memberId, refundTextarea, productId);
+        } catch (Exception e) {
+            throw new RuntimeException("refundMessage테이블 저장중 오류");
+        }
+
+        // 지금 발생하는 문제가 db에는 저장이 되는데 message를 넘길때 null로 넘겨지고 있음
+        // 사실 환불버튼이 배송중 일때 눌러야 환불중으로 바뀌어야하는데 지금은 아무떄나 눌러도 환불중으로 바뀔뿐만 아니라 db에 저장이 됨.
+        // if문을 이용해서 enun의 배달중이라는 글짜일때만 디비에 존재할때 다음 처리가 가능하게 제한걸고 이러한 글자가 아니라면 message를 이용해서 튕겨내야할듯
+        // 프로트에서도 배달중이 아니라면 누르지못하게 프론트에서도 막아야할듯.
+        
+        String refundProcessingOrderStatusStr =OrderStatus.REFUND_PROCESSING.getOrderStatusStr();
+        memberService.updateOrderStatusSwitchRefund(refundProcessingOrderStatusStr, productOrderId);
+        return "redirect:/message/refundOk";
+    }
 }

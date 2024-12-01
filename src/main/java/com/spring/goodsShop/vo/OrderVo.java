@@ -1,9 +1,6 @@
 package com.spring.goodsShop.vo;
 
-import com.spring.goodsShop.enums.OrderStatus;
 import lombok.Data;
-
-import java.util.List;
 
 @Data
 public class OrderVo {
@@ -17,9 +14,8 @@ public class OrderVo {
     private String status; // 결재상태
     private int price;
     private String productName; // 구매한상품 이름
-    private String orderStaus; // 배송전, 배송중, 배송완료, 환불처리중
+    private String orderStatus; // 배송전, 배송중, 배송완료, 환불처리중
 
     private String orderMemberName; // 구입자 이름
-    // 주문번호(orderVo,id), 상품이름([디자인]상품이름), 구입한가격, 구입날짜, orderStatus
 
 }

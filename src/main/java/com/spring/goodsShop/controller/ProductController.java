@@ -1,9 +1,8 @@
 package com.spring.goodsShop.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.spring.goodsShop.enums.OrderStatus;
+import com.spring.goodsShop.enums.PaymentStatus;
 import com.spring.goodsShop.etc.NavbarHelper;
 import com.spring.goodsShop.etc.NumFormat;
 import com.spring.goodsShop.etc.PaymentHelper;
@@ -12,13 +11,11 @@ import com.spring.goodsShop.service.MemberService;
 import com.spring.goodsShop.service.ProductService;
 import com.spring.goodsShop.vo.*;
 import jakarta.servlet.http.HttpSession;
-import org.apache.ibatis.ognl.DefaultTypeConverter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -396,7 +393,7 @@ public class ProductController {
         String mid = session.getAttribute("sMid").toString();
         int  member_id = memberService.getMemberIdBymid(mid);
         String address = JPaymentInfo.get("address").toString();
-        String status = OrderStatus.PAID.getDisplayName();
+        String status = PaymentStatus.PAID.getDisplayName();
 
         OrderVo order = new OrderVo();
         order.setMember_id(member_id);

@@ -58,6 +58,14 @@
         select * from productOrder where product_id = #{productId};
     </select>
 
+    <select id="getOrderVoByMemberId" resultType="com.spring.goodsShop.vo.OrderVo">
+        select id, design, productName, price, order_date, orderStatus from productOrder where member_id = #{memberId};
+    </select>
+
+    <select id="getProductIdByProductOrderId" resultType="java.lang.Integer">
+        select product_id from productOrder where id = #{productOrderId};
+    </select>
+
 
     <!--  insert  -->
     <insert id="memberJoin">
@@ -71,6 +79,11 @@
     <insert id="setProduct">
         insert into product (id, sub_category_id, brand, product_name, member_id, product_img_id, product_img_detail, price, stock, design)
             values (default, #{productVo.sub_category_id}, #{productVo.brand}, #{productVo.product_name}, #{productVo.member_id}, #{productVo.product_img_id}, #{productVo.product_img_detail}, #{productVo.price}, #{productVo.stock}, #{productVo.design});
+    </insert>
+
+    <insert id="setRefundMessage">
+        insert into refundMessage (id, member_id, memo, refundDate, product_id)
+            value (default, #{memberId}, #{refundTextarea}, default, #{productId});
     </insert>
 
 
@@ -89,6 +102,14 @@
 
     <update id="pwdSet">
         update member set pwd = #{encodePwd} where mid = #{mid};
+    </update>
+
+    <update id="updateOrderStatusByProductOrderId">
+        update productOrder set orderStatus = #{orderStatus} where id = #{productOrderId};
+    </update>
+
+    <update id="updateOrderStatusSwitchRefund">
+        update productOrder set orderStatus = #{refundProcessingOrderStatusStr} where id = #{productOrderId};
     </update>
 
 

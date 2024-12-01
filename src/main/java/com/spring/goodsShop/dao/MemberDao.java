@@ -49,4 +49,14 @@ public interface MemberDao {
     List<Integer> getProductIdsByMemberId(@Param("memberId") int memberId);
 
     List<OrderVo> getOrderVoByProductId(@Param("productId") int productId);
+
+    List<OrderVo> getOrderVoByMemberId(@Param("memberId") int memberId);
+
+    void updateOrderStatusByProductOrderId(@Param("productOrderId") int productOrderId, @Param("orderStatus") String orderStatus);
+
+    int getProductIdByProductOrderId(@Param("productOrderId") int productOrderId);
+
+    void setRefundMessage(@Param("memberId") int memberId, @Param("refundTextarea") String refundTextarea, @Param("productId") int productId);
+
+    void updateOrderStatusSwitchRefund(@Param("refundProcessingOrderStatusStr") String refundProcessingOrderStatusStr, @Param("productOrderId") int productOrderId);
 }
