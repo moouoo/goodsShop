@@ -65,4 +65,6 @@ public interface MemberService {
     void setRefundMessage(int memberId, String refundTextarea, int productId);
 
     void updateOrderStatusSwitchRefund(String refundProcessingOrderStatusStr, int productOrderId);
+
+    String getOrderStatusByProductOrderId(int productOrderId);
 }

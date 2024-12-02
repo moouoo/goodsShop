@@ -66,6 +66,10 @@
         select product_id from productOrder where id = #{productOrderId};
     </select>
 
+    <select id="getOrderStatusByProductOrderId" resultType="java.lang.String">
+        select orderStatus from productOrder where id = #{productOrderId};
+    </select>
+
 
     <!--  insert  -->
     <insert id="memberJoin">

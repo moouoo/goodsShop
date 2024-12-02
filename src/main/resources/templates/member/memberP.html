@@ -208,7 +208,7 @@
                             <th>관리</th>
                         </tr>
                     </thead>
-                    <tbody th:each="sectionOrdersList : ${sectionOrdersList}">
+                    <tbody th:each="sectionOrdersList, sectionOrdersListStat : ${sectionOrdersList}">
                         <tr>
                             <td th:text="${sectionOrdersList.id}">주문번호</td>
                             <td>
@@ -216,10 +216,17 @@
                             </td>
                             <td th:text="${sectionOrdersList.price}">주문가격</td>
                             <td th:text="${sectionOrdersList.order_date}">구입날짜</td>
-                            <td th:text="${sectionOrdersList.orderStatus}">배송전/배송중/결정완료/환불중</td>
+                            <td th:id="'orderStatus_' + ${sectionOrdersListStat.index}" th:text="${sectionOrdersList.orderStatus}">배송전/배송중/결정완료/환불중</td>
                             <td class="flex_btn">
-                                <button class="btn" th:productOrderId="${sectionOrdersList.id}" onclick="completeOrder(this.getAttribute('productOrderId'))" >구매결정</button>
-                                <button class="btn" th:productOrderId="${sectionOrdersList.id}" onclick="refundRequest(this.getAttribute('productOrderId'))">환불신청</button>
+                                <button class="btn" th:productOrderId="${sectionOrdersList.id}"
+                                        onclick="completeOrder(this.getAttribute('productOrderId')">
+                                    구매결정
+                                </button>
+                                <button class="btn" th:productOrderId="${sectionOrdersList.id}"
+                                        th:index="${sectionOrdersListStat.index}"
+                                        onclick="refundRequest(this.getAttribute('productOrderId'), this.getAttribute('index'))">
+                                    환불신청
+                                </button>
                             </td>
                         </tr>
                     </tbody>
@@ -238,7 +245,7 @@
                         <button class="closeModal btn" type="button">닫기</button>
                     </div>
                     <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
-                    <input type="hidden" name="productOrderId" id="productOrderId">
+                    <input type="hidden" name="productOrderId">
                 </form>
             </div>
 
@@ -333,7 +340,8 @@
                             <th>구입자이름</th>
                             <th>구입자주소</th>
                             <th>구입가격</th>
-                            <th>상태</th>
+                            <th>결재상태</th>
+                            <th>배송상태</th>
                             <th>관리</th>
                         </tr>
                     </thead>
@@ -345,13 +353,34 @@
                             <td th:text="${productOrderList.orderMemberName}">구입자이름</td>
                             <td th:text="${productOrderList.address}">구입자주소</td>
                             <td th:text="${productOrderList.price}">구입한 가격</td>
+                            <td id="" th:text="${productOrderList.orderStatus}">구입한 가격</td>
                             <td th:text="${productOrderList.status}">결재상태</td>
-                            <td><button class="btn" onclick="removeProduct(this)">삭제</button></td>
+                            <td>
+                                <button class="btn" th:productOrderId="${productOrderList.id}" onclick="refundRefuse(this.getAttribute('productOrderId'))">환불거절</button>
+                                <button class="btn" th:productOrderId="${productOrderList.id}" onclick="shipping(this.getAttribute('productOrderId'))">배송</button>
+                            </td>
                         </tr>
                     </tbody>
                 </table>
             </div>
         </div>
+    </div>
+
+    <!-- 환불거절 사유 창 -->
+    <div id="refundRefuseModal" class="modal" style="display:none;">
+        <span class="close-btn">&times;</span>
+        <form id="sendRefundRefuseForm" method="post" th:action="@{/member/refundRefuse}">
+            <div class="modal-content">
+                <p>환불사유</p>
+                <textarea rows="7" cols="40" maxlength="50" oninput="updateCharCount()" id="refundRefuseTextarea" name="refundTextarea"></textarea>
+                <p>남은 글자 수: <span id="reFuseCharCount">50</span></p>
+                <button class="btn" onclick="sendRefundRefuse()">환불</button>
+                <button class="closeModal btn" type="button">닫기</button>
+            </div>
+            <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
+            <input type="hidden" name="productOrderId" id="productOrderId">
+        </form>
+<!--    여기 하다가 위에서 이상한거 생각나서 고치는중    -->
     </div>
 
     <script>
@@ -362,6 +391,7 @@
         const refundModal = document.getElementById('refundModal');
         const closeModalBtn = document.querySelector('.close-btn');
         const closeModal = document.querySelector('.closeModal');
+        const refundRefuseModal = document.getElementById('refundRefuseModal');
 
         // 모달 닫기 함수 (닫기 버튼 클릭 시)
         closeModalBtn.addEventListener("click", () => {
@@ -381,6 +411,9 @@
             else if(e.target === refundModal) {
                 refundModal.style.display = 'none';
             }
+            else if(e.target === refundModal) {
+                refundRefuseModal.style.display = 'none';
+            }
         });
 
         // 모달 열기
@@ -388,10 +421,19 @@
              modal.style.display = "flex";
         }
 
-        function refundRequest(productOrderId){
-            refundModal.style.display = "flex";
+        function refundRequest(productOrderId, index){
+            let orderStatusCheck = document.getElementById('orderStatus_' + index).textContent.trim();
+            if(orderStatusCheck != '배송중'){
+                alert('상품이 배송중일때 환불처리를 할 수 있습니다.');
+                return;
+            }
+            refundModal.style.display = 'flex';
 
             document.getElementById('productOrderId').value = productOrderId;
+        }
+
+        function refundRefuse(){
+            refundRefuseModal.style.display = 'flex';
         }
 
         function pwdSet(){
@@ -464,12 +506,14 @@
         }
 
         function editAccount_num(){
+            const sendRefundForm = document.getElementById('sendRefundForm');
+
             let account_num = document.getElementById("account_num").value.trim();
             if(account_num == "") {
                 alert("계좌번호를 적어주세요.");
                 return
             }
-            accountForm.submit();
+            sendRefundForm.submit();
         }
     </script>
     <script>
@@ -683,6 +727,10 @@
 
             // 결과 확인 (디버깅 용도)
             // console.log(designsJson);
+        }
+
+        function refundRefuse(productOrderId){
+
         }
     </script>
     <script>

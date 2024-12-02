@@ -59,4 +59,6 @@ public interface MemberDao {
     void setRefundMessage(@Param("memberId") int memberId, @Param("refundTextarea") String refundTextarea, @Param("productId") int productId);
 
     void updateOrderStatusSwitchRefund(@Param("refundProcessingOrderStatusStr") String refundProcessingOrderStatusStr, @Param("productOrderId") int productOrderId);
+
+    String getOrderStatusByProductOrderId(@Param("productOrderId") int productOrderId);
 }

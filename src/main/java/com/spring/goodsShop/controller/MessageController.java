@@ -105,11 +105,19 @@ public class MessageController {
         }
         else if(msgFlag.equals("refund")){
             model.addAttribute("msg", "환불처리되었습니다.");
-            model.addAttribute("url", "/member/memberP#order");
+            model.addAttribute("url", "/member/memberP#orders");
         }
         else if(msgFlag.equals("refundX")){
-            model.addAttribute("msg", "환불처리중 오류(주문번호 혹은 메모내용 없음)");
-            model.addAttribute("url", "/member/memberP#order");
+            model.addAttribute("msg", "환불처리중 오류(주문번호 혹은 메모내용 없음.)");
+            model.addAttribute("url", "/member/memberP#orders");
+        }
+        else if(msgFlag.equals("refundOk")){
+            model.addAttribute("msg", "환불처리되었습니다.");
+            model.addAttribute("url", "/member/memberP#orders");
+        }
+        else if(msgFlag.equals("refundStatusErr")){
+            model.addAttribute("msg", "배송중일때만 가능함. 배송상태 에러");
+            model.addAttribute("url", "/member/memberP#orders");
         }
 
 

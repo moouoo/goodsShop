@@ -202,6 +202,9 @@ public class MemberController {
                 vo.setPrice(orderVosTem.get(j).getPrice());
                 vo.setStatus(orderVosTem.get(j).getStatus());
 
+                vo.setId(orderVosTem.get(j).getId());
+                vo.setOrderStatus(orderVosTem.get(j).getOrderStatus());
+
                 productOrderList.add(vo);
             }
         }
@@ -303,19 +306,23 @@ public class MemberController {
         int memberId = memberService.getMemberIdBymid(mid);
         int productId = memberService.getProductIdByProductOrderId(productOrderId);
 
-        try {
-            memberService.setRefundMessage(memberId, refundTextarea, productId);
-        } catch (Exception e) {
-            throw new RuntimeException("refundMessage테이블 저장중 오류");
-        }
+        String orderStatus = memberService.getOrderStatusByProductOrderId(productOrderId);
 
-        // 지금 발생하는 문제가 db에는 저장이 되는데 message를 넘길때 null로 넘겨지고 있음
-        // 사실 환불버튼이 배송중 일때 눌러야 환불중으로 바뀌어야하는데 지금은 아무떄나 눌러도 환불중으로 바뀔뿐만 아니라 db에 저장이 됨.
-        // if문을 이용해서 enun의 배달중이라는 글짜일때만 디비에 존재할때 다음 처리가 가능하게 제한걸고 이러한 글자가 아니라면 message를 이용해서 튕겨내야할듯
-        // 프로트에서도 배달중이 아니라면 누르지못하게 프론트에서도 막아야할듯.
-        
-        String refundProcessingOrderStatusStr =OrderStatus.REFUND_PROCESSING.getOrderStatusStr();
-        memberService.updateOrderStatusSwitchRefund(refundProcessingOrderStatusStr, productOrderId);
-        return "redirect:/message/refundOk";
+        if(orderStatus == "배송중"){
+            try {
+                memberService.setRefundMessage(memberId, refundTextarea, productId);
+
+                String refundProcessingOrderStatusStr = OrderStatus.REFUND_PROCESSING.getOrderStatusStr();
+                memberService.updateOrderStatusSwitchRefund(refundProcessingOrderStatusStr, productOrderId);
+
+                return "redirect:/message/refundOk";
+            }
+            catch (Exception e) {
+                throw new RuntimeException("refundMessage테이블 저장중 오류");
+            }
+        }
+        else{
+            return "redirect:/message/refundStatusErr";
+        }
     }
 }

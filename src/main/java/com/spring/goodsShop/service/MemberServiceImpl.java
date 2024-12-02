@@ -247,5 +247,10 @@ public class MemberServiceImpl implements MemberService{
         memberDao.updateOrderStatusSwitchRefund(refundProcessingOrderStatusStr, productOrderId);
     }
 
+    @Override
+    public String getOrderStatusByProductOrderId(int productOrderId) {
+        return memberDao.getOrderStatusByProductOrderId(productOrderId);
+    }
+
 
 }
