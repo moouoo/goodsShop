@@ -620,7 +620,7 @@ public class ProductController {
             item.put("price", price.get(i));
             item.put("img", img.get(i));
 
-            // 상품 정보를 Map에서 빠르게 조회
+            // 상품 정보를 Map에서 조회
             ProductVo vo = productMap.get(productId.get(i));
 
             if (vo != null) {

@@ -61,4 +61,19 @@ public interface MemberDao {
     void updateOrderStatusSwitchRefund(@Param("refundProcessingOrderStatusStr") String refundProcessingOrderStatusStr, @Param("productOrderId") int productOrderId);
 
     String getOrderStatusByProductOrderId(@Param("productOrderId") int productOrderId);
+
+    int getRefundMessageIdByMemberIdAndProductId(@Param("memberId") int memberId, @Param("productId") int productId);
+
+    void setProductOrderRefundMsgId(@Param("refundMessageId") int refundMessageId);
+
+    void setRefundRefuseMessage(@Param("refundRefuseTextarea") String refundRefuseTextarea, @Param("refundMessageId") int refundMessageId);
+
+    int getRefundMessageIdByProductOrderId(@Param("productOrderId") int productOrderId);
+
+    void updateOrderStatusSwitchRefundRefuse(@Param("refundRefuseOrderStatusStr") String refundRefuseOrderStatusStr, @Param("productOrderId") int productOrderId);
+
+    String getRefundReasonByrefundMessageId(@Param("refundMessageId") int refundMessageId);
+
+    String getRefundRefuseMessageByRefundMessageId(@Param("refundMessageId") int refundMessageId);
+
 }

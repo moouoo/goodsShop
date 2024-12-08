@@ -195,7 +195,7 @@
             <div class="section" id="orders" style="display: none;">
                 <div class="space_between">
                     <h2 style="border-bottom: none;">주문 내역</h2>
-                    <button class="refund_information">환불정보</button>
+<!--                    <button class="refund_information">환불정보</button>-->
                 </div>
                 <table>
                     <thead>
@@ -217,16 +217,27 @@
                             <td th:text="${sectionOrdersList.price}">주문가격</td>
                             <td th:text="${sectionOrdersList.order_date}">구입날짜</td>
                             <td th:id="'orderStatus_' + ${sectionOrdersListStat.index}" th:text="${sectionOrdersList.orderStatus}">배송전/배송중/결정완료/환불중</td>
-                            <td class="flex_btn">
-                                <button class="btn" th:productOrderId="${sectionOrdersList.id}"
-                                        onclick="completeOrder(this.getAttribute('productOrderId')">
+                            <td>
+                                <button th:if="${sectionOrdersList.orderStatus} == '배송중'"
+                                        class="btn" th:productOrderId="${sectionOrdersList.id}"
+                                        onclick="completeOrder(this.getAttribute('productOrderId'))">
                                     구매결정
                                 </button>
-                                <button class="btn" th:productOrderId="${sectionOrdersList.id}"
+                                <button th:if="${sectionOrdersList.orderStatus} == '환불거부'"
+                                        class="btn" th:productOrderId="${sectionOrdersList.id}"
+                                        th:index="${sectionOrdersListStat.index}"
+                                        onclick="refundRefuseReason(this.getAttribute('productOrderId'), this.getAttribute('index'))">
+                                    환불거절사유
+                                </button>
+                                <button th:if="${sectionOrdersList.orderStatus} == '배송중'"
+                                        class="btn" th:productOrderId="${sectionOrdersList.id}"
                                         th:index="${sectionOrdersListStat.index}"
                                         onclick="refundRequest(this.getAttribute('productOrderId'), this.getAttribute('index'))">
                                     환불신청
                                 </button>
+                                <p th:if="${sectionOrdersList.orderStatus} == '배송완료'">배송완료</p>
+                                <p th:if="${sectionOrdersList.orderStatus} == '환불처리중'">환불처리중</p>
+                                <p th:if="${sectionOrdersList.orderStatus} == '배송전'">배송전</p>
                             </td>
                         </tr>
                     </tbody>
@@ -340,12 +351,12 @@
                             <th>구입자이름</th>
                             <th>구입자주소</th>
                             <th>구입가격</th>
-                            <th>결재상태</th>
                             <th>배송상태</th>
+                            <th>결재상태</th>
                             <th>관리</th>
                         </tr>
                     </thead>
-                    <tbody th:each="productOrderList : ${productOrderList}">
+                    <tbody th:each="productOrderList, sectionProductOrderListStat : ${productOrderList}">
                         <tr>
                             <td th:text="${productOrderList.productName}">상품이름</td>
                             <td th:text="${productOrderList.design}">디자인</td>
@@ -353,11 +364,22 @@
                             <td th:text="${productOrderList.orderMemberName}">구입자이름</td>
                             <td th:text="${productOrderList.address}">구입자주소</td>
                             <td th:text="${productOrderList.price}">구입한 가격</td>
-                            <td id="" th:text="${productOrderList.orderStatus}">구입한 가격</td>
+                            <td th:id="'productOrderStatus_' + ${sectionProductOrderListStat.index}" th:text="${productOrderList.orderStatus}">배송상태</td>
                             <td th:text="${productOrderList.status}">결재상태</td>
                             <td>
-                                <button class="btn" th:productOrderId="${productOrderList.id}" onclick="refundRefuse(this.getAttribute('productOrderId'))">환불거절</button>
-                                <button class="btn" th:productOrderId="${productOrderList.id}" onclick="shipping(this.getAttribute('productOrderId'))">배송</button>
+                                <button th:if="${productOrderList.orderStatus} == '배송전'"
+                                        class="btn" th:productOrderId="${productOrderList.id}"
+                                        th:index="${sectionProductOrderListStat.index}"
+                                        onclick="sendProduct(this.getAttribute('productOrderId'), this.getAttribute('index'))">
+                                    배송
+                                </button>
+                                <button th:if="${productOrderList.orderStatus} == '환불처리중'"
+                                        class="btn" th:productOrderId="${productOrderList.id}"
+                                        th:index="${sectionProductOrderListStat.index}"
+                                        onclick="refundReason(this.getAttribute('productOrderId'), this.getAttribute('index'))">
+                                    환불사유
+                                </button>
+                                <p th:if="${productOrderList.orderStatus} == '배송완료'">배송완료</p>
                             </td>
                         </tr>
                     </tbody>
@@ -372,15 +394,35 @@
         <form id="sendRefundRefuseForm" method="post" th:action="@{/member/refundRefuse}">
             <div class="modal-content">
                 <p>환불사유</p>
-                <textarea rows="7" cols="40" maxlength="50" oninput="updateCharCount()" id="refundRefuseTextarea" name="refundTextarea"></textarea>
+                <textarea rows="7" cols="40" maxlength="50" oninput="updateCharCount()" id="refundRefuseTextarea" name="refundRefuseTextarea"></textarea>
                 <p>남은 글자 수: <span id="reFuseCharCount">50</span></p>
-                <button class="btn" onclick="sendRefundRefuse()">환불</button>
-                <button class="closeModal btn" type="button">닫기</button>
+                <button class="btn" type="button" onclick="sendRefundRefuse()">환불거절</button>
+                <button class="closeRefundRefuseModal btn" type="button">닫기</button>
             </div>
             <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
-            <input type="hidden" name="productOrderId" id="productOrderId">
+            <input type="hidden" id="hidProductOrderId" name="productOrderId">
         </form>
-<!--    여기 하다가 위에서 이상한거 생각나서 고치는중    -->
+    </div>
+
+    <!--  환불사유창.. 여기서 환불해줄지 환불거절할지 결정  -->
+    <div id="refundReasonModal" class="modal" style="display:none;">
+        <span class="close-btn">&times;</span>
+        <div class="modal-content">
+            <div id="refundReason"></div>
+            <button class="btn" onclick="refundRefuse()">환불거절</button>
+            <button class="btn" onclick="refundOk()">환불</button>
+        </div>
+    </div>
+
+    <div id="refundRefuseReasonModal" class="modal" style="display:none;">
+        <span class="close-btn">&times;</span>
+        <div class="modal-content">
+            <div id="refundRefuseReason" style="margin-bottom:10px;"></div>
+            <input type="hidden" id="hidProductOrderIdForComplete" name="productOrderId">
+            <p>환불거절 사유가 논리적이지 않거나 사유가 납득이 되지 않는다면 <span style="color:red;">구매결정하시지 마시고</span> 043-123-5678로 문의주세요.</p>
+            <button class="btn" onclick="completeOrderCheck()" id="completeOrderCheck">구매결정</button>
+            <button class="btn closeRefundRefuseReasonModal" onclick="">닫기</button>
+        </div>
     </div>
 
     <script>
@@ -392,6 +434,10 @@
         const closeModalBtn = document.querySelector('.close-btn');
         const closeModal = document.querySelector('.closeModal');
         const refundRefuseModal = document.getElementById('refundRefuseModal');
+        const closeRefundRefuseModal = document.querySelector('.closeRefundRefuseModal');
+        const refundReasonModal = document.getElementById('refundReasonModal');
+        const refundRefuseReasonModal = document.getElementById('refundRefuseReasonModal');
+        const closeRefundRefuseReasonModal = document.querySelector('.closeRefundRefuseReasonModal');
 
         // 모달 닫기 함수 (닫기 버튼 클릭 시)
         closeModalBtn.addEventListener("click", () => {
@@ -403,6 +449,14 @@
             refundModal.style.display = 'none';
         });
 
+        closeRefundRefuseModal.addEventListener('click', function () {
+            refundRefuseModal.style.display = 'none';
+        });
+
+        closeRefundRefuseReasonModal.addEventListener('click', function () {
+            refundRefuseReasonModal.style.display = 'none';
+        });
+
         // 모달 닫기 함수 (배경 클릭 시)
         window.addEventListener("click", (e) => {
             if (e.target === modal) {
@@ -411,8 +465,11 @@
             else if(e.target === refundModal) {
                 refundModal.style.display = 'none';
             }
-            else if(e.target === refundModal) {
+            else if(e.target === refundRefuseModal) {
                 refundRefuseModal.style.display = 'none';
+            }
+            else if(e.target === refundRefuseReasonModal) {
+                refundRefuseReasonModal.style.display = 'none';
             }
         });
 
@@ -430,10 +487,6 @@
             refundModal.style.display = 'flex';
 
             document.getElementById('productOrderId').value = productOrderId;
-        }
-
-        function refundRefuse(){
-            refundRefuseModal.style.display = 'flex';
         }
 
         function pwdSet(){
@@ -468,7 +521,7 @@
             const sections = document.querySelectorAll('.section');
 
             // 선택된 섹션의 ID를 확인합니다.
-            let isProductSection = section === 'product_register' || section === 'product_management';
+            let isProductSection = section === 'product_register' || section === 'productOrder';
 
             if(isProductSection){
                 let sLevel = [[${level}]];
@@ -728,10 +781,6 @@
             // 결과 확인 (디버깅 용도)
             // console.log(designsJson);
         }
-
-        function refundRefuse(productOrderId){
-
-        }
     </script>
     <script>
         'use strict'
@@ -768,6 +817,110 @@
             if(refundTextarea == '') alert('환불사유를 입력해주세요.');
 
             refundModal.submit();
+        }
+
+        function refundRefuse(){
+            refundReasonModal.style.display = 'none';
+            refundRefuseModal.style.display = 'flex';
+        }
+
+        function sendRefundRefuse(){
+            let refundRefuseTextarea = document.getElementById('refundRefuseTextarea').value.trim();
+            if(refundRefuseTextarea == '') alert('환불거부 사유를 입력해주세요.');
+
+            let sendRefundRefuseForm = document.getElementById('sendRefundRefuseForm');
+            sendRefundRefuseForm.submit();
+        }
+
+        function refundReason(productOrderId, index){
+            let productOrderStatusCheck = document.getElementById('productOrderStatus_' + index).textContent.trim();
+            if(productOrderStatusCheck != '환불처리중'){
+                alert('상품이 환불처리중일때 환불거절을 할 수 있습니다.');
+                return;
+            }
+
+            fetch('/member/refundReason',{
+                method: 'POST',
+                headers: {
+                    [csrfHeader]: csrfToken,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ productOrderId : productOrderId })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if(data.success){
+                    let content = data.content;
+                    document.getElementById('refundReason').textContent = content;
+                    document.getElementById('hidProductOrderId').value = productOrderId;
+                    refundReasonModal.style.display = 'flex';
+                }
+                else alert('거절사유를 가져오는 도중 에러발생.');
+            })
+            .catch(error => {
+                console.error(error);
+            });
+        }
+
+        function refundRefuseReason(productOrderId, index){
+            let orderStatusCheck = document.getElementById('orderStatus_' + index).textContent.trim();
+            if(orderStatusCheck != '환불거부'){
+                alert('상품이 환불거부 상태일때 사용할 수 있는 버튼입니다.');
+                return;
+            }
+
+            fetch('/member/refundRefuseReason',{
+                method: 'POST',
+                headers: {
+                    [csrfHeader]: csrfToken,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ productOrderId : productOrderId })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if(data.success){
+                    let content = data.content;
+                    document.getElementById('refundRefuseReason').textContent = content;
+                    document.getElementById('hidProductOrderIdForComplete').value = productOrderId;
+                    refundRefuseReasonModal.style.display = 'flex';
+                }
+                else alert('거절사유를 가져오는 도중 에러발생.');
+            })
+            .catch(error => {
+                console.error(error);
+            });
+        }
+
+        function completeOrderCheck(){
+            let productOrderId = document.getElementById('hidProductOrderIdForComplete').value;
+            const completeOrderCheckButton = document.getElementById('completeOrderCheck');
+            completeOrderCheckButton.addEventListener('click', () => completeOrder(productOrderId));
+        }
+
+        function sendProduct(productOrderId, index){
+            let productOrderStatusCheck = document.getElementById('productOrderStatus_' + index).textContent.trim();
+            if(productOrderStatusCheck != '배송전'){
+                alert('상품이 배송전일때 배송버튼을 이용할 수 있습니다.');
+                return;
+            }
+
+            fetch('/member/sendProduct',{
+                method: 'POST',
+                headers: {
+                    [csrfHeader]: csrfToken,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ productOrderId : productOrderId })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if(data.success) alert('배송처리했습니다.');
+                else alert('배송처리중 에러발생.');
+            })
+            .catch(error => {
+                console.error(error);
+            });
         }
     </script>
 </body>

@@ -119,6 +119,18 @@ public class MessageController {
             model.addAttribute("msg", "배송중일때만 가능함. 배송상태 에러");
             model.addAttribute("url", "/member/memberP#orders");
         }
+        else if(msgFlag.equals("refundRefuseX")){
+            model.addAttribute("msg", "환불거절중 오류(주문번호 혹은 메모 내용 없음.");
+            model.addAttribute("url", "/member/memberP#orders");
+        }
+        else if(msgFlag.equals("refundRefuseOk")){
+            model.addAttribute("msg", "환불거절하셨습니다.");
+            model.addAttribute("url", "/member/memberP#productOrder");
+        }
+        else if(msgFlag.equals("refundRefuseStatusErr")){
+            model.addAttribute("msg", "배송상태가 환불처리중 일때만 가능한 기능입니다.");
+            model.addAttribute("url", "/member/memberP#productOrder");
+        }
 
 
         return "include/message";

@@ -4,7 +4,8 @@ public enum OrderStatus {
     PREPARING("배송전"),
     SHIPPING("배송중"),
     DELIVERED("배송완료"),
-    REFUND_PROCESSING("환불처리중");
+    REFUND_PROCESSING("환불처리중"),
+    Refund_Refuse("환불거부");
 
     private final String orderStatusStr;
 

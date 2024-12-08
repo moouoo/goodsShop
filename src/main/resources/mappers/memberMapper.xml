@@ -70,6 +70,22 @@
         select orderStatus from productOrder where id = #{productOrderId};
     </select>
 
+    <select id="getRefundMessageIdByMemberIdAndProductId" resultType="java.lang.Integer">
+        select id from refundMessage where member_id = #{memberId} and product_id = #{productId};
+    </select>
+
+    <select id="getRefundMessageIdByProductOrderId" resultType="java.lang.Integer">
+        select refundMessage_id from productOrder where id = #{productOrderId};
+    </select>
+
+    <select id="getRefundReasonByrefundMessageId" resultType="java.lang.String">
+        select memo from refundMessage where id = #{refundMessageId};
+    </select>
+
+    <select id="getRefundRefuseMessageByRefundMessageId" resultType="java.lang.String">
+        select memo from refundRefuseMessage where refundMessage_id = #{refundMessageId};
+    </select>
+
 
     <!--  insert  -->
     <insert id="memberJoin">
@@ -88,6 +104,14 @@
     <insert id="setRefundMessage">
         insert into refundMessage (id, member_id, memo, refundDate, product_id)
             value (default, #{memberId}, #{refundTextarea}, default, #{productId});
+    </insert>
+
+    <insert id="setProductOrderRefundMsgId">
+        insert into productOrder (refundMessage_id) value (#{refundMessageId});
+    </insert>
+
+    <insert id="setRefundRefuseMessage">
+        insert into refundRefuseMessage (id, refundMessage_id, memo, refuseDate) value (default, #{refundMessageId}, #{refundRefuseTextarea}, default);
     </insert>
 
 
@@ -115,6 +139,11 @@
     <update id="updateOrderStatusSwitchRefund">
         update productOrder set orderStatus = #{refundProcessingOrderStatusStr} where id = #{productOrderId};
     </update>
+
+    <update id="updateOrderStatusSwitchRefundRefuse">
+        update productOrder set orderStatus = #{refundRefuseOrderStatusStr} where id = #{productOrderId};
+    </update>
+
 
 
     <!--  delete  -->

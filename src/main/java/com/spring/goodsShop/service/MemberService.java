@@ -67,4 +67,19 @@ public interface MemberService {
     void updateOrderStatusSwitchRefund(String refundProcessingOrderStatusStr, int productOrderId);
 
     String getOrderStatusByProductOrderId(int productOrderId);
+
+    int getRefundMessageIdByMemberIdAndProductId(int memberId, int productId);
+
+    void setProductOrderRefundMsgId(int refundMessageId);
+
+    void setRefundRefuseMessage(String refundRefuseTextarea, int refundMessageId);
+
+    int getRefundMessageIdByProductOrderId(int productOrderId);
+
+    void updateOrderStatusSwitchRefundRefuse(String refundRefuseOrderStatusStr, int productOrderId);
+
+    String getRefundReasonByrefundMessageId(int refundMessageId);
+
+    String getRefundRefuseMessageByRefundMessageId(int refundMessageId);
+
 }

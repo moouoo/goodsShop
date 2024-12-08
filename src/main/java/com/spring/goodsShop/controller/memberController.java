@@ -315,6 +315,9 @@ public class MemberController {
                 String refundProcessingOrderStatusStr = OrderStatus.REFUND_PROCESSING.getOrderStatusStr();
                 memberService.updateOrderStatusSwitchRefund(refundProcessingOrderStatusStr, productOrderId);
 
+                int refundMessageId = memberService.getRefundMessageIdByMemberIdAndProductId(memberId, productId);
+                memberService.setProductOrderRefundMsgId(refundMessageId);
+
                 return "redirect:/message/refundOk";
             }
             catch (Exception e) {
@@ -325,4 +328,105 @@ public class MemberController {
             return "redirect:/message/refundStatusErr";
         }
     }
+
+    @RequestMapping(value = "/refundRefuse", method = RequestMethod.POST)
+    String refundRefuse(int productOrderId, String refundRefuseTextarea, HttpSession session){
+        Object midObj = session.getAttribute("sMid");
+        String mid;
+        if (midObj == null) {
+            return "redirect:/message/memberX";
+        }
+        else {
+            mid = midObj.toString();
+        }
+
+        if(productOrderId == 0 || refundRefuseTextarea.isEmpty()){
+            return "redirect:/message/refundRefuseX";
+        }
+
+        int memberId = memberService.getMemberIdBymid(mid);
+        int productId = memberService.getProductIdByProductOrderId(productOrderId);
+
+        String orderStatus = memberService.getOrderStatusByProductOrderId(productOrderId);
+        System.out.println("orderStatus----" + orderStatus);
+        if(orderStatus.equals("환불처리중")){
+            try {
+                int refundMessageId = memberService.getRefundMessageIdByProductOrderId(productOrderId);
+
+                memberService.setRefundRefuseMessage(refundRefuseTextarea, refundMessageId);
+
+                String refundRefuseOrderStatusStr = OrderStatus.Refund_Refuse.getOrderStatusStr();
+                memberService.updateOrderStatusSwitchRefundRefuse(refundRefuseOrderStatusStr, productOrderId);
+
+                return "redirect:/message/refundRefuseOk";
+            }
+            catch (Exception e) {
+                throw new RuntimeException("refundRefuseMessage테이블 저장중 오류");
+            }
+        }
+        else{
+            return "redirect:/message/refundRefuseStatusErr";
+        }
+    }
+
+    @RequestMapping(value = "/refundReason", method = RequestMethod.POST)
+    ResponseEntity<Map<String, Object>> refundReason(@RequestBody Map<String, Object> item){
+        Map<String, Object> data = new HashMap<>();
+        int productOrderId = !item.get("productOrderId").toString().isEmpty() ? Integer.parseInt(item.get("productOrderId").toString()) : 0;
+
+        if(productOrderId == 0){
+            data.put("success", false);
+            return ResponseEntity.badRequest().body(data);
+        }
+
+        int refundMessageId = memberService.getRefundMessageIdByProductOrderId(productOrderId);
+        String refundReason = memberService.getRefundReasonByrefundMessageId(refundMessageId);
+        data.put("content", refundReason);
+        data.put("success", true);
+
+        return ResponseEntity.ok(data);
+    }
+
+    @RequestMapping(value = "/refundRefuseReason", method = RequestMethod.POST)
+    ResponseEntity<Map<String, Object>> refundRefuseReason(@RequestBody Map<String, Object> item){
+        Map<String, Object> data = new HashMap<>();
+        int productOrderId = !item.get("productOrderId").toString().isEmpty() ? Integer.parseInt(item.get("productOrderId").toString()) : 0;
+
+        if(productOrderId == 0){
+            data.put("success", false);
+            return ResponseEntity.badRequest().body(data);
+        }
+
+        int refundMessageId = memberService.getRefundMessageIdByProductOrderId(productOrderId);
+        String refundRefuseReason = memberService.getRefundRefuseMessageByRefundMessageId(refundMessageId);
+        data.put("content", refundRefuseReason);
+        data.put("success", true);
+
+        return ResponseEntity.ok(data);
+    }
+
+    @RequestMapping(value = "/sendProduct", method = RequestMethod.POST)
+    ResponseEntity<Map<String, Object>> sendProduct(@RequestBody Map<String, Object> item){
+        Map<String, Object> data = new HashMap<>();
+        int productOrderId = !item.get("productOrderId").toString().isEmpty() ? Integer.parseInt(item.get("productOrderId").toString()) : 0;
+
+        if(productOrderId == 0){
+            data.put("success", false);
+            return ResponseEntity.badRequest().body(data);
+        }
+
+        String orderStatus= OrderStatus.SHIPPING.getOrderStatusStr();
+
+        try {
+            memberService.updateOrderStatusByProductOrderId(productOrderId, orderStatus);
+        }
+        catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+
+        data.put("success", true);
+        return ResponseEntity.ok(data);
+    }
+
+    // 이제 위시리스트 할 차례
 }

@@ -252,5 +252,42 @@ public class MemberServiceImpl implements MemberService{
         return memberDao.getOrderStatusByProductOrderId(productOrderId);
     }
 
+    @Override
+    public int getRefundMessageIdByMemberIdAndProductId(int memberId, int productId) {
+        return memberDao.getRefundMessageIdByMemberIdAndProductId(memberId, productId);
+    }
+
+    @Override
+    public void setProductOrderRefundMsgId(int refundMessageId) {
+        memberDao.setProductOrderRefundMsgId(refundMessageId);
+    }
+
+    @Override
+    public void setRefundRefuseMessage(String refundRefuseTextarea, int refundMessageId) {
+        memberDao.setRefundRefuseMessage(refundRefuseTextarea, refundMessageId);
+    }
+
+    @Override
+    public int getRefundMessageIdByProductOrderId(int productOrderId) {
+        return memberDao.getRefundMessageIdByProductOrderId(productOrderId);
+    }
+
+    @Override
+    public void updateOrderStatusSwitchRefundRefuse(String refundRefuseOrderStatusStr, int productOrderId) {
+        memberDao.updateOrderStatusSwitchRefundRefuse(refundRefuseOrderStatusStr, productOrderId);
+    }
+
+    @Override
+    public String getRefundReasonByrefundMessageId(int refundMessageId) {
+        return memberDao.getRefundReasonByrefundMessageId(refundMessageId);
+    }
+
+    @Override
+    public String getRefundRefuseMessageByRefundMessageId(int refundMessageId) {
+        return memberDao.getRefundRefuseMessageByRefundMessageId(refundMessageId);
+    }
+
+
+
 
 }
