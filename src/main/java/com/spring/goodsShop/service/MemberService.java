@@ -82,4 +82,11 @@ public interface MemberService {
 
     String getRefundRefuseMessageByRefundMessageId(int refundMessageId);
 
+    boolean checkWishListExist(int memberId);
+
+    String getWishListProductIds(int memberId);
+
+    void insertWishList(int memberId, String productIdJson);
+
+    void updateWishList(int memberId, String productIdJson);
 }

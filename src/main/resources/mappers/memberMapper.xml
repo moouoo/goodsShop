@@ -86,6 +86,14 @@
         select memo from refundRefuseMessage where refundMessage_id = #{refundMessageId};
     </select>
 
+    <select id="checkWishListExist" resultType="java.lang.Integer">
+        select count(*) from wishList where member_id = #{memberId};
+    </select>
+
+    <select id="getWishListProductIds" resultType="java.lang.String">
+        select productIds from wishList where member_id = #{memberId};
+    </select>
+
 
     <!--  insert  -->
     <insert id="memberJoin">
@@ -112,6 +120,10 @@
 
     <insert id="setRefundRefuseMessage">
         insert into refundRefuseMessage (id, refundMessage_id, memo, refuseDate) value (default, #{refundMessageId}, #{refundRefuseTextarea}, default);
+    </insert>
+
+    <insert id="insertWishList">
+        insert into wishList (id, member_id, productIds) value (default, #{memberId}, #{productIdJson});
     </insert>
 
 
@@ -142,6 +154,10 @@
 
     <update id="updateOrderStatusSwitchRefundRefuse">
         update productOrder set orderStatus = #{refundRefuseOrderStatusStr} where id = #{productOrderId};
+    </update>
+
+    <update id="updateWishList">
+        update wishList set productIds = #{productIdJson} where member_id = #{memberId};
     </update>
 
 

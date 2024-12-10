@@ -1,5 +1,8 @@
 package com.spring.goodsShop.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.spring.goodsShop.enums.OrderStatus;
 import com.spring.goodsShop.service.AdminService;
 import com.spring.goodsShop.service.ProductService;
@@ -428,5 +431,52 @@ public class MemberController {
         return ResponseEntity.ok(data);
     }
 
-    // 이제 위시리스트 할 차례
+    @RequestMapping(value = "/addWishList", method = RequestMethod.POST)
+    ResponseEntity<Map<String, Object>> addWishList(@RequestBody Map<String, Object> item, HttpSession session) throws JsonProcessingException {
+        Map<String, Object> data = new HashMap<>();
+        int productId = !item.get("productId").toString().isEmpty() ? Integer.parseInt(item.get("productId").toString()) : 0;
+
+        if(productId == 0){
+            throw new RuntimeException("위시리스트 등록 시 productId 넘기기 실패");
+        }
+
+        String mid = (String) session.getAttribute("sMid");
+        if (mid == null) {
+            data.put("loginOk", false);
+        }
+        else{
+            int memberId = memberService.getMemberIdBymid(mid);
+
+            boolean check = memberService.checkWishListExist(memberId);
+
+            if(check){
+                // 존재하지않으므로 해당 내용 테이블에 생성... check == true
+                ObjectMapper objectMapper = new ObjectMapper();
+
+                // 단일 int 데이터를 리스트로 변환
+                String productIdJson = objectMapper.writeValueAsString(Collections.singletonList(productId));
+                memberService.insertWishList(memberId, productIdJson);
+            }
+            else {
+                // 존재하므로 기존 테이블에 productId가 존재하는지 확인 후 있으면 거부, 없으면 넣어서 저장.
+                ObjectMapper objectMapper = new ObjectMapper();
+                String productIdsJson = memberService.getWishListProductIds(memberId);
+                List<Integer> productIds = objectMapper.readValue(productIdsJson, new TypeReference<>() {});
+                System.out.println("productIds-----" + productIds);
+
+                if(!productIds.contains(productId)){
+                    productIds.add(productId);
+                    String productIdJson = objectMapper.writeValueAsString(productIds);
+                    memberService.updateWishList(memberId, productIdJson);
+                    data.put("success", true);
+                }
+                else{
+                    // 이미존재하는 상품번호이다.
+                    data.put("success", false);
+                }
+            }
+        }
+        data.put("loginOk", true);
+        return ResponseEntity.ok(data);
+    }
 }

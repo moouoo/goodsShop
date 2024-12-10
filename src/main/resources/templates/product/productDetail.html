@@ -308,7 +308,7 @@
                     <input type="hidden" name="productId" th:value="${productId}">
                     <button type="button" class="buy-now" th:productId="${productId}" onclick="addToCart(this.getAttribute('productId'))">바로 구매하기</button>
                     <button type="button" class="add-cart" th:productId="${productId}" onclick="addToCart(this.getAttribute('productId'))">장바구니</button>
-                    <button class="wish-list">관심상품</button>
+                    <button type="button" th:productId="${productId}" class="wish-list" onclick="addWishList(this.getAttribute('productId'))">관심상품</button>
                 </div>
             </form>
         </div>
@@ -476,6 +476,34 @@
                 })
                 .catch(error => console.error('Error:', error));
             }
+        }
+
+        function addWishList(productId){
+            fetch('/member/addWishList',{
+                method: "POST",
+                headers: {
+                    [csrfHeader]: csrfToken,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ productId : productId })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if(!data.loginOk) {
+                    console.log(data.loginOk);
+                    alert('로그인을 하셔야 관심상품에 등록할 수 있습니다.');
+                    window.location.href='/member/login';
+                    return;
+                }
+                if(data.success){
+                    alert('위시리스트에 등록되었습니다.');
+                }
+                else alert('위시리스트에 존재하는 상품입니다.');
+            })
+            .catch(error => {
+                console.error(error);
+                alert('서버에 오류가 발생했습니다.');
+            });
         }
     </script>
 </body>

@@ -287,7 +287,31 @@ public class MemberServiceImpl implements MemberService{
         return memberDao.getRefundRefuseMessageByRefundMessageId(refundMessageId);
     }
 
+    @Override
+    public boolean checkWishListExist(int memberId) {
+        boolean check;
+        int count =  memberDao.checkWishListExist(memberId);
 
+        if(count == 1) check = false;
+        else check = true;
+
+        return check;
+    }
+
+    @Override
+    public String getWishListProductIds(int memberId) {
+        return memberDao.getWishListProductIds(memberId);
+    }
+
+    @Override
+    public void insertWishList(int memberId, String productIdJson) {
+        memberDao.insertWishList(memberId, productIdJson);
+    }
+
+    @Override
+    public void updateWishList(int memberId, String productIdJson) {
+        memberDao.updateWishList(memberId, productIdJson);
+    }
 
 
 }

@@ -76,4 +76,11 @@ public interface MemberDao {
 
     String getRefundRefuseMessageByRefundMessageId(@Param("refundMessageId") int refundMessageId);
 
+    int checkWishListExist(@Param("memberId") int memberId);
+
+    String getWishListProductIds(@Param("memberId") int memberId);
+
+    void insertWishList(@Param("memberId") int memberId, @Param("productIdJson") String productIdJson);
+
+    void updateWishList(@Param("memberId") int memberId, @Param("productIdJson") String productIdJson);
 }
