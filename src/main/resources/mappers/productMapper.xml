@@ -91,15 +91,41 @@
         select mid from member where id = #{memberId};
     </select>
 
+    <select id="getProductDESCLimit10" resultType="com.spring.goodsShop.vo.ProductVo">
+        SELECT p.id, p.sub_category_id, p.product_name, p.price, p.brand, pi.img1
+        FROM product p
+        JOIN product_img pi ON p.product_img_id = pi.id
+        ORDER BY p.Rdate DESC LIMIT 10;
+    </select>
+
+    <select id="getProductDESC" resultType="com.spring.goodsShop.vo.ProductVo">
+        SELECT p.id, p.sub_category_id, p.product_name, p.price, p.brand, pi.img1
+        FROM product p
+        JOIN product_img pi ON p.product_img_id = pi.id
+        ORDER BY p.Rdate DESC;
+    </select>
+
+    <select id="getProductSalesCount" resultType="com.spring.goodsShop.vo.ProductVo">
+        SELECT sales_count FROM product WHERE id = #{productId};
+    </select>
+
+
     <!--  insert  -->
     <insert id="setOrderOne" useGeneratedKeys="true" keyProperty="id">
-        insert into productOrder (id, member_id, product_id, design, amount, address, order_date, status, price, productName, orderStaus)
+        insert into productOrder (id, member_id, product_id, design, amount, address, order_date, status, price, productName, orderStatus)
         values (default, #{order.member_id}, #{order.product_id}, #{order.design}, #{order.amount}, #{order.address}, default, #{order.status}, #{order.price}, #{order.productName}, default);
     </insert>
 
     <insert id="setPaymentOne">
         insert into payment values (default, #{payment.order_id}, #{payment.payMethod}, #{payment.payment_date}, #{payment.finalPrice});
     </insert>
+
+
     <!--  update  -->
+    <update id="updateAddSalesCount">
+        UPDATE product SET sales_count = #{addSalesCount} WHERE id = #{productId};
+    </update>
+
+
     <!--  delete  -->
 </mapper>

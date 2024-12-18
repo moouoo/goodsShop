@@ -679,4 +679,17 @@ public class ProductController {
         return ResponseEntity.ok(data);
     }
 
+    @RequestMapping(value = "/productNew", method = RequestMethod.GET)
+    String productNew(Model model){
+        List<ProductVo> product_listLimit10 = productService.getProductDESCLimit10();
+        List<ProductVo> product_list = productService.getProductDESC();
+
+
+        model.addAttribute("product_listLimit10", product_listLimit10);
+        model.addAttribute("product_list", product_list);
+
+        navbarHelper.navbarSetup(model);
+        return "product/productNew";
+    }
+
 }

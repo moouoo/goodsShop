@@ -313,5 +313,10 @@ public class MemberServiceImpl implements MemberService{
         memberDao.updateWishList(memberId, productIdJson);
     }
 
+    @Override
+    public List<ProductVo> getProductForWishList(int wishListProductId) {
+        return memberDao.getProductForWishList(wishListProductId);
+    }
+
 
 }

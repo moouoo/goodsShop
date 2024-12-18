@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.spring.goodsShop.enums.OrderStatus;
+import com.spring.goodsShop.etc.NavbarHelper;
 import com.spring.goodsShop.service.AdminService;
 import com.spring.goodsShop.service.ProductService;
 import com.spring.goodsShop.vo.*;
@@ -146,7 +147,7 @@ public class MemberController {
     }
 
     @RequestMapping(value = "/memberP", method = RequestMethod.GET)
-    String memberP(Model model, HttpSession session){
+    String memberP(Model model, HttpSession session) throws JsonProcessingException {
         String mid = (String) session.getAttribute("sMid");
         String email = (String) session.getAttribute("sEmail");
         int level = (int) session.getAttribute("sLevel");
@@ -219,6 +220,26 @@ public class MemberController {
 
         model.addAttribute("sectionOrdersList", sectionOrdersList);
 
+        // section - wishList
+        ObjectMapper objectMapper = new ObjectMapper();
+        String productIdsJson = memberService.getWishListProductIds(memberId);
+        // productIdsJson가 비어있을경우 에러 피하기
+        if(productIdsJson == null || productIdsJson.isEmpty()){
+            productIdsJson = "[]";
+        }
+
+        List<Integer> wishListProductIds = objectMapper.readValue(productIdsJson, new TypeReference<>() {});
+
+        List<ProductVo> wishListProduct =  new ArrayList<>();
+        for (int i = 0; i < wishListProductIds.size(); i++) {
+            // 상품의 사진, 이름, 가격정보를 가져와야함.
+            // 이번에는 sql문의 join을 이용해서 한번 짜보자.
+            int wishListProductId = wishListProductIds.get(i);
+            List<ProductVo> wishListProductTem = memberService.getProductForWishList(wishListProductId);
+            wishListProduct.addAll(wishListProductTem);
+        }
+
+        model.addAttribute("wishListProduct", wishListProduct);
         return "member/memberP";
     }
 
@@ -278,13 +299,20 @@ public class MemberController {
     ResponseEntity<Map<String, Object>> completeOrder(@RequestBody Map<String, Object> item){
         Map<String, Object> data = new HashMap<>();
         int productOrderId = !item.get("productOrderId").toString().isEmpty() ? Integer.parseInt(item.get("productOrderId").toString()) : 0;
+        int productId = !item.get("productId").toString().isEmpty() ? Integer.parseInt(item.get("productId").toString()) : 0;
+        int amount = !item.get("amount").toString().isEmpty() ? Integer.parseInt(item.get("amount").toString()) : 0;
 
-        if(productOrderId == 0){
+        if(productOrderId == 0 ||amount == 0 || productId == 0){
             data.put("success", false);
             return ResponseEntity.badRequest().body(data);
         }
         String orderStatus = OrderStatus.DELIVERED.getOrderStatusStr();
         memberService.updateOrderStatusByProductOrderId(productOrderId, orderStatus);
+
+        // 상품배송완료시 product테이블의 sales_count컬럼 업그레이드
+        int salesCount = productService.getProductSalesCount(productId);
+        int addSalesCount = salesCount + amount;
+        productService.updateAddSalesCount(productId, addSalesCount);
 
         data.put("success", true);
 
@@ -351,7 +379,7 @@ public class MemberController {
         int productId = memberService.getProductIdByProductOrderId(productOrderId);
 
         String orderStatus = memberService.getOrderStatusByProductOrderId(productOrderId);
-        System.out.println("orderStatus----" + orderStatus);
+
         if(orderStatus.equals("환불처리중")){
             try {
                 int refundMessageId = memberService.getRefundMessageIdByProductOrderId(productOrderId);
@@ -462,7 +490,6 @@ public class MemberController {
                 ObjectMapper objectMapper = new ObjectMapper();
                 String productIdsJson = memberService.getWishListProductIds(memberId);
                 List<Integer> productIds = objectMapper.readValue(productIdsJson, new TypeReference<>() {});
-                System.out.println("productIds-----" + productIds);
 
                 if(!productIds.contains(productId)){
                     productIds.add(productId);
@@ -477,6 +504,46 @@ public class MemberController {
             }
         }
         data.put("loginOk", true);
+        return ResponseEntity.ok(data);
+    }
+
+    @RequestMapping(value = "/deleteWishList", method = RequestMethod.POST)
+    ResponseEntity<Map<String, Object>> deleteWishList(@RequestBody Map<String, Integer> item, HttpSession session) throws JsonProcessingException {
+        Map<String, Object> data = new HashMap<>();
+//        int productId = !item.get("productId").toString().isEmpty() ? Integer.parseInt(item.get("productId").toString()) : 0;
+        int productId = !item.get("productId").toString().isEmpty() ? item.get("productId") : 0;
+        if(productId == 0){
+            throw new RuntimeException("위시리스트 삭제 시 productId 넘기기 실패");
+        }
+
+        String mid = (String) session.getAttribute("sMid");
+        if (mid == null) {
+            System.out.println("로그인세션없음");
+            data.put("loginOk", false);
+        }
+        else {
+            // 맴버아이디를 이용해서 위시리스트 접근후 삭제.
+            int memberId = memberService.getMemberIdBymid(mid);
+
+            ObjectMapper objectMapper = new ObjectMapper();
+            // db에서 데이터 꺼내온후에 json나눠서 따로 만든다음에 들어온 번호와 일치하는거 제거후에 다시 포장해서 db에 저장
+            String productIdsJson = memberService.getWishListProductIds(memberId);
+            List<Integer> productIds = objectMapper.readValue(productIdsJson, new TypeReference<>() {});
+
+            if(productIds.contains(productId)){
+                productIds.remove(Integer.valueOf(productId));
+                String productIdJson = objectMapper.writeValueAsString(productIds);
+                memberService.updateWishList(memberId, productIdJson);
+
+                data.put("success", true);
+                data.put("loginOk", true);
+            }
+            else{
+                // 위시리스트에서 상품제거 실패
+                data.put("success", false);
+                System.out.println("위시리스트상품제거실패");
+            }
+        }
         return ResponseEntity.ok(data);
     }
 }

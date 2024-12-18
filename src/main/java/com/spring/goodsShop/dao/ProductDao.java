@@ -52,4 +52,12 @@ public interface ProductDao {
     String getProductNameByProductId(@Param("productId") int productId);
 
     String getOrderMemberNameByMemberId(@Param("memberId") int memberId);
+
+    List<ProductVo> getProductDESCLimit10();
+
+    List<ProductVo> getProductDESC();
+
+    int getProductSalesCount(@Param("productId") int productId);
+
+    void updateAddSalesCount(@Param("productId") int productId, @Param("addSalesCount") int addSalesCount);
 }

@@ -188,4 +188,24 @@ public class ProductServiceImpl implements ProductService{
         return productDao.getOrderMemberNameByMemberId(memberId);
     }
 
+    @Override
+    public List<ProductVo> getProductDESCLimit10() {
+        return productDao.getProductDESCLimit10();
+    }
+
+    @Override
+    public List<ProductVo> getProductDESC() {
+        return productDao.getProductDESC();
+    }
+
+    @Override
+    public int getProductSalesCount(int productId) {
+        return productDao.getProductSalesCount(productId);
+    }
+
+    @Override
+    public void updateAddSalesCount(int productId, int addSalesCount) {
+        productDao.updateAddSalesCount(productId, addSalesCount);
+    }
+
 }

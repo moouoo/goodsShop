@@ -94,6 +94,20 @@
         select productIds from wishList where member_id = #{memberId};
     </select>
 
+    <resultMap id="ProductVoMap" type="com.spring.goodsShop.vo.ProductVo">
+        <result property="id" column="id"/>
+        <result property="sub_category_id" column="sub_category_id"/>
+        <result property="product_name" column="product_name"/>
+        <result property="product_img_id" column="product_img_id"/>
+        <result property="price" column="price"/>
+        <result property="img1" column="img1"/>
+    </resultMap>
+
+    <select id="getProductForWishList" resultMap="ProductVoMap">
+        SELECT p.id, p.sub_category_id ,p.product_name, p.product_img_id, p.price, pi.img1 FROM product p
+        JOIN product_img pi ON p.product_img_id = pi.id WHERE p.id = #{wishListProductId};
+    </select>
+
 
     <!--  insert  -->
     <insert id="memberJoin">

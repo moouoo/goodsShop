@@ -83,4 +83,6 @@ public interface MemberDao {
     void insertWishList(@Param("memberId") int memberId, @Param("productIdJson") String productIdJson);
 
     void updateWishList(@Param("memberId") int memberId, @Param("productIdJson") String productIdJson);
+
+    List<ProductVo> getProductForWishList(@Param("wishListProductId") int wishListProductId);
 }

@@ -51,4 +51,12 @@ public interface ProductService {
     String getProductNameByProductId(int productId);
 
     String getOrderMemberNameByMemberId(int memberId);
+
+    List<ProductVo> getProductDESCLimit10();
+
+    List<ProductVo> getProductDESC();
+
+    int getProductSalesCount(int productId);
+
+    void updateAddSalesCount(int productId, int addSalesCount);
 }

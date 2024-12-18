@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="ko" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../fontawesome/css/all.min.css">
+    <link rel="stylesheet" href="../css/nav.css">
+    <link rel="stylesheet" href="../css/productNew.css">
+    <title>신제품</title>
+</head>
+<body>
+    <div th:replace="include/nav :: navbar"></div>
+
+    <div class="new-products">
+        <h2 class="main-title">NEW</h2>
+        <p class="sub-title">주목할 만한 NEW 굿즈</p>
+        <div class="slider-container">
+            <!-- 좌우 버튼 -->
+            <button class="slider-btn left" onclick="moveSlide(-1)">&#10094;</button>
+            <div class="slider-wrapper">
+                <div class="slider">
+                    <!-- 상품 아이템 -->
+                    <div class="product-card slideItem" th:each="product_listLimit10 : ${product_listLimit10}">
+                        <img th:src="@{/img/product_img/{img1}(img1=${product_listLimit10.img1})}" alt="상품 이미지">
+                        <span class="brand" th:text="${product_listLimit10.brand}"></span><p class="product-title" th:text="${product_listLimit10.product_name}">상품이름</p>
+                        <p class="product-price" th:text="${product_listLimit10.getFormattedPrice}">상품가격</p>
+                    </div>
+                </div>
+            </div>
+            <button class="slider-btn right" onclick="moveSlide(1)">&#10095;</button>
+        </div>
+    </div>
+
+    <div class="product-container">
+        <h2>최근상품</h2>
+        <div class="product-grid">
+            <!-- 상품 카드 반복 -->
+            <div class="product-card" th:each="product_list : ${product_list}">
+                <a th:href="@{/product/{product_name}/{id}/{productId}(product_name=${product_list.product_name}, id=${product_list.sub_category_id}, productId=${product_list.id})}">
+                    <img th:src="@{/img/product_img/{img1}(img1=${product_list.img1})}" alt="상품 이미지">
+                    <span class="brand" th:text="${product_list.brand}">브랜드</span>
+                    <h3 th:text="${product_list.product_name}">상품 이름</h3>
+                </a>
+                <span th:text="${product_list.getFormattedPrice}">가격</span>
+            </div>
+        </div>
+    </div>
+
+    <script src="/js/productNew_slider.js"></script>
+</body>
+</html>

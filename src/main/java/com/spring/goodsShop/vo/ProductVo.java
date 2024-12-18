@@ -18,6 +18,12 @@ public class ProductVo {
     private int stock;
     private String Rdate;
     private String design; //json
+    private int sales_count;
+
+    // wishList에서 join을 통한 상품이미지를 가져오기 위한 장치
+    // productNew.html에서 이용해보기 join이용해서
+    private String img1;
+
 
     public String getFormattedPrice() {
         NumberFormat numberFormat = NumberFormat.getInstance(Locale.KOREA);

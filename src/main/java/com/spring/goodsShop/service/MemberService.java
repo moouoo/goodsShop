@@ -89,4 +89,6 @@ public interface MemberService {
     void insertWishList(int memberId, String productIdJson);
 
     void updateWishList(int memberId, String productIdJson);
+
+    List<ProductVo> getProductForWishList(int wishListProductId);
 }

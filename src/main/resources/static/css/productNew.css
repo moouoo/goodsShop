@@ -1,0 +1,163 @@
+/* 기본 스타일 */
+h2 {
+    font-size: 24px;
+    text-align: center;
+    margin: 20px 0;
+    color: #444;
+}
+/* 컨테이너 스타일 */
+.product-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+/* 그리드 스타일 */
+.product-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); /* 반응형 그리드 */
+    gap: 20px;
+}
+
+/* 카드 스타일 */
+.product-card {
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+.product-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+.product-card img {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+}
+.product-card h3 {
+    font-size: 18px;
+    color: #333;
+    margin: 10px 0 5px;
+}
+.product-card .brand {
+    font-size: 14px;
+    color: #888;
+    margin-bottom: 5px;
+    display: block;
+}
+.product-card .price {
+    font-size: 16px;
+    color: #007bff;
+    font-weight: bold;
+    margin-bottom: 15px;
+}
+
+/* 링크 스타일 */
+.product-card a {
+    text-decoration: none;
+    color: inherit;
+}
+.product-card a:hover h3 {
+    color: #007bff;
+}
+.main-title {
+    text-align: center;
+    font-size: 28px;
+    font-weight: bold;
+    margin: 20px 0 5px;
+}
+
+.sub-title {
+    text-align: center;
+    color: #555;
+    font-size: 16px;
+    margin-bottom: 30px;
+}
+
+/* 슬라이더 컨테이너 */
+.slider-container {
+    position: relative;
+    width: 90%;
+    margin: 0 auto;
+    overflow: hidden;
+    padding-top: 50px; /* 슬라이드 상단 여백 추가 */
+}
+
+.slider-wrapper {
+    width: 100%;
+    overflow: hidden;
+}
+
+.slider {
+    display: flex;
+    transition: transform 0.5s ease-in-out;
+}
+
+/* 상품 카드 디자인 */
+.product-card {
+    flex: 0 0 220px; /* 각 상품 카드 너비 */
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    text-align: center;
+    margin-right: 20px;
+    padding: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    transition: transform 0.3s;
+}
+
+.product-card:hover {
+    transform: translateY(-5px);
+}
+
+.product-card img {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+    border-radius: 8px;
+}
+
+.product-title {
+    font-size: 14px;
+    margin: 10px 0;
+    color: #333;
+}
+
+.product-price {
+    font-size: 16px;
+    font-weight: bold;
+    color: #000;
+}
+
+/* 슬라이더 버튼 */
+/* 슬라이더 버튼 (상단 오른쪽에 위치) */
+.slider-btn {
+    position: absolute;
+    top: 10px; /* 상단에서의 거리 */
+    right: 10px; /* 오른쪽에서의 거리 */
+    background-color: rgba(0, 0, 0, 0.5);
+    color: #fff;
+    border: none;
+    width: 35px;
+    height: 35px;
+    font-size: 18px;
+    cursor: pointer;
+    border-radius: 50%;
+    transition: background 0.3s;
+    z-index: 10;
+}
+
+/* 왼쪽 버튼 위치를 조정 */
+.slider-btn.left {
+    right: 60px; /* 오른쪽에서 조금 왼쪽으로 밀기 */
+}
+
+.slider-btn.right {
+    right: 10px; /* 오른쪽 버튼은 더 오른쪽에 배치 */
+}
+
+.slider-btn:hover {
+    background-color: rgba(0, 0, 0, 0.8);
+}

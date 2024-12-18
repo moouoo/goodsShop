@@ -43,7 +43,7 @@
         }
         .container {
             flex: 1;
-            max-width: 800px;
+            max-width: 1200px;
             margin: 20px;
             margin-top: 60px;
             background: #fff;
@@ -112,6 +112,9 @@
         }
         .flex {
             display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+
         }
         .space_between {
             display: flex;
@@ -137,6 +140,54 @@
             gap: 10px;
         }
 
+        .wishlist-container {
+
+        }
+        .wishlist-item {
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin: 10px;
+            width: 200px;
+            overflow: hidden;
+            text-align: center;
+            transition: transform 0.3s ease;
+        }
+        .wishlist-item:hover {
+            transform: translateY(-10px);
+        }
+        .wishlist-item img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            border-bottom: 1px solid #eee;
+        }
+        .wishlist-item .product-info {
+            padding: 15px;
+        }
+        .wishlist-item h3 {
+            font-size: 18px;
+            margin: 10px 0;
+            color: #333;
+        }
+        .wishlist-item p {
+            color: #777;
+            font-size: 16px;
+        }
+        .remove-btn {
+            background-color: #ff4c4c;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            font-size: 14px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: background-color 0.3s ease;
+        }
+        .remove-btn:hover {
+            background-color: #e03e3e;
+        }
     </style>
 </head>
 <body>
@@ -203,6 +254,7 @@
                             <th>주문 번호</th>
                             <th>상품명</th>
                             <th>가격</th>
+                            <th>수량</th>
                             <th>주문일</th>
                             <th>상태</th>
                             <th>관리</th>
@@ -215,12 +267,13 @@
                                 [<span th:text="${sectionOrdersList.design}"></span>]<p th:text="${sectionOrdersList.productName}"></p>
                             </td>
                             <td th:text="${sectionOrdersList.price}">주문가격</td>
+                            <td th:text="${sectionOrdersList.amount}">구입수량</td>
                             <td th:text="${sectionOrdersList.order_date}">구입날짜</td>
                             <td th:id="'orderStatus_' + ${sectionOrdersListStat.index}" th:text="${sectionOrdersList.orderStatus}">배송전/배송중/결정완료/환불중</td>
                             <td>
                                 <button th:if="${sectionOrdersList.orderStatus} == '배송중'"
-                                        class="btn" th:productOrderId="${sectionOrdersList.id}"
-                                        onclick="completeOrder(this.getAttribute('productOrderId'))">
+                                        class="btn" th:productOrderId="${sectionOrdersList.id}" th:productId="${sectionOrdersList.product_id}" th:amount="${sectionOrdersList.amount}"
+                                        onclick="completeOrder(this.getAttribute('productOrderId'), this.getAttribute('productId'), this.getAttribute('amount'))">
                                     구매결정
                                 </button>
                                 <button th:if="${sectionOrdersList.orderStatus} == '환불거부'"
@@ -261,25 +314,29 @@
             </div>
 
             <div class="section" id="wishlist" style="display: none;">
-                <h2>찜 목록</h2>
-                <table>
-                    <thead>
-                    <tr>
-                        <th>상품명</th>
-                        <th>가격</th>
-                        <th>상태</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <tr>
-                        <td>상품 E</td>
-                        <td>₩30,000</td>
-                        <td>찜하기</td>
-                    </tr>
-                    </tbody>
-                </table>
+                <h2>찜한상품</h2>
+                <div class="flex">
+                <div class="wishlist-container" th:each="wishListProduct : ${wishListProduct}">
+                    <div class="wishlist-item">
+                        <a th:href="@{/product/{product_name}/{id}/{productId}(product_name=${wishListProduct.product_name}, id=${wishListProduct.sub_category_id}, productId=${wishListProduct.id})}">
+                            <img th:src=@{/img/product_img/{img1}(img1=${wishListProduct.img1})} alt="Product Image">
+                        </a>
+                        <div class="product-info">
+                            <h3 th:text="${wishListProduct.product_name}">상품 이름</h3>
+                            <p th:text="${wishListProduct.price}">가격: 20,000원</p>
+                            <button class="remove-btn" th:productId="${wishListProduct.id}" onclick="deleteWishList(this.getAttribute('productId'))">삭제</button>
+                        </div>
+                    </div>
+                </div>
+                </div>
             </div>
 
+            <!--
+                지금 뷰에서 두번째부터 옆으로 안가고 밑으로 내려가는 현상 발견.
+                한줄에 4개 정도까지 넣어보자.
+            -->
+
+            <!-- 유저등급 level2 -->
             <div class="section" id="product_register" style="display: none;">
                 <h2>상품등록</h2>
                 <form name="productForm" method="post" th:action="@{/product/insertProduct}" enctype="multipart/form-data">
@@ -380,6 +437,7 @@
                                     환불사유
                                 </button>
                                 <p th:if="${productOrderList.orderStatus} == '배송완료'">배송완료</p>
+                                <p th:if="${productOrderList.orderStatus} == '배송중'">배송중</p>
                             </td>
                         </tr>
                     </tbody>
@@ -785,14 +843,22 @@
     <script>
         'use strict'
 
-        function completeOrder(productOrderId){
+        function completeOrder(productOrderId, productId, amount){
+            let item = {
+                productOrderId : productOrderId,
+                productId : productId,
+                amount : amount
+                // 현재 productId랑 amount가 0으로 받고 있어서 400 badrequest가 뜨고 있음.
+            };
+            console.log(item);
+
             fetch('/member/completeOrder',{
-                method: "POST",
+                method: 'POST',
                 headers: {
                     [csrfHeader]: csrfToken,
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({ productOrderId : productOrderId })
+                body: JSON.stringify(item)
             })
             .then(response => response.json())
             .then(data => {
@@ -917,6 +983,37 @@
             .then(data => {
                 if(data.success) alert('배송처리했습니다.');
                 else alert('배송처리중 에러발생.');
+            })
+            .catch(error => {
+                console.error(error);
+            });
+        }
+    </script>
+    <script>
+        'use strict';
+
+        function deleteWishList(productId){
+            fetch('/member/deleteWishList',{
+                method: 'POST',
+                headers: {
+                    [csrfHeader]: csrfToken,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ productId : productId })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if(data.loginOk){
+                    if(data.success){
+                        alert('위시리스트에서 삭제되었습니다.');
+                        location.reload();
+                    }
+                    else alert('위시리스트 삭제중 오류발생');
+                }
+                else{
+                    alert('세션완료. 로그인하셔야 사용할 수 있는 기능입니다.');
+                    console.log('loginOk--false');
+                }
             })
             .catch(error => {
                 console.error(error);

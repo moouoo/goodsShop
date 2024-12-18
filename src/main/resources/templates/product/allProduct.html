@@ -107,7 +107,8 @@
                          th:if="${product_list.product_img_id == product_img_list.id}">
                         <img th:src="@{/img/product_img/{img1}(img1=${product_img_list.img1})}" alt="상품 이미지">
                     </div>
-                    [<span th:text="${product_list.brand}">브랜드이름</span>]<h3 th:text="${product_list.product_name}">상품이름</h3>
+                    [<span th:text="${product_list.brand}">브랜드이름</span>]
+                    <h3 th:text="${product_list.product_name}">상품이름</h3>
                 </a>
                 <span th:text="${product_list.getFormattedPrice}">가격</span>
             </div>
