@@ -59,4 +59,8 @@ public interface ProductService {
     int getProductSalesCount(int productId);
 
     void updateAddSalesCount(int productId, int addSalesCount);
+
+    List<ProductVo> getProductBest100();
+
+    List<ProductVo> getOrderProduct(int memberId);
 }

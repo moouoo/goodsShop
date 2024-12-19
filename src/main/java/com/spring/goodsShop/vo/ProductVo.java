@@ -24,10 +24,20 @@ public class ProductVo {
     // productNew.html에서 이용해보기 join이용해서
     private String img1;
 
+    // 리뷰할수있는 상품가져올때 사용.
+    private String orderDesign;
+    private int orderPrice;
+    private String reviewStatus;
+
 
     public String getFormattedPrice() {
         NumberFormat numberFormat = NumberFormat.getInstance(Locale.KOREA);
         return numberFormat.format(this.price) + "원";
+    }
+
+    public String getFormattedOrderPrice(){
+        NumberFormat numberFormat = NumberFormat.getInstance(Locale.KOREA);
+        return numberFormat.format(this.orderPrice) + "원";
     }
 
     public String getFormatOneProductPrice(int amount){

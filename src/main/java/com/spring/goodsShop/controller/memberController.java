@@ -240,6 +240,11 @@ public class MemberController {
         }
 
         model.addAttribute("wishListProduct", wishListProduct);
+
+        //section - review
+        List<ProductVo> orderProductList = productService.getOrderProduct(memberId);
+        model.addAttribute("orderProductList", orderProductList);
+
         return "member/memberP";
     }
 

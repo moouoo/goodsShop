@@ -59,7 +59,7 @@
     </select>
 
     <select id="getOrderVoByMemberId" resultType="com.spring.goodsShop.vo.OrderVo">
-        select id, design, productName, price, order_date, orderStatus from productOrder where member_id = #{memberId};
+        select id, product_id, design, amount, productName, price, order_date, orderStatus from productOrder where member_id = #{memberId};
     </select>
 
     <select id="getProductIdByProductOrderId" resultType="java.lang.Integer">

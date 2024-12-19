@@ -60,4 +60,8 @@ public interface ProductDao {
     int getProductSalesCount(@Param("productId") int productId);
 
     void updateAddSalesCount(@Param("productId") int productId, @Param("addSalesCount") int addSalesCount);
+
+    List<ProductVo> getProductBest100();
+
+    List<ProductVo> getOrderProduct(@Param("memberId") int memberId);
 }

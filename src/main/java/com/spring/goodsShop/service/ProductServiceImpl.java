@@ -208,4 +208,14 @@ public class ProductServiceImpl implements ProductService{
         productDao.updateAddSalesCount(productId, addSalesCount);
     }
 
+    @Override
+    public List<ProductVo> getProductBest100() {
+        return productDao.getProductBest100();
+    }
+
+    @Override
+    public List<ProductVo> getOrderProduct(int memberId) {
+        return productDao.getOrderProduct(memberId);
+    }
+
 }

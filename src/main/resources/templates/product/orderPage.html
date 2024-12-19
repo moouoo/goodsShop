@@ -330,7 +330,6 @@
                 })
             })
             .then(response => {
-                // console.log("Response status:", response.status);
                 if (!response.ok) {
                     throw new Error('Network response was not ok');
                 }
@@ -357,7 +356,6 @@
             let couponId = selectedCoupon ? selectedCoupon.value.trim() : "";
 
             couponData.push({productId, couponId, design});
-            //console.log('잘만들어지고있나?' + JSON.stringify(couponData));
 
             // 할인결과를 위한 선언
             const availablePoints = [[${discount_point}]];
@@ -382,7 +380,6 @@
                 })
             })
             .then(response => {
-                // console.log("Response status:", response.status);
                 if (!response.ok) {
                     throw new Error('Network response was not ok');
                 }
@@ -609,7 +606,6 @@
             .then(data => {
                 if (data.success) {
                     return payment(data.paymentInfo) // 결제 처리 완료를 기다림
-                    console.log(data.paymentInfo);
                 }
                 else {
                     alert("결제 실패");

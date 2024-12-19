@@ -692,4 +692,14 @@ public class ProductController {
         return "product/productNew";
     }
 
+    @RequestMapping(value = "/best100", method = RequestMethod.GET)
+    String best100(Model model){
+        List<ProductVo> productBest100 = productService.getProductBest100();
+
+        model.addAttribute("productBest100", productBest100);
+
+        navbarHelper.navbarSetup(model);
+        return "product/best100";
+    }
+
 }
