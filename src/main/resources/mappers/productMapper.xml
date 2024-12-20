@@ -123,10 +123,11 @@
         <result column="img1" property="img1"/>
         <result column="design" property="orderDesign"/>
         <result column="reviewStatus" property="reviewStatus"/>
+        <result column="productOrderId" property="productOrderId"/>
     </resultMap>
 
     <select id="getOrderProduct" resultMap="OrderProductListMap">
-        SELECT p.id, p.brand, p.product_name, po.price, pi.img1, po.design, po.reviewStatus FROM product p
+        SELECT p.id, p.brand, p.product_name, po.price, pi.img1, po.design, po.reviewStatus, po.id AS productOrderId FROM product p
         JOIN product_img pi ON p.product_img_id = pi.id
         JOIN productOrder po ON p.id = po.product_id
         WHERE po.member_id = #{memberId} AND po.orderStatus = '배송완료';

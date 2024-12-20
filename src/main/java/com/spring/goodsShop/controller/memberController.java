@@ -243,6 +243,7 @@ public class MemberController {
 
         //section - review
         List<ProductVo> orderProductList = productService.getOrderProduct(memberId);
+
         model.addAttribute("orderProductList", orderProductList);
 
         return "member/memberP";
@@ -550,5 +551,36 @@ public class MemberController {
             }
         }
         return ResponseEntity.ok(data);
+    }
+
+    @RequestMapping(value = "/reviewWrite", method = RequestMethod.POST)
+    String reviewWrite(String reviewText, String reviewFile, int reviewProductOrderId, int starRatingValue, HttpSession session){
+        // 리뷰테이블에 insert.
+        // 리뷰글 작성 시 적림금 100원주자!
+        if(reviewText.isEmpty() || reviewProductOrderId == 0 || starRatingValue == 0){
+            return "redirect:/message/reviewX";
+        }
+
+        if(reviewFile.isEmpty()){
+            memberService.insertReview(reviewText, reviewProductOrderId, starRatingValue);
+            return "redirect:/message/reviewOk";
+        }
+        else{
+            String mid = session.getAttribute("sMid").toString();
+            if(mid.isEmpty()){
+                return "redirect:/message/loginX";
+            }
+
+            // review테이블에 insert
+            memberService.insertReview(reviewText, reviewProductOrderId, starRatingValue, reviewFile);
+
+            // 리뷰썼으니 적립금 100원 적립해주기
+            int memberId = memberService.getMemberIdBymid(mid);
+            memberService.updateMemberDiscountPoint(memberId);
+
+            return "redirect:/message/reviewOk";
+
+            // 여기에 있는거 하나하나 db에 연결해주는 등 해결해야함.
+        }
     }
 }

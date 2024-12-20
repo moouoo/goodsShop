@@ -1,0 +1,41 @@
+.star_rating {
+  width: 100%;
+  box-sizing: border-box;
+  display: inline-flex;
+  float: left;
+  flex-direction: row;
+  justify-content: flex-start;
+}
+.star_rating .star {
+  width: 25px;
+  height: 25px;
+  margin-right: 10px;
+  display: inline-block;
+  background: url('../img/etc/star.svg') no-repeat;
+  background-size: 100%;
+  box-sizing: border-box;
+}
+.star_rating .star.on {
+  width: 25px;
+  height: 25px;
+  margin-right: 10px;
+  display: inline-block;
+  background: url('../img/etc/starOn.svg') no-repeat;
+  background-size: 100%;
+  box-sizing: border-box;
+}
+
+.star_box {
+  width: 350px;
+  box-sizing: border-box;
+  display: inline-block;
+  margin: 15px 0;
+  background: #F3F4F8;
+  border: 0;
+  border-radius: 10px;
+  height: 100px;
+  resize: none;
+  padding: 15px;
+  font-size: 13px;
+  font-family: sans-serif;
+}

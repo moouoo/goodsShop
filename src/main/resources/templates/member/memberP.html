@@ -194,6 +194,7 @@
             border: 1px solid #ddd;
         }
     </style>
+    <link rel="stylesheet" href="../css/memberP_review.css">
 </head>
 <body>
     <div th:replace="include/nav2 :: navbar2"></div>
@@ -356,17 +357,49 @@
                         </td>
                         <td th:text="${orderProductList.getFormattedOrderPrice}">구입한 가격</td>
                         <td>
-                            <button class="btn" th:if="${orderProductList.reviewStatus == '리뷰전'}">리뷰쓰기</button>
-                            <button class="btn" th:if="${orderProductList.reviewStatus == '리뷰완료'}">리뷰보기</button>
+                            <button class="btn"
+                                    th:if="${orderProductList.reviewStatus == '리뷰전'}"
+                                    th:reviewProductOrderId="${orderProductList.productOrderId}"
+                                    onclick="OpenReviewModal(this.getAttribute('reviewProductOrderId'))">
+                                리뷰쓰기
+                            </button>
+                            <button class="btn" th:if="${orderProductList.reviewStatus == '리뷰완료'}">작성리뷰보기</button>
                             <button class="btn" th:if="${orderProductList.reviewStatus == '리뷰완료'}">리뷰답글보기</button>
                             <!--
                                 버튼기능 완성시켜야함
                                 지금 리뷰쓰고 리뷰에대한 답장 쓰고 그것을 상품창 밑의 구입후기창에 띄울 수 있어야함.
                                 현재 리뷰테이블과 리뷰코멘트테이블을 만들고 리뷰상태를 productOrder테이블에 만들어 버튼이 보이는것을 조절중.
+
+                                모달에 행당 상품번호 데이터를 던져주고 백에서 해당 상품번호와 세션을 이용한 사용자번호를 이용하여
+                                productOrder테이블에서 상품번호, 구매자번호, id 일치 확인 뒤  review테이블에 insert하기.
+
+                                아 다 필요없고 productOrder테이블의 id로만 비교하자 그게 훨씬빠르겠다
                             -->
                         </td>
                     </tr>
                 </table>
+            </div>
+
+            <div id="reviewWriteModal" class="modal" style="display:none;">
+                <form id="reviewWriteForm" method="post" th:action="@{/member/reviewWrite}" enctype="multipart/form-data">
+                    <div class="modal-content">
+                        <h2>리뷰 작성</h2>
+                        <div class="star_rating">
+                            <span class="star on" value="1"></span>
+                            <span class="star" value="2"></span>
+                            <span class="star" value="3"></span>
+                            <span class="star" value="4"></span>
+                            <span class="star" value="5"></span>
+                        </div>
+                        <textarea class="star_box" id="reviewText" name="reviewText" placeholder="리뷰 내용을 작성해주세요." oninput="reviewLimit(this, 100)" ></textarea>
+                        <div><input type="file" nmae="reviewFile" value="이미지넣기"></div>
+                        <button type="button" class="btn" onclick="reviewWrite()">리뷰등록</button>
+                        <button class="reviewModalClose btn" type="button">닫기</button>
+                    </div>
+                    <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
+                    <input type="hidden" id="reviewProductOrderId" name="reviewProductOrderId" value="0">
+                    <input type="hidden" id="starRatingValue" name="starRatingValue" value="0">
+                </form>
             </div>
 
             <!-- 유저등급 level2 -->
@@ -529,6 +562,8 @@
         const refundReasonModal = document.getElementById('refundReasonModal');
         const refundRefuseReasonModal = document.getElementById('refundRefuseReasonModal');
         const closeRefundRefuseReasonModal = document.querySelector('.closeRefundRefuseReasonModal');
+        const reviewWriteModal = document.getElementById('reviewWriteModal');
+        const reviewModalClose = document.querySelector('.reviewModalClose');
 
         // 모달 닫기 함수 (닫기 버튼 클릭 시)
         closeModalBtn.addEventListener("click", () => {
@@ -562,11 +597,14 @@
             else if(e.target === refundRefuseReasonModal) {
                 refundRefuseReasonModal.style.display = 'none';
             }
+            else if(e.target === reviewWriteModal) {
+                reviewWriteModal.style.display = 'none';
+            }
         });
 
         // 모달 열기
         function openPwdSetModal(){
-             modal.style.display = "flex";
+             modal.style.display = 'flex';
         }
 
         function refundRequest(productOrderId, index){
@@ -1054,5 +1092,6 @@
             });
         }
     </script>
+    <script src="/js/memberP_review.js"></script>
 </body>
 </html>

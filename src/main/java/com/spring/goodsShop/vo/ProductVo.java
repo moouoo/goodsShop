@@ -28,6 +28,7 @@ public class ProductVo {
     private String orderDesign;
     private int orderPrice;
     private String reviewStatus;
+    private int productOrderId;
 
 
     public String getFormattedPrice() {
