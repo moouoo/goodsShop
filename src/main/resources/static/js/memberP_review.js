@@ -37,8 +37,8 @@ function reviewLimit(input, maxLength){
 }
 
 function reviewWrite(){
-    let reviewProductOrderId = document.getElementById('getElementById').value;
-    let starRatingValue = document.getElementById('getElementById').value;
+    let reviewProductOrderId = document.getElementById('reviewProductOrderId').value;
+    let starRatingValue = document.getElementById('starRatingValue').value;
     let reviewText = document.getElementById('reviewText').value;
 
     if(reviewProductOrderId == 0 || starRatingValue == 0){

@@ -7,263 +7,8 @@
     <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
     <link rel="stylesheet" href="/fontawesome/css/all.min.css">
     <link rel="stylesheet" href="/css/nav.css">
+    <link rel="stylesheet" href="/css/productDetail.css">
     <title>productDetail</title>
-    <style>
-        .detail_container {
-            display: flex;
-            background-color: #fff;
-            margin: 50px auto;
-            padding: 20px;
-            width: 80%;
-        }
-
-        .product-image {
-            flex: 1;
-            margin-right: 20px;
-        }
-
-        .product-image img {
-            width: 100%;
-            border-radius: 10px;
-        }
-
-        .product-info {
-            flex: 2;
-        }
-
-        .product-info h1 {
-            font-size: 24px;
-            margin-bottom: 10px;
-        }
-
-        .price {
-            font-size: 20px;
-            margin-bottom: 10px;
-        }
-
-        .price span {
-            font-weight: bold;
-            color: #e74c3c;
-        }
-
-        label {
-            display: block;
-            margin-top: 10px;
-        }
-
-        select {
-            width: 100%;
-            padding: 8px;
-            margin-top: 5px;
-            border-radius: 5px;
-            border: 1px solid #ddd;
-        }
-
-        .quantity {
-            margin-top: 10px;
-        }
-
-        input[type="number"] {
-            width: 100%;
-            padding: 8px;
-            border-radius: 5px;
-            border: 1px solid #ddd;
-        }
-
-        button {
-            width: 100%;
-            padding: 10px;
-            margin-top: 10px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-
-        .buy-now {
-            background-color: #27ae60;
-            color: white;
-        }
-
-        .add-cart {
-            background-color: #3498db;
-            color: white;
-        }
-
-        .wish-list {
-            background-color: #e67e22;
-            color: white;
-        }
-        .button-container {
-            display: flex;
-            justify-content: space-between; /* 버튼 간격을 동일하게 설정 */
-            margin-top: 20px; /* 버튼 간격 조정 */
-        }
-
-        button {
-            flex: 1; /* 버튼이 같은 너비로 나란히 배치됨 */
-            padding: 10px;
-            margin-right: 10px; /* 버튼 간격 추가 */
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-
-        button:last-child {
-            margin-right: 0; /* 마지막 버튼은 오른쪽 여백 제거 */
-        }
-
-        /* 각 버튼 색상 */
-        .buy-now {
-            background-color: #27ae60;
-            color: white;
-        }
-
-        .add-cart {
-            background-color: #3498db;
-            color: white;
-        }
-
-        .wish-list {
-            background-color: #e67e22;
-            color: white;
-        }
-
-        /* 추가 스타일 */
-        .quantity {
-            margin-top: 10px;
-        }
-
-        /* input[type="number"] 스타일 */
-        input[type="number"] {
-            width: 100%;
-            padding: 8px;
-            border-radius: 5px;
-            border: 1px solid #ddd;
-        }
-        /* 이미지 갤러리 스타일 */
-        .gallery {
-            display: flex;
-            justify-content: center;
-            margin-top: 20px;
-        }
-
-        .gallery img {
-            width: 60px; /* 미리보기 이미지 크기 */
-            height: 60px; /* 미리보기 이미지 크기 */
-            border: 2px solid #ddd; /* 테두리 추가 */
-            border-radius: 5px;
-            cursor: pointer;
-            margin: 0 5px; /* 간격 조정 */
-            transition: border-color 0.3s;
-        }
-
-        .gallery img:hover {
-            border-color: #3498db; /* hover 시 테두리 색상 변경 */
-        }
-
-        .selected-image {
-            margin-top: 20px;
-            text-align: center;
-        }
-
-        .selected-image img {
-            width: 400px; /* 큰 이미지 크기 */
-            height: 400px; /* 큰 이미지 크기 */
-            object-fit: cover; /* 이미지를 고정된 크기에 맞추면서 비율 유지 */
-            border-radius: 10px;
-        }
-        .tab-container {
-            width: 100%;
-            border: 1px solid #ddd;
-        }
-
-        .tab-header {
-            background-color: #f7f7f7;
-            border-bottom: 1px solid #ddd;
-        }
-
-        .tab-list {
-            list-style: none;
-            padding: 0;
-            margin: 0;
-            display: flex;
-        }
-
-        .tab-item {
-            padding: 15px 20px;
-            cursor: pointer;
-            text-align: center;
-            flex: 1;
-            transition: background-color 0.3s;
-        }
-
-        .tab-item:hover {
-            background-color: #e7e7e7;
-        }
-
-        .tab-item.active {
-            background-color: white;
-            font-weight: bold;
-            border-bottom: 3px solid #007bff;
-        }
-
-        .tab-content {
-            padding: 20px;
-        }
-
-        .tab-pane {
-            display: none;
-        }
-
-        .tab-pane.active {
-            display: block;
-        }
-
-        .no-data {
-            text-align: center;
-            color: #999;
-        }
-
-        .guide_container {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: space-between;
-            padding: 20px;
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-
-        .info-section {
-            width: 45%;
-            margin-bottom: 20px;
-        }
-        .info-section h2 {
-            font-size: 20px;
-            font-weight: bold;
-            margin-bottom: 10px;
-        }
-        .info-section p {
-            font-size: 14px;
-        }
-        .purchase-btn {
-            display: block;
-            width: 200px;
-            background-color: black;
-            color: white;
-            text-align: center;
-            padding: 15px;
-            font-size: 16px;
-            font-weight: bold;
-            margin: 0 auto;
-            cursor: pointer;
-            text-decoration: none;
-        }
-        @media (max-width: 768px) {
-            .info-section {
-                width: 100%;
-            }
-        }
-    </style>
 </head>
 <body>
     <div th:replace="include/nav :: navbar"></div>
@@ -328,18 +73,48 @@
                 <img th:src="@{/img/product_detail/{detail}(detail=${product_list.product_img_detail})}" alt="상세정보 이미지" style="width: 100%; max-width: 860px; display: block; margin: 0 auto;">
                 <p>상세정보 내용을 여기에 추가하세요.</p>
             </div>
+
             <div id="review" class="tab-pane">
                 <h2>REVIEW</h2>
                 <div class="no-data">
-                    <p>게시물이 없습니다</p>
+                    <div class="review-section">
+
+                        <!-- 후기 카드 -->
+                        <div class="review-card" th:each="reviewList : ${reviewList}">
+                            <div class="review-user">
+                                <p th:text="${reviewList.mid}">사용자A</p>
+                            </div>
+                            <div class="review-content">
+                                <div class="review-header">
+                                    <div class="review-rating">★★★★★</div>
+                                    <p th:text="${reviewList.write_date.substring(0, 10)}">2024-12-15</p>
+                                </div>
+                                <div class="review-text" th:text="${reviewList.content}">
+                                    정말 만족스러운 상품이었어요! 배송도 빠르고 품질도 훌륭했습니다.
+                                </div>
+                                <span th:if="${reviewList.review_img != null}">
+                                    <img th:src="@{/img/reviewImg/{review_img}(review_img=${reviewList.review_img})}" alt="후기 이미지" class="review-img">
+                                </span>
+                            </div>
+                        </div>
+                        <!--
+                            th:if사용해서 별점에따른 별모야 설정.
+                            리뷰사진위치 재조정.
+                        -->
+
+                        <!-- 페이징처리 20개씩 보이게 설정하자. -->
+
+                    </div>
                 </div>
             </div>
+
             <div id="qna" class="tab-pane">
                 <h2>Q&A</h2>
                 <div class="no-data">
                     <p>게시물이 없습니다</p>
                 </div>
             </div>
+
             <div id="guide" class="tab-pane">
                 <div class="guide_container">
                     <div class="info-section">
@@ -395,116 +170,6 @@
         </div>
     </div>
 
-    <script>
-        'use strict'
-        const csrfToken = document.querySelector('meta[name="_csrf"]').getAttribute('content');
-        const csrfHeader = document.querySelector('meta[name="_csrf_header"]').getAttribute('content');
-
-        function changeImage(src) {
-            const mainImage = document.getElementById('main-image');
-            mainImage.src = src;
-        }
-
-        function defOrderCheck(){
-            let design = document.getElementById("design").value.trim();
-            let amount = document.getElementById("amount").value.trim();
-
-            if(design == "" || amount == "" || amount == 0){
-                alert("필수옵션 혹은 수량을 입력해주세요.");
-            }
-            else{
-                befOrderForm.submit();
-            }
-        }
-
-        document.querySelectorAll('.tab-item').forEach(item => {
-            item.addEventListener('click', () => {
-                const tab = item.getAttribute('data-tab');
-
-                // 탭 활성화
-                document.querySelectorAll('.tab-item').forEach(tabItem => {
-                    tabItem.classList.remove('active');
-                });
-                item.classList.add('active');
-
-                // 콘텐츠 표시
-                document.querySelectorAll('.tab-pane').forEach(pane => {
-                    pane.classList.remove('active');
-                    if (pane.id === tab) {
-                        pane.classList.add('active');
-                    }
-                });
-            });
-        });
-
-        function addToCart(productId){
-            let design = document.getElementById("design").value.trim();
-            let amount = document.getElementById("amount").value.trim();
-            let price = parseInt(document.getElementById("price").textContent);
-
-            if(design == "" || amount == "" || amount == 0){
-                alert("필수옵션 혹은 수량을 입력해주세요.");
-            }
-            else{
-                let item = {
-                    productId : productId,
-                    design : design,
-                    amount : amount,
-                    price : price
-                }
-
-                fetch('/product/addToCart', {
-                    method: 'POST',
-                    headers: {
-                        [csrfHeader]: csrfToken,
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(item)
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if(data.noLogin){
-                        alert("로그인이 필요한 서비스입니다.");
-                        window.location.href = "/member/login";
-                    }
-                    if(data.success) {
-                        window.location.href = "/product/cart";
-                    }
-                    else {
-                        alert('장바구니 등록 실패');
-                    }
-                })
-                .catch(error => console.error('Error:', error));
-            }
-        }
-
-        function addWishList(productId){
-            fetch('/member/addWishList',{
-                method: "POST",
-                headers: {
-                    [csrfHeader]: csrfToken,
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ productId : productId })
-            })
-            .then(response => response.json())
-            .then(data => {
-                if(!data.loginOk) {
-                    console.log(data.loginOk);
-                    alert('로그인을 하셔야 관심상품에 등록할 수 있습니다.');
-                    window.location.href='/member/login';
-                    return;
-                }
-                if(data.success){
-                    alert('위시리스트에 등록되었습니다.');
-                }
-                else alert('위시리스트에 존재하는 상품입니다.');
-            })
-            .catch(error => {
-                console.error(error);
-                alert('서버에 오류가 발생했습니다.');
-            });
-        }
-    </script>
+    <script src="/js/productDetail.js"></script>
 </body>
 </html>

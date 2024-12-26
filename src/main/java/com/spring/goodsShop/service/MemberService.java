@@ -91,4 +91,12 @@ public interface MemberService {
     void updateWishList(int memberId, String productIdJson);
 
     List<ProductVo> getProductForWishList(int wishListProductId);
+
+    void insertReview(String reviewText, int reviewProductOrderId, int starRatingValue);
+
+    void insertReview(String reviewText, int reviewProductOrderId, int starRatingValue, String saveFileName);
+
+    void updateMemberDiscountPoint50(int memberId);
+
+    void updateMemberDiscountPoint100(int memberId);
 }

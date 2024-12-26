@@ -131,6 +131,14 @@ public class MessageController {
             model.addAttribute("msg", "배송상태가 환불처리중 일때만 가능한 기능입니다.");
             model.addAttribute("url", "/member/memberP#productOrder");
         }
+        else if(msgFlag.equals("reviewX")){
+            model.addAttribute("msg", "리뷰할 데이터가 정상적으로 보내지지 않았습니다.");
+            model.addAttribute("url", "/member/memberP#review");
+        }
+        else if(msgFlag.equals("reviewOk")){
+            model.addAttribute("msg", "리뷰를 등록하셨습니다.");
+            model.addAttribute("url", "/member/memberP#review");
+        }
 
 
         return "include/message";

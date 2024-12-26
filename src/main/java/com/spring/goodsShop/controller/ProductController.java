@@ -175,6 +175,11 @@ public class ProductController {
         model.addAttribute("designList", designList);
         model.addAttribute("productId", productId);
 
+        // review
+        List<ReviewVo> reviewList = productService.getReview(productId);
+        System.out.println("reviewList---" + reviewList);
+        model.addAttribute("reviewList", reviewList);
+
         navbarHelper.navbarSetup(model);
         return "product/productDetail";
     }

@@ -4,6 +4,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.spring.goodsShop.enums.OrderStatus;
+import com.spring.goodsShop.enums.ReviewStatus;
+import com.spring.goodsShop.etc.ImgHandler;
 import com.spring.goodsShop.etc.NavbarHelper;
 import com.spring.goodsShop.service.AdminService;
 import com.spring.goodsShop.service.ProductService;
@@ -16,7 +18,9 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -554,33 +558,46 @@ public class MemberController {
     }
 
     @RequestMapping(value = "/reviewWrite", method = RequestMethod.POST)
-    String reviewWrite(String reviewText, String reviewFile, int reviewProductOrderId, int starRatingValue, HttpSession session){
-        // 리뷰테이블에 insert.
-        // 리뷰글 작성 시 적림금 100원주자!
+    String reviewWrite(String reviewText, MultipartFile reviewFile, int reviewProductOrderId, int starRatingValue, HttpSession session) throws IOException {
         if(reviewText.isEmpty() || reviewProductOrderId == 0 || starRatingValue == 0){
             return "redirect:/message/reviewX";
         }
+        System.out.println("reviewFile---" + reviewFile);
 
-        if(reviewFile.isEmpty()){
+        String mid = session.getAttribute("sMid").toString();
+        if(mid.isEmpty()){
+            return "redirect:/message/loginX";
+        }
+
+        int memberId = memberService.getMemberIdBymid(mid);
+
+        if(reviewFile == null || reviewFile.isEmpty()){
             memberService.insertReview(reviewText, reviewProductOrderId, starRatingValue);
-            return "redirect:/message/reviewOk";
+
+            // 일반리뷰썼으니 적립금 50원 적립해주기
+            memberService.updateMemberDiscountPoint50(memberId);
         }
         else{
-            String mid = session.getAttribute("sMid").toString();
-            if(mid.isEmpty()){
-                return "redirect:/message/loginX";
-            }
+            ImgHandler imgHandler = new ImgHandler();
+
+            UUID uid = UUID.randomUUID();
+            String oFileName = reviewFile.getOriginalFilename();
+            String saveFileName = uid + "-" + oFileName;
 
             // review테이블에 insert
-            memberService.insertReview(reviewText, reviewProductOrderId, starRatingValue, reviewFile);
+            memberService.insertReview(reviewText, reviewProductOrderId, starRatingValue, saveFileName);
 
-            // 리뷰썼으니 적립금 100원 적립해주기
-            int memberId = memberService.getMemberIdBymid(mid);
-            memberService.updateMemberDiscountPoint(memberId);
+            String urlPath = "reviewImg";
+            MultipartFile fName = reviewFile;
+            imgHandler.writeFile(fName, saveFileName, urlPath);
 
-            return "redirect:/message/reviewOk";
-
-            // 여기에 있는거 하나하나 db에 연결해주는 등 해결해야함.
+            // 포토리뷰썼으니 적립금 100원 적립해주기
+            memberService.updateMemberDiscountPoint100(memberId);
         }
+        //리뷰했으니 리뷰상태 리뷰완료로 바꾸기
+        String reviewStatus = ReviewStatus.REVIEW_COMPLETED.getReviewStatusStr();
+        productService.updateProductOrderReviewStatus(reviewStatus, reviewProductOrderId);
+
+        return "redirect:/message/reviewOk";
     }
 }

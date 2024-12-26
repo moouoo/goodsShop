@@ -318,5 +318,25 @@ public class MemberServiceImpl implements MemberService{
         return memberDao.getProductForWishList(wishListProductId);
     }
 
+    @Override
+    public void insertReview(String reviewText, int reviewProductOrderId, int starRatingValue) {
+        memberDao.insertReviewNoImg(reviewText, reviewProductOrderId, starRatingValue);
+    }
+
+    @Override
+    public void insertReview(String reviewText, int reviewProductOrderId, int starRatingValue, String reviewFile) {
+        memberDao.insertReviewYesImg(reviewText, reviewProductOrderId, starRatingValue, reviewFile);
+    }
+
+    @Override
+    public void updateMemberDiscountPoint50(int memberId) {
+        memberDao.updateMemberDiscountPoint50(memberId);
+    }
+
+    @Override
+    public void updateMemberDiscountPoint100(int memberId) {
+        memberDao.updateMemberDiscountPoint100(memberId);
+    }
+
 
 }

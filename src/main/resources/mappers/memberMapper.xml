@@ -140,6 +140,16 @@
         insert into wishList (id, member_id, productIds) value (default, #{memberId}, #{productIdJson});
     </insert>
 
+    <insert id="insertReviewNoImg">
+        INSERT INTO review (id, order_id, stars, content, write_date)
+        VALUE (default, #{reviewProductOrderId}, #{starRatingValue}, #{reviewText}, default);
+    </insert>
+
+    <insert id="insertReviewYesImg">
+        INSERT INTO review (id, order_id, stars, review_img ,content, write_date)
+        VALUE (default, #{reviewProductOrderId}, #{starRatingValue}, #{saveFileName} ,#{reviewText}, default);
+    </insert>
+
 
     <!--  update  -->
     <update id="setPwd">
@@ -172,6 +182,14 @@
 
     <update id="updateWishList">
         update wishList set productIds = #{productIdJson} where member_id = #{memberId};
+    </update>
+
+    <update id="updateMemberDiscountPoint50">
+        UPDATE member set discount_point = discount_point + 50 WHERE id = #{memberId};
+    </update>
+
+    <update id="updateMemberDiscountPoint100">
+        UPDATE member set discount_point = discount_point + 100 WHERE id = #{memberId};
     </update>
 
 

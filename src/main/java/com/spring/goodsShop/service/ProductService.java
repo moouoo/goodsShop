@@ -63,4 +63,8 @@ public interface ProductService {
     List<ProductVo> getProductBest100();
 
     List<ProductVo> getOrderProduct(int memberId);
+
+    void updateProductOrderReviewStatus(String reviewStatus, int reviewProductOrderId);
+
+    List<ReviewVo> getReview(int productId);
 }

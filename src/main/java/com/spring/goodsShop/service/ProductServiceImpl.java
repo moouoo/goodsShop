@@ -218,4 +218,14 @@ public class ProductServiceImpl implements ProductService{
         return productDao.getOrderProduct(memberId);
     }
 
+    @Override
+    public void updateProductOrderReviewStatus(String reviewStatus, int reviewProductOrderId) {
+        productDao.updateProductOrderReviewStatus(reviewStatus, reviewProductOrderId);
+    }
+
+    @Override
+    public List<ReviewVo> getReview(int productId) {
+        return productDao.getReview(productId);
+    }
+
 }

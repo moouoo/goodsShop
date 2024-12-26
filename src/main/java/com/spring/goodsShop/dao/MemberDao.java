@@ -85,4 +85,12 @@ public interface MemberDao {
     void updateWishList(@Param("memberId") int memberId, @Param("productIdJson") String productIdJson);
 
     List<ProductVo> getProductForWishList(@Param("wishListProductId") int wishListProductId);
+
+    void insertReviewNoImg(@Param("reviewText") String reviewText, @Param("reviewProductOrderId") int reviewProductOrderId, @Param("starRatingValue") int starRatingValue);
+
+    void insertReviewYesImg(@Param("reviewText") String reviewText, @Param("reviewProductOrderId") int reviewProductOrderId, @Param("starRatingValue") int starRatingValue, @Param("saveFileName") String saveFileName);
+
+    void updateMemberDiscountPoint50(@Param("memberId") int memberId);
+
+    void updateMemberDiscountPoint100(@Param("memberId") int memberId);
 }

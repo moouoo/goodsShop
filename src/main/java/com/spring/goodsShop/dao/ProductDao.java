@@ -64,4 +64,8 @@ public interface ProductDao {
     List<ProductVo> getProductBest100();
 
     List<ProductVo> getOrderProduct(@Param("memberId") int memberId);
+
+    void updateProductOrderReviewStatus(@Param("reviewStatus") String reviewStatus, @Param("reviewProductOrderId") int reviewProductOrderId);
+
+    List<ReviewVo> getReview(@Param("productId") int productId);
 }

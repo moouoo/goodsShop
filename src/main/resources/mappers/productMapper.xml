@@ -133,6 +133,13 @@
         WHERE po.member_id = #{memberId} AND po.orderStatus = '배송완료';
     </select>
 
+    <select id="getReview" resultType="com.spring.goodsShop.vo.ReviewVo">
+        SELECT r.id, r.order_id, r.stars, r.review_img, r.content, r. write_date, m.mid FROM review r
+        JOIN productOrder po ON r.order_id = po.id
+        JOIN member m ON m.id = po.member_id
+        WHERE po.product_id = #{productId};
+    </select>
+
 
     <!--  insert  -->
     <insert id="setOrderOne" useGeneratedKeys="true" keyProperty="id">
@@ -148,6 +155,10 @@
     <!--  update  -->
     <update id="updateAddSalesCount">
         UPDATE product SET sales_count = #{addSalesCount} WHERE id = #{productId};
+    </update>
+
+    <update id="updateProductOrderReviewStatus">
+        UPDATE productOrder SET reviewStatus = #{reviewStatus} WHERE id = #{reviewProductOrderId};
     </update>
 
 
