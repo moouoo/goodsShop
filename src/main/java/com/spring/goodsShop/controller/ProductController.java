@@ -177,8 +177,11 @@ public class ProductController {
 
         // review
         List<ReviewVo> reviewList = productService.getReview(productId);
-        System.out.println("reviewList---" + reviewList);
+
+        int reviewCount = productService.getReviewCountAll(productId);
+
         model.addAttribute("reviewList", reviewList);
+        model.addAttribute("reviewCount", reviewCount);
 
         navbarHelper.navbarSetup(model);
         return "product/productDetail";

@@ -310,6 +310,9 @@ input[type="number"] {
     border-radius: 8px;
     object-fit: cover;
 }
+.review-data {
+    color: #999;
+}
 
 @media (max-width: 768px) {
     .info-section {

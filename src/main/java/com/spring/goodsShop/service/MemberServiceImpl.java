@@ -338,5 +338,30 @@ public class MemberServiceImpl implements MemberService{
         memberDao.updateMemberDiscountPoint100(memberId);
     }
 
+    @Override
+    public String getReviewByProductOrderId(int reviewProductOrderId) {
+        return memberDao.getReviewByProductOrderId(reviewProductOrderId);
+    }
+
+    @Override
+    public int getMemberIdByOrderId(int reviewProductOrderId) {
+        return memberDao.getMemberIdByOrderId(reviewProductOrderId);
+    }
+
+    @Override
+    public List<ReviewVo> getReviewList(int memberId) {
+        return memberDao.getReviewList(memberId);
+    }
+
+    @Override
+    public int getReviewId(int reviewProductOrderId) {
+        return memberDao.getReviewId(reviewProductOrderId);
+    }
+
+    @Override
+    public void updateReviewReplyAndReplyContent(int reviewId, String reviewReplyText) {
+        memberDao.updateReviewReplyAndReplyContent(reviewId, reviewReplyText);
+    }
+
 
 }

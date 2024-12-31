@@ -68,4 +68,6 @@ public interface ProductDao {
     void updateProductOrderReviewStatus(@Param("reviewStatus") String reviewStatus, @Param("reviewProductOrderId") int reviewProductOrderId);
 
     List<ReviewVo> getReview(@Param("productId") int productId);
+
+    int getReviewCountAll(@Param("productId") int productId);
 }

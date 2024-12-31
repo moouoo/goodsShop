@@ -139,6 +139,14 @@ public class MessageController {
             model.addAttribute("msg", "리뷰를 등록하셨습니다.");
             model.addAttribute("url", "/member/memberP#review");
         }
+        else if(msgFlag.equals("reviewReplyWriteOk")){
+            model.addAttribute("msg", "리뷰에 대한 댓글을 등록하셨습니다.");
+            model.addAttribute("url", "/member/memberP#reviewReply");
+        }
+        else if(msgFlag.equals("reviewReplyWriteNo")){
+            model.addAttribute("msg", "리뷰에 대한 댓글을 등록실패.");
+            model.addAttribute("url", "/member/memberP#reviewReply");
+        }
 
 
         return "include/message";

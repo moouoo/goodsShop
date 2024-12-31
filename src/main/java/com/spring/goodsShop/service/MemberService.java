@@ -99,4 +99,14 @@ public interface MemberService {
     void updateMemberDiscountPoint50(int memberId);
 
     void updateMemberDiscountPoint100(int memberId);
+
+    String getReviewByProductOrderId(int reviewProductOrderId);
+
+    int getMemberIdByOrderId(int reviewProductOrderId);
+
+    List<ReviewVo> getReviewList(int memberId);
+
+    int getReviewId(int reviewProductOrderId);
+
+    void updateReviewReplyAndReplyContent(int reviewId, String reviewReplyText);
 }

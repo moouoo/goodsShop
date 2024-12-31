@@ -108,6 +108,29 @@
         JOIN product_img pi ON p.product_img_id = pi.id WHERE p.id = #{wishListProductId};
     </select>
 
+    <select id="getReviewByProductOrderId" resultType="java.lang.String">
+        SELECT content FROM review WHERE order_id = #{reviewProductOrderId};
+    </select>
+
+    <select id="getMemberIdByOrderId" resultType="java.lang.Integer">
+        SELECT p.member_id FROM review r
+        JOIN productOrder po ON r.order_id = po.id
+        JOIN product p ON po.product_id = p.id
+        WHERE r.order_id = #{reviewProductOrderId};
+    </select>
+
+    <select id="getReviewList" resultType="com.spring.goodsShop.vo.ReviewVo">
+        SELECT r.id, r.order_id, r.stars, r.reply ,r.content, po.productName, po.design, m.mid FROM review r
+        JOIN productOrder po ON r.order_id = po.id
+        JOIN member m ON po.member_id = m.id
+        JOIN product p ON po.product_id = p.id
+        WHERE p.member_id = #{memberId};
+    </select>
+
+    <select id="getReviewId" resultType="java.lang.Integer">
+        SELECT id FROM review WHERE order_id = #{reviewProductOrderId};
+    </select>
+
 
     <!--  insert  -->
     <insert id="memberJoin">
@@ -190,6 +213,11 @@
 
     <update id="updateMemberDiscountPoint100">
         UPDATE member set discount_point = discount_point + 100 WHERE id = #{memberId};
+    </update>
+
+    <update id="updateReviewReplyAndReplyContent">
+        UPDATE review SET (reply, replyContent) = (1, #{reviewReplyText})
+        WHERE id = #{reviewId};
     </update>
 
 

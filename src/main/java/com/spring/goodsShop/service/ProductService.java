@@ -67,4 +67,6 @@ public interface ProductService {
     void updateProductOrderReviewStatus(String reviewStatus, int reviewProductOrderId);
 
     List<ReviewVo> getReview(int productId);
+
+    int getReviewCountAll(int productId);
 }

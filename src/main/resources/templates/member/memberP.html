@@ -210,6 +210,7 @@
             <h2>판매관리</h2>
             <a href="#product_register" onclick="showSection('product_register')">상품등록</a>
             <a href="#productOrder" onclick="showSection('productOrder')">판매관리</a>
+            <a href="#reviewReply" onclick="showSection('reviewReply')">리뷰관리</a>
             <p><hr></p><br>
             <h2>문의사항</h2>
         </div>
@@ -360,11 +361,21 @@
                             <button class="btn"
                                     th:if="${orderProductList.reviewStatus == '리뷰전'}"
                                     th:reviewProductOrderId="${orderProductList.productOrderId}"
-                                    onclick="OpenReviewModal(this.getAttribute('reviewProductOrderId'))">
+                                    onclick="openReviewWriteModal(this.getAttribute('reviewProductOrderId'))">
                                 리뷰쓰기
                             </button>
-                            <button class="btn" th:if="${orderProductList.reviewStatus == '리뷰완료'}">작성리뷰보기</button>
-                            <button class="btn" th:if="${orderProductList.reviewStatus == '리뷰완료'}">리뷰답글보기</button>
+                            <button class="btn"
+                                    th:if="${orderProductList.reviewStatus == '리뷰완료'}"
+                                    th:reviewProductOrderId="${orderProductList.productOrderId}"
+                                    onclick="befOpenReviewViewModal(this.getAttribute('reviewProductOrderId'))">
+                                작성리뷰보기
+                            </button>
+                            <button class="btn"
+                                    th:if="${orderProductList.reviewStatus == '리뷰완료'}"
+                                    th:reviewProductOrderId="${orderProductList.productOrderId}"
+                                    onclick="reviewReplyView(this.getAttribute('reviewProductOrderId'))">
+                                리뷰답글보기
+                            </button>
                             <!--
                                 버튼기능 완성시켜야함
                                 지금 리뷰쓰고 리뷰에대한 답장 쓰고 그것을 상품창 밑의 구입후기창에 띄울 수 있어야함.
@@ -379,6 +390,14 @@
                     </tr>
                 </table>
             </div>
+
+            <div id="reviewWriteViewModal" class="modal" style="display: none;">
+                <div class="modal-content">
+                    <div id="reviewWriteViewModalContent"></div>
+                    <button class="btn reviewWriteViewModalClose">닫기</button>
+                </div>
+            </div>
+            <!-- 모달창 열고, 닫고, 모달창안으로 내용 넣는거 해야함. -->
 
             <div id="reviewWriteModal" class="modal" style="display:none;">
                 <form id="reviewWriteForm" method="post" th:action="@{/member/reviewWrite}" enctype="multipart/form-data">
@@ -400,6 +419,19 @@
                     <input type="hidden" id="reviewProductOrderId" name="reviewProductOrderId" value="0">
                     <input type="hidden" id="starRatingValue" name="starRatingValue" value="0">
                 </form>
+            </div>
+
+            <div id="reviewViewModal" class="modal" style="display: none;">
+                <div class="modal-content">
+                    <div id="reviewViewModalContent"></div>
+                    <div class="btnFlex">
+                        <button class="reviewViewModalClose btn" type="button">닫기</button>
+                        <button class="btn btnNone" onclick="reviewReplyWriteModalOpen()" type="button"
+                                style="display: none;">
+                            리뷰답장하기
+                        </button>
+                    </div>
+                </div>
             </div>
 
             <!-- 유저등급 level2 -->
@@ -509,11 +541,56 @@
                     </tbody>
                 </table>
             </div>
+
+            <div class="section" id="reviewReply" style="display: none;">
+                <h2>리뷰관리</h2>
+                <table>
+                    <tr>
+                        <th>상품명</th>
+                        <th>디자인</th>
+                        <th>점수</th>
+                        <th>구매아이디</th>
+                        <th>비고</th>
+                    </tr>
+                    <tr th:each="reviewReplyList : ${reviewReplyList}">
+                        <td th:text="${reviewReplyList.productName}"></td>
+                        <td th:text="${reviewReplyList.design}"></td>
+                        <td th:text="${reviewReplyList.stars}"></td>
+                        <td th:text="${reviewReplyList.mid}"></td>
+                        <td>
+                            <button class="btn"
+                                    th:if="${reviewReplyList.reply == 0}"
+                                    th:replyProductOrderId="${reviewReplyList.order_id}"
+                                    onclick="befOpenReviewViewModal(this.getAttribute('replyProductOrderId'))">
+                                리뷰보기
+                            </button>
+
+                            <!-- 모달창 재활용, 버튼창 메모장에 적혀있는대로 if걸어서 버튼 컨트롤. -->
+                            <p th:if="${reviewReplyList.reply == 1}">댓글작성완료</p>
+                        </td>
+                    </tr>
+                </table>
+            </div>
         </div>
     </div>
 
+    <div id="reviewReplyWriteModal" class="modal" style="display: none;">
+        <form id="reviewReplyWriteForm" method="post" th:action="@{/member/reviewReplyWrite}">
+            <div class="modal-content">
+                <h2>리뷰답글쓰기</h2>
+                <textarea id="reviewReplyText" name="reviewReplyText" class="star_box" placeholder="리뷰 내용을 작성해주세요."></textarea>
+                <div class="btnFlex">
+                    <button class="btn reviewReplyWriteModalClose" type="button">닫기</button>
+                    <button class="btn" onclick="reviewReplyCheck()" type="button">작성하기</button>
+                </div>
+                <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
+                <input type="hidden" name="reviewId" id="reviewId">
+            </div>
+        </form>
+    </div>
+
     <!-- 환불거절 사유 창 -->
-    <div id="refundRefuseModal" class="modal" style="display:none;">
+    <div id="refundRefuseModal" class="modal" style="display: none;">
         <span class="close-btn">&times;</span>
         <form id="sendRefundRefuseForm" method="post" th:action="@{/member/refundRefuse}">
             <div class="modal-content">
@@ -529,7 +606,7 @@
     </div>
 
     <!--  환불사유창.. 여기서 환불해줄지 환불거절할지 결정  -->
-    <div id="refundReasonModal" class="modal" style="display:none;">
+    <div id="refundReasonModal" class="modal" style="display: none;">
         <span class="close-btn">&times;</span>
         <div class="modal-content">
             <div id="refundReason"></div>
@@ -538,7 +615,7 @@
         </div>
     </div>
 
-    <div id="refundRefuseReasonModal" class="modal" style="display:none;">
+    <div id="refundRefuseReasonModal" class="modal" style="display: none;">
         <span class="close-btn">&times;</span>
         <div class="modal-content">
             <div id="refundRefuseReason" style="margin-bottom:10px;"></div>
@@ -564,6 +641,10 @@
         const closeRefundRefuseReasonModal = document.querySelector('.closeRefundRefuseReasonModal');
         const reviewWriteModal = document.getElementById('reviewWriteModal');
         const reviewModalClose = document.querySelector('.reviewModalClose');
+        const reviewViewModal = document.getElementById('reviewViewModal');
+        const reviewViewModalClose = document.querySelector('.reviewViewModalClose');
+        const reviewReplyWriteModal = document.getElementById('reviewReplyWriteModal');
+        const reviewReplyWriteModalClose = document.querySelector('.reviewReplyWriteModalClose');
 
         // 모달 닫기 함수 (닫기 버튼 클릭 시)
         closeModalBtn.addEventListener("click", () => {

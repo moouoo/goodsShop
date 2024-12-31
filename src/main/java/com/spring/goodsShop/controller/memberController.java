@@ -154,6 +154,9 @@ public class MemberController {
     String memberP(Model model, HttpSession session) throws JsonProcessingException {
         String mid = (String) session.getAttribute("sMid");
         String email = (String) session.getAttribute("sEmail");
+        if(mid == null){
+            return "redirect:/message/memberX";
+        }
         int level = (int) session.getAttribute("sLevel");
 
         String level_name = "";
@@ -249,6 +252,11 @@ public class MemberController {
         List<ProductVo> orderProductList = productService.getOrderProduct(memberId);
 
         model.addAttribute("orderProductList", orderProductList);
+
+        //section - reviewReply (level2)
+        // memberId == level2 판매자
+        List<ReviewVo> reviewReplyList = memberService.getReviewList(memberId);
+        model.addAttribute("reviewReplyList", reviewReplyList);
 
         return "member/memberP";
     }
@@ -599,5 +607,55 @@ public class MemberController {
         productService.updateProductOrderReviewStatus(reviewStatus, reviewProductOrderId);
 
         return "redirect:/message/reviewOk";
+    }
+
+    @RequestMapping(value = "/befOpenReviewViewModal", method = RequestMethod.POST)
+    ResponseEntity<Map<String, Object>> befOpenReviewViewModal(@RequestBody Map<String, Integer> item, HttpSession session){
+        Map<String, Object> data = new HashMap<>();
+
+        String mid = session.getAttribute("sMid").toString();
+        if(mid == null){
+            data.put("login", false);
+        }
+
+        int reviewProductOrderId = !item.get("reviewProductOrderId").toString().isEmpty() ? item.get("reviewProductOrderId") : 0;
+
+        if(reviewProductOrderId == 0){
+            throw new RuntimeException("데이터 가져오기 실패로인한, 자기가 작성한 리뷰 보기 실패");
+        }
+
+        String reviewContent = memberService.getReviewByProductOrderId(reviewProductOrderId);
+        int reviewId = memberService.getReviewId(reviewProductOrderId);
+
+        if(reviewContent == null){
+            data.put("login", true);
+            data.put("success", false);
+        }
+        else{
+            int sMemberId = memberService.getMemberIdBymid(mid);
+            int memberId = memberService.getMemberIdByOrderId(reviewProductOrderId);
+
+            if(sMemberId != memberId){
+                data.put("reviewReplyBtn", false);
+            }
+            // 리뷰답글작성 버튼 활성화
+            else{
+                data.put("reviewReplyBtn", true);
+                data.put("reviewId", reviewId);
+            }
+            data.put("login", true);
+            data.put("success", true);
+            data.put("content", reviewContent);
+        }
+
+        return ResponseEntity.ok(data);
+    }
+
+    @RequestMapping(value = "/reviewReplyWrite", method = RequestMethod.POST)
+    String reviewReplyWrite(int reviewId, String reviewReplyText){
+        if(reviewId == 0 || reviewReplyText == "") return "redirect:/message/reviewReplyWriteNo";
+
+        memberService.updateReviewReplyAndReplyContent(reviewId, reviewReplyText);
+        return "redirect:/message/reviewReplyWriteOk";
     }
 }

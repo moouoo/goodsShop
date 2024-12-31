@@ -140,6 +140,12 @@
         WHERE po.product_id = #{productId};
     </select>
 
+    <select id="getReviewCountAll" resultType="java.lang.Integer">
+        SELECT count(*) FROM review r
+        JOIN productOrder po ON r.order_id = po.id
+        WHERE po.product_id = #{productId};
+    </select>
+
 
     <!--  insert  -->
     <insert id="setOrderOne" useGeneratedKeys="true" keyProperty="id">

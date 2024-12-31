@@ -63,7 +63,7 @@
         <div class="tab-header">
             <ul class="tab-list">
                 <li class="tab-item active" data-tab="detail">상세정보</li>
-                <li class="tab-item" data-tab="review">상품후기 <span>0</span></li>
+                <li class="tab-item" data-tab="review">상품후기 <span th:text="${reviewCount}">0</span></li>
                 <li class="tab-item" data-tab="qna">상품문의 <span>0</span></li>
                 <li class="tab-item" data-tab="guide">배송/교환/환불 안내</li>
             </ul>
@@ -76,7 +76,7 @@
 
             <div id="review" class="tab-pane">
                 <h2>REVIEW</h2>
-                <div class="no-data">
+                <div class="review-data">
                     <div class="review-section">
 
                         <!-- 후기 카드 -->
@@ -86,21 +86,24 @@
                             </div>
                             <div class="review-content">
                                 <div class="review-header">
-                                    <div class="review-rating">★★★★★</div>
+                                    <div th:if="${reviewList.stars == 5}" class="review-rating">★★★★★</div>
+                                    <div th:if="${reviewList.stars == 4}" class="review-rating">★★★★</div>
+                                    <div th:if="${reviewList.stars == 3}" class="review-rating">★★★</div>
+                                    <div th:if="${reviewList.stars == 2}" class="review-rating">★★</div>
+                                    <div th:if="${reviewList.stars == 1}" class="review-rating">★</div>
                                     <p th:text="${reviewList.write_date.substring(0, 10)}">2024-12-15</p>
                                 </div>
                                 <div class="review-text" th:text="${reviewList.content}">
-                                    정말 만족스러운 상품이었어요! 배송도 빠르고 품질도 훌륭했습니다.
+                                    리뷰내용
                                 </div>
                                 <span th:if="${reviewList.review_img != null}">
-                                    <img th:src="@{/img/reviewImg/{review_img}(review_img=${reviewList.review_img})}" alt="후기 이미지" class="review-img">
+                                    <img th:src="@{/img/reviewImg/{review_img}(review_img=${reviewList.review_img})}"
+                                         alt="후기 이미지" class="review-img"
+                                         onclick="window.open(this.src)"
+                                    >
                                 </span>
                             </div>
                         </div>
-                        <!--
-                            th:if사용해서 별점에따른 별모야 설정.
-                            리뷰사진위치 재조정.
-                        -->
 
                         <!-- 페이징처리 20개씩 보이게 설정하자. -->
 

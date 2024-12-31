@@ -93,4 +93,14 @@ public interface MemberDao {
     void updateMemberDiscountPoint50(@Param("memberId") int memberId);
 
     void updateMemberDiscountPoint100(@Param("memberId") int memberId);
+
+    String getReviewByProductOrderId(@Param("reviewProductOrderId") int reviewProductOrderId);
+
+    int getMemberIdByOrderId(@Param("reviewProductOrderId") int reviewProductOrderId);
+
+    List<ReviewVo> getReviewList(@Param("memberId") int memberId);
+
+    int getReviewId(@Param("reviewProductOrderId") int reviewProductOrderId);
+
+    void updateReviewReplyAndReplyContent(@Param("reviewId") int reviewId, @Param("reviewReplyText") String reviewReplyText);
 }
