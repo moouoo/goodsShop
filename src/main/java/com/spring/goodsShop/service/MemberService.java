@@ -109,4 +109,6 @@ public interface MemberService {
     int getReviewId(int reviewProductOrderId);
 
     void updateReviewReplyAndReplyContent(int reviewId, String reviewReplyText);
+
+    String getReplyContentByProductOrderId(int reviewProductOrderId);
 }

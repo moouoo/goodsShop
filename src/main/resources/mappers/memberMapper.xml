@@ -131,6 +131,10 @@
         SELECT id FROM review WHERE order_id = #{reviewProductOrderId};
     </select>
 
+    <select id="getReplyContentByProductOrderId" resultType="java.lang.String">
+        SELECT replyContent FROM review WHERE order_id = #{reviewProductOrderId};
+    </select>
+
 
     <!--  insert  -->
     <insert id="memberJoin">
@@ -216,7 +220,7 @@
     </update>
 
     <update id="updateReviewReplyAndReplyContent">
-        UPDATE review SET (reply, replyContent) = (1, #{reviewReplyText})
+        UPDATE review SET reply = 1, replyContent = #{reviewReplyText}
         WHERE id = #{reviewId};
     </update>
 

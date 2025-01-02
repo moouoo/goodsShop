@@ -147,6 +147,18 @@ public class MessageController {
             model.addAttribute("msg", "리뷰에 대한 댓글을 등록실패.");
             model.addAttribute("url", "/member/memberP#reviewReply");
         }
+        else if(msgFlag.equals("noticeWritePostX")){
+            model.addAttribute("msg", "알림작성을 위한 데이터 가져오기 실패");
+            model.addAttribute("url", "/admin/adminP");
+        }
+        else if(msgFlag.equals("longStr")){
+            model.addAttribute("msg", "가져온 데이터가 너무 길어용");
+            model.addAttribute("url", "/admin/adminP");
+        }
+        else if(msgFlag.equals("noticeWriteOk")){
+            model.addAttribute("msg", "알림을 등록했습니다.");
+            model.addAttribute("url", "/admin/adminP");
+        }
 
 
         return "include/message";

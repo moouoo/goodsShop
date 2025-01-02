@@ -658,4 +658,30 @@ public class MemberController {
         memberService.updateReviewReplyAndReplyContent(reviewId, reviewReplyText);
         return "redirect:/message/reviewReplyWriteOk";
     }
+
+    @RequestMapping(value = "/reviewReplyView", method = RequestMethod.POST)
+    ResponseEntity<Map<String, Object>> reviewReplyView(@RequestBody Map<String, Integer> item){
+        Map<String, Object> data = new HashMap<>();
+        int reviewProductOrderId = item.get("reviewProductOrderId") == null ? 0 : item.get("reviewProductOrderId");
+
+        if(reviewProductOrderId == 0) {
+            data.put("success", false);
+            return ResponseEntity.badRequest().body(data);
+        }
+
+        String replyContent = memberService.getReplyContentByProductOrderId(reviewProductOrderId);
+
+        if(replyContent == null){
+            data.put("success", false);
+            return ResponseEntity.badRequest().body(data);
+        }
+        else{
+            data.put("content", replyContent);
+            data.put("success", true);
+            return ResponseEntity.ok(data);
+        }
+
+
+
+    }
 }

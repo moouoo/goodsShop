@@ -61,27 +61,27 @@
     </style>
 </head>
 <body>
-<div th:replace="include/nav :: navbar"></div>
+    <div th:replace="include/nav :: navbar"></div>
 
-<main class="product-container">
-    <div class="filter-section">
-        <p class="filter-title">BEST100</p>
-    </div>
-
-    <div class="product-grid">
-        <div class="product-card" th:each="productBest100 : ${productBest100}">
-            <a th:href="@{/product/{product_name}/{id}/{productId}(product_name=${productBest100.product_name}, id=${productBest100.sub_category_id}, productId=${productBest100.id})}">
-                <img th:src="@{/img/product_img/{img1}(img1=${productBest100.img1})}" alt="상품 이미지">
-                [<span th:text="${productBest100.brand}">브랜드이름</span>]
-                <h3 th:text="${productBest100.product_name}">상품이름</h3>
-            </a>
-            <span th:text="${productBest100.getFormattedPrice}">가격</span>
+    <main class="product-container">
+        <div class="filter-section">
+            <p class="filter-title">BEST100</p>
         </div>
-    </div>
 
-    <div class="total-products">
-        <span>총 639개의 상품이 있습니다.</span>
-    </div>
-</main>
+        <div class="product-grid">
+            <div class="product-card" th:each="productBest100 : ${productBest100}">
+                <a th:href="@{/product/{product_name}/{id}/{productId}(product_name=${productBest100.product_name}, id=${productBest100.sub_category_id}, productId=${productBest100.id})}">
+                    <img th:src="@{/img/product_img/{img1}(img1=${productBest100.img1})}" alt="상품 이미지">
+                    [<span th:text="${productBest100.brand}">브랜드이름</span>]
+                    <h3 th:text="${productBest100.product_name}">상품이름</h3>
+                </a>
+                <span th:text="${productBest100.getFormattedPrice}">가격</span>
+            </div>
+        </div>
+
+        <div class="total-products">
+            <span>총 639개의 상품이 있습니다.</span>
+        </div>
+    </main>
 </body>
 </html>

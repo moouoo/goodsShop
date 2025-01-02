@@ -185,4 +185,24 @@ public class AdminController {
     String inquiryM(){
         return "admin/inquiryM";
     }
+
+    @RequestMapping(value = "/noticeM", method = RequestMethod.GET)
+    String notice(){
+        return "admin/noticeM";
+    }
+
+    @RequestMapping(value = "/noticeWrite", method = RequestMethod.GET)
+    String noticeWrite(){
+        return "admin/noticeWrite";
+    }
+
+    @RequestMapping(value = "/noticeWritePost", method = RequestMethod.POST)
+    String noticeWritePost(String title, String content){
+        if(content == null || content.isEmpty() || title == null || title.isEmpty()) return "redirect:/message/noticeWritePostX";
+        if(content.length() > 500 || title.length() > 30) return "redirect:/message/longStr";
+
+        adminService.insertNotice(title, content);
+        // 저장하는 코드 완성시켜야함.
+        return "redirect:/message/noticeWriteOk";
+    }
 }

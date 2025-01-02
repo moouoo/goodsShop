@@ -12,6 +12,10 @@ reviewReplyWriteModalClose.addEventListener('click', function () {
     reviewReplyWriteModal.style.display = 'none';
 });
 
+reviewReplyViewModalClose.addEventListener('click', function () {
+    reviewReplyViewModal.style.display = 'none';
+});
+
 function openReviewWriteModal(reviewProductOrderId){
     reviewWriteModal.style.display = 'flex';
     document.getElementById('reviewProductOrderId').value = reviewProductOrderId;
@@ -125,11 +129,10 @@ function reviewReplyView(reviewProductOrderId){
     .then(response => response.json())
     .then(data => {
         if(data.success){
-            // 리뷰 댓글볼수있는 모달창 띄우기
-            // 1. 모달창을 만든다.
-            // 2. 백에서 완성시킨다.
+            document.getElementById('reviewReplyViewModalContent').textContent = data.content;
+            reviewReplyViewModal.style.display = 'flex';
         }
-        else alert('리뷰댓글가져오는거 실패');
+        else alert('현재 리뷰에 대한 댓글이 작성되지 않았습니다.');
     })
     .catch(error => {
         console.error(error);

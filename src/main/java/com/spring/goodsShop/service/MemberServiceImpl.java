@@ -363,5 +363,10 @@ public class MemberServiceImpl implements MemberService{
         memberDao.updateReviewReplyAndReplyContent(reviewId, reviewReplyText);
     }
 
+    @Override
+    public String getReplyContentByProductOrderId(int reviewProductOrderId) {
+        return memberDao.getReplyContentByProductOrderId(reviewProductOrderId);
+    }
+
 
 }

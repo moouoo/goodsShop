@@ -127,9 +127,10 @@
     </resultMap>
 
     <select id="getOrderProduct" resultMap="OrderProductListMap">
-        SELECT p.id, p.brand, p.product_name, po.price, pi.img1, po.design, po.reviewStatus, po.id AS productOrderId FROM product p
+        SELECT p.id, p.brand, p.product_name, po.price, pi.img1, po.design, po.reviewStatus, po.id AS productOrderId, r.reply FROM product p
         JOIN product_img pi ON p.product_img_id = pi.id
         JOIN productOrder po ON p.id = po.product_id
+        JOIN review r ON po.id = r.order_id
         WHERE po.member_id = #{memberId} AND po.orderStatus = '배송완료';
     </select>
 

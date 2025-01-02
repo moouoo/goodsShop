@@ -212,7 +212,6 @@
             <a href="#productOrder" onclick="showSection('productOrder')">판매관리</a>
             <a href="#reviewReply" onclick="showSection('reviewReply')">리뷰관리</a>
             <p><hr></p><br>
-            <h2>문의사항</h2>
         </div>
 
         <div class="container">
@@ -371,33 +370,22 @@
                                 작성리뷰보기
                             </button>
                             <button class="btn"
-                                    th:if="${orderProductList.reviewStatus == '리뷰완료'}"
+                                    th:if="${orderProductList.reviewStatus == '리뷰완료'} and ${orderProductList.reply == 1}"
                                     th:reviewProductOrderId="${orderProductList.productOrderId}"
                                     onclick="reviewReplyView(this.getAttribute('reviewProductOrderId'))">
                                 리뷰답글보기
                             </button>
-                            <!--
-                                버튼기능 완성시켜야함
-                                지금 리뷰쓰고 리뷰에대한 답장 쓰고 그것을 상품창 밑의 구입후기창에 띄울 수 있어야함.
-                                현재 리뷰테이블과 리뷰코멘트테이블을 만들고 리뷰상태를 productOrder테이블에 만들어 버튼이 보이는것을 조절중.
-
-                                모달에 행당 상품번호 데이터를 던져주고 백에서 해당 상품번호와 세션을 이용한 사용자번호를 이용하여
-                                productOrder테이블에서 상품번호, 구매자번호, id 일치 확인 뒤  review테이블에 insert하기.
-
-                                아 다 필요없고 productOrder테이블의 id로만 비교하자 그게 훨씬빠르겠다
-                            -->
                         </td>
                     </tr>
                 </table>
             </div>
 
-            <div id="reviewWriteViewModal" class="modal" style="display: none;">
+            <div id="reviewReplyViewModal" class="modal" style="display: none;">
                 <div class="modal-content">
-                    <div id="reviewWriteViewModalContent"></div>
-                    <button class="btn reviewWriteViewModalClose">닫기</button>
+                    <div id="reviewReplyViewModalContent"></div>
+                    <button class="btn reviewReplyViewModalClose">닫기</button>
                 </div>
             </div>
-            <!-- 모달창 열고, 닫고, 모달창안으로 내용 넣는거 해야함. -->
 
             <div id="reviewWriteModal" class="modal" style="display:none;">
                 <form id="reviewWriteForm" method="post" th:action="@{/member/reviewWrite}" enctype="multipart/form-data">
@@ -564,8 +552,6 @@
                                     onclick="befOpenReviewViewModal(this.getAttribute('replyProductOrderId'))">
                                 리뷰보기
                             </button>
-
-                            <!-- 모달창 재활용, 버튼창 메모장에 적혀있는대로 if걸어서 버튼 컨트롤. -->
                             <p th:if="${reviewReplyList.reply == 1}">댓글작성완료</p>
                         </td>
                     </tr>
@@ -645,6 +631,8 @@
         const reviewViewModalClose = document.querySelector('.reviewViewModalClose');
         const reviewReplyWriteModal = document.getElementById('reviewReplyWriteModal');
         const reviewReplyWriteModalClose = document.querySelector('.reviewReplyWriteModalClose');
+        const reviewReplyViewModal = document.getElementById('reviewReplyViewModal');
+        const reviewReplyViewModalClose = document.querySelector('.reviewReplyViewModalClose');
 
         // 모달 닫기 함수 (닫기 버튼 클릭 시)
         closeModalBtn.addEventListener("click", () => {

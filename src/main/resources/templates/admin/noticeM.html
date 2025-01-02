@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="ko" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NOTICE</title>
+    <style>
+        /* 전체 화면 스타일 */
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f9f9f9;
+            margin: 0;
+            padding: 0;
+        }
+
+        /* 제목 스타일 */
+        h2 {
+            text-align: center;
+            color: #333;
+            margin: 20px 0;
+        }
+
+        /* 테이블 컨테이너 */
+        table {
+            width: 80%;
+            margin: 0 auto;
+            border-collapse: collapse;
+            background-color: #fff;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        /* 테이블 헤더 */
+        th {
+            background-color: #007bff;
+            color: #fff;
+            padding: 12px;
+            text-align: center;
+            font-size: 16px;
+        }
+
+        /* 테이블 본문 */
+        td {
+            text-align: center;
+            padding: 10px;
+            font-size: 14px;
+            color: #555;
+        }
+
+        /* 짝수 행 배경색 */
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+
+        /* 홀수 행 배경색 */
+        tr:nth-child(odd) {
+            background-color: #ffffff;
+        }
+
+        /* 행 hover 효과 */
+        tr:hover {
+            background-color: #e3f2fd;
+            cursor: pointer;
+        }
+
+        .deleteBtn{
+            background-color: red;
+            color: black;
+        }
+
+        .writeBtn{
+             background-color: #0282ff;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+
+        /* 반응형 처리 */
+        @media (max-width: 768px) {
+            table {
+                width: 100%;
+                font-size: 12px;
+            }
+
+            th, td {
+                padding: 8px;
+            }
+
+            h2 {
+                font-size: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div>
+        <h2>NOTICE</h2>
+        <button onclick="location.href='/admin/noticeWrite';" class="writeBtn">작성하기</button>
+    </div>
+    <table>
+        <tr>
+            <th>번호</th>
+            <th>제목</th>
+            <th>작성자</th>
+            <th>작성일</th>
+            <th>조회</th>
+            <th>비고</th>
+        </tr>
+        <tr th:each="noticeList, noticeListStat : ${noticeList}">
+            <td th:text="${noticeListStat.count}">번호</td>
+            <td th:text="${noticeList.title}">제목</td>
+            <td th:text="${noticeList.mid}">작성자아이디</td>
+            <td th:text="${noticeList.wDate}">작성일</td>
+            <td th:text="${noticeList.count}">조회수</td>
+            <td>
+                <button class="deleteBtn">삭제하기</button>
+            </td>
+        </tr>
+    </table>
+</body>
+</html>

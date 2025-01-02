@@ -103,4 +103,6 @@ public interface MemberDao {
     int getReviewId(@Param("reviewProductOrderId") int reviewProductOrderId);
 
     void updateReviewReplyAndReplyContent(@Param("reviewId") int reviewId, @Param("reviewReplyText") String reviewReplyText);
+
+    String getReplyContentByProductOrderId(@Param("reviewProductOrderId") int reviewProductOrderId);
 }
