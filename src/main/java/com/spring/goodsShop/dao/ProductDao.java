@@ -70,4 +70,6 @@ public interface ProductDao {
     List<ReviewVo> getReview(@Param("productId") int productId);
 
     int getReviewCountAll(@Param("productId") int productId);
+
+    void insertProductQ(@Param("mid") String mid, @Param("productId") int productId);
 }

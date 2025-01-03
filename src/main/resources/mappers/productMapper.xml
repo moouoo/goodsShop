@@ -158,6 +158,10 @@
         insert into payment values (default, #{payment.order_id}, #{payment.payMethod}, #{payment.payment_date}, #{payment.finalPrice});
     </insert>
 
+    <insert id="insertProductQ">
+    <!--   JOIN을 이용해서 가져온 mid를 통해 member테이블을 연결한다음에 member_id를 넣어보자!     -->
+    </insert>
+
 
     <!--  update  -->
     <update id="updateAddSalesCount">

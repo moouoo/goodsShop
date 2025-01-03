@@ -1,5 +1,6 @@
 package com.spring.goodsShop.dao;
 
+import com.spring.goodsShop.vo.NoticeVo;
 import com.spring.goodsShop.vo.SubcategoryVo;
 import org.apache.ibatis.annotations.Param;
 
@@ -27,4 +28,14 @@ public interface AdminDao {
     void UpdateSubcategory(@Param("sub_update_title") String sub_update_title, @Param("id") int id);
 
     List<SubcategoryVo> getSubCategory2(@Param("mainCategoryId") int mainCategoryId);
+
+    void insertNotice(@Param("title") String title, @Param("content") String content, @Param("mid") String mid);
+
+    List<NoticeVo> getNoticeAll();
+
+    void deleteNotice(@Param("noticeId") int noticeId);
+
+    NoticeVo getNoticeByNoticeId(@Param("noticeId") int noticeId);
+
+    void updateNoticeCount(@Param("noticeId") int noticeId);
 }

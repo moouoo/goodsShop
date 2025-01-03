@@ -113,8 +113,24 @@
 
             <div id="qna" class="tab-pane">
                 <h2>Q&A</h2>
+                <button class="btn" onclick="askAboutProductModalOpen()">문의하기</button>
                 <div class="no-data">
                     <p>게시물이 없습니다</p>
+                </div>
+            </div>
+
+            <div id="askAboutProductModal">
+                <div class="modal-content">
+                    <form id="askAboutProductModalForm" method="post" th:action="@{/product/askAboutProduct}">
+                        <input type="text" id="askAboutProductTitle" name="askAboutProductTitle">
+                        <textarea placeholder="문의내용을 적어주세요." id="askAboutProductContent" name="askAboutProductContent"></textarea>
+                        <div>
+                            <button class="btn askAboutProductModalClose">취소</button>
+                            <button class="btn" type="button" th:onclick="'askAboutProductCheck(' + ${productId} + ')'">문의하기</button>
+                        </div>
+                        <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
+                        <input type="hidden" name="productId" id="productId" value="0">
+                    </form>
                 </div>
             </div>
 

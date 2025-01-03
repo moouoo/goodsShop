@@ -4,18 +4,19 @@ import com.spring.goodsShop.service.AdminService;
 import com.spring.goodsShop.service.MemberService;
 import com.spring.goodsShop.vo.MaincategoryVo;
 import com.spring.goodsShop.vo.MemberVo;
+import com.spring.goodsShop.vo.NoticeVo;
 import com.spring.goodsShop.vo.SubcategoryVo;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Controller
 @RequestMapping("/admin")
@@ -187,7 +188,10 @@ public class AdminController {
     }
 
     @RequestMapping(value = "/noticeM", method = RequestMethod.GET)
-    String notice(){
+    String notice(Model model){
+        List<NoticeVo> noticeList = adminService.getNoticeAll();
+
+        model.addAttribute("noticeList", noticeList);
         return "admin/noticeM";
     }
 
@@ -197,12 +201,36 @@ public class AdminController {
     }
 
     @RequestMapping(value = "/noticeWritePost", method = RequestMethod.POST)
-    String noticeWritePost(String title, String content){
+    String noticeWritePost(String title, String content, HttpSession session){
         if(content == null || content.isEmpty() || title == null || title.isEmpty()) return "redirect:/message/noticeWritePostX";
         if(content.length() > 500 || title.length() > 30) return "redirect:/message/longStr";
+        String mid = session.getAttribute("sMid").toString();
+        if(mid == null || mid.isEmpty()){
+            return "redirect:/message/loginX";
+        }
 
-        adminService.insertNotice(title, content);
-        // 저장하는 코드 완성시켜야함.
+        adminService.insertNotice(title, content, mid);
         return "redirect:/message/noticeWriteOk";
+    }
+
+    @RequestMapping(value = "/deleteNotice", method = RequestMethod.POST)
+    ResponseEntity<Map<String, Object>> deleteNotice(@RequestBody Map<String, Integer> item){
+        int noticeId = item.get("noticeId") == null ? 0 : item.get("noticeId");
+        Map<String, Object> data = new HashMap<>();
+        if(noticeId == 0){
+            data.put("success", false);
+            return ResponseEntity.badRequest().body(data);
+        }
+
+        try {
+            adminService.deleteNotice(noticeId);
+        }
+        catch (Exception e) {
+            System.out.println("notice 삭제 중 문제발생");
+            throw new RuntimeException(e);
+        }
+        data.put("success", true);
+
+        return ResponseEntity.ok(data);
     }
 }

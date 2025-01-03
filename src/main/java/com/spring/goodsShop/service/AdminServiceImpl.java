@@ -1,6 +1,7 @@
 package com.spring.goodsShop.service;
 
 import com.spring.goodsShop.dao.AdminDao;
+import com.spring.goodsShop.vo.NoticeVo;
 import com.spring.goodsShop.vo.SubcategoryVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -76,5 +77,30 @@ public class AdminServiceImpl implements AdminService{
     @Override
     public List<SubcategoryVo> getSubCategory(int mainCategoryId) {
         return adminDao.getSubCategory2(mainCategoryId);
+    }
+
+    @Override
+    public void insertNotice(String title, String content, String mid) {
+        adminDao.insertNotice(title, content, mid);
+    }
+
+    @Override
+    public List<NoticeVo> getNoticeAll() {
+        return adminDao.getNoticeAll();
+    }
+
+    @Override
+    public void deleteNotice(int noticeId) {
+        adminDao.deleteNotice(noticeId);
+    }
+
+    @Override
+    public NoticeVo getNoticeByNoticeId(int noticeId) {
+        return adminDao.getNoticeByNoticeId(noticeId);
+    }
+
+    @Override
+    public void updateNoticeCount(int noticeId) {
+        adminDao.updateNoticeCount(noticeId);
     }
 }

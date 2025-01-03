@@ -153,11 +153,23 @@ public class MessageController {
         }
         else if(msgFlag.equals("longStr")){
             model.addAttribute("msg", "가져온 데이터가 너무 길어용");
-            model.addAttribute("url", "/admin/adminP");
+            model.addAttribute("url", "/admin/noticeWrite");
         }
         else if(msgFlag.equals("noticeWriteOk")){
             model.addAttribute("msg", "알림을 등록했습니다.");
-            model.addAttribute("url", "/admin/adminP");
+            model.addAttribute("url", "/admin/noticeM");
+        }
+        else if(msgFlag.equals("goMain")){
+            model.addAttribute("msg", "세션이 완료되었습니다.");
+            model.addAttribute("url", "/");
+        }
+        else if(msgFlag.equals("askAboutProductOk")){
+            model.addAttribute("msg", "문의사항을 등록했습니다.");
+            model.addAttribute("url", "/{product_name}/{id}/{productId}");
+        }
+        else if(msgFlag.equals("accessErr")){
+            model.addAttribute("msg", "잘못된 접근입니다.");
+            model.addAttribute("url", "/");
         }
 
 

@@ -69,4 +69,6 @@ public interface ProductService {
     List<ReviewVo> getReview(int productId);
 
     int getReviewCountAll(int productId);
+
+    void insertProductQ(String mid, int productId);
 }

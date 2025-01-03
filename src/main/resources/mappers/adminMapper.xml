@@ -23,6 +23,14 @@
         select * from sub_category where main_category_id = #{mainCategoryId};
     </select>
 
+    <select id="getNoticeAll" resultType="com.spring.goodsShop.vo.NoticeVo">
+        SELECT * FROM notice;
+    </select>
+
+    <select id="getNoticeByNoticeId" resultType="com.spring.goodsShop.vo.NoticeVo">
+        SELECT * FROM notice WHERE id = #{noticeId};
+    </select>
+
 
     <!--  insert  -->
     <insert id="setMainCategory">
@@ -31,6 +39,10 @@
 
     <insert id="setSubCategory">
         insert into sub_category (id, main_category_id, title) values (default, #{main_id}, #{subTitle});
+    </insert>
+
+    <insert id="insertNotice">
+        INSERT INTO notice (id, title, content, wDate, count, mid) VALUES (default, #{title}, #{content}, default, default, #{mid});
     </insert>
 
 
@@ -43,6 +55,10 @@
         delete from sub_category where title = #{hiddenSubcategory};
     </delete>
 
+    <delete id="deleteNotice" parameterType="int">
+        DELETE FROM notice WHERE id = #{noticeId};
+    </delete>
+
 
     <!--  update  -->
     <update id="updateMaincategory">
@@ -51,6 +67,10 @@
 
     <update id="UpdateSubcategory">
         update sub_category set title = #{sub_update_title} where id = #{id};
+    </update>
+
+    <update id="updateNoticeCount">
+        UPDATE notice SET count = count + 1 WHERE id = #{noticeId};
     </update>
 
 

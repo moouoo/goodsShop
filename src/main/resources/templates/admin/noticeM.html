@@ -3,6 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="_csrf" th:content="${_csrf.token}"/>
+    <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
     <title>NOTICE</title>
     <style>
         /* 전체 화면 스타일 */
@@ -11,6 +13,11 @@
             background-color: #f9f9f9;
             margin: 0;
             padding: 0;
+        }
+
+        a{
+            text-decoration: none;
+            color: #555;
         }
 
         /* 제목 스타일 */
@@ -56,24 +63,24 @@
             background-color: #ffffff;
         }
 
-        /* 행 hover 효과 */
-        tr:hover {
-            background-color: #e3f2fd;
-            cursor: pointer;
-        }
-
         .deleteBtn{
             background-color: red;
             color: black;
         }
 
+        .deleteBtn:hover{
+            cursor: pointer;
+        }
+
         .writeBtn{
-             background-color: #0282ff;
+            background-color: #0299ff;
             color: #fff;
             border: none;
             padding: 10px 20px;
             cursor: pointer;
             border-radius: 5px;
+            float: right;
+            margin-bottom: 2px;
         }
 
         /* 반응형 처리 */
@@ -94,7 +101,7 @@
     </style>
 </head>
 <body>
-    <div>
+    <div class="flex">
         <h2>NOTICE</h2>
         <button onclick="location.href='/admin/noticeWrite';" class="writeBtn">작성하기</button>
     </div>
@@ -109,14 +116,50 @@
         </tr>
         <tr th:each="noticeList, noticeListStat : ${noticeList}">
             <td th:text="${noticeListStat.count}">번호</td>
-            <td th:text="${noticeList.title}">제목</td>
+            <td>
+                <a th:text="${noticeList.title}" th:href="@{/community/noticeDetail/{noticeId}(noticeId = ${noticeList.id})}"></a>
+            </td>
             <td th:text="${noticeList.mid}">작성자아이디</td>
             <td th:text="${noticeList.wDate}">작성일</td>
             <td th:text="${noticeList.count}">조회수</td>
             <td>
-                <button class="deleteBtn">삭제하기</button>
+                <button class="deleteBtn" th:onclick="'deleteNotice('+${noticeList.id}+')'">삭제하기</button>
             </td>
         </tr>
     </table>
+
+    <script>
+        'use strict';
+
+        const csrfToken = document.querySelector('meta[name="_csrf"]').getAttribute('content');
+        const csrfHeader = document.querySelector('meta[name="_csrf_header"]').getAttribute('content');
+
+        function deleteNotice(noticeId){
+            if(confirm('해당 공지를 삭제하시겠습니까?')){
+                fetch('/admin/deleteNotice',{
+                    method: 'POST',
+                    headers: {
+                        [csrfHeader]: csrfToken,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ noticeId : noticeId })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if(data.success){
+                        alert('삭제되었습니다.');
+                        window.location.href='/admin/noticeM';
+                    }
+                    else{
+                        alert('notice 삭제실패.');
+                    }
+                })
+                .catch(error => {
+                    console.error(error);
+                });
+            }
+            else alert('취소되었습니다.');
+        }
+    </script>
 </body>
 </html>

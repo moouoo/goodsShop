@@ -20,7 +20,7 @@
     <h2>noticeWrite</h2>
     <form id="noticeWriteForm" method="post" th:action="@{/admin/noticeWritePost}">
         <input type="text" placeholder="제목을 입력해주세요." id="title" name="title">
-        <textarea placeholder="클릭해주십시오. 500자 이내로 입력해야합니다." id="noticeWriteText" name="noticeWriteText"></textarea>
+        <textarea placeholder="클릭해주십시오. 500자 이내로 입력해야합니다." id="content" name="content"></textarea>
         <button class="writeBtn" onclick="noticeWrite()" type="button">작성하기</button>
         <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
     </form>
@@ -37,11 +37,11 @@
                 alert('빈칸을 전부 채워주세요.');
                 return;
             }
-            else if(title.length() > 30){
+            else if(title.length > 30){
                 alert('제목은 최대 30자까지 가능합니다.(빈칸포함)');
                 return;
             }
-            else if(content.length() > 500){
+            else if(content.length > 500){
                 alert('본 내용은 최대 500자까지 가능합니다.(빈칸포함)');
                 return;
             }

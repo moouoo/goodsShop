@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/fontawesome/css/all.min.css">
+    <link rel="stylesheet" href="/css/nav.css">
+    <title>noticeDetail</title>
+    <style>
+        /* 기본 스타일 초기화 */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* 전체 페이지 스타일 */
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f4f4;
+            padding: 20px;
+        }
+
+        /* 공지사항 상세 뷰 */
+        .container {
+            max-width: 900px;
+            margin: 10px auto;
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .notice-detail {
+            padding: 20px;
+        }
+
+        /* 제목 */
+        .notice-title {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+
+        /* 조회수 및 날짜 */
+        .notice-info {
+            font-size: 14px;
+            color: #888;
+            margin-bottom: 20px;
+        }
+
+        .notice-views {
+            margin-right: 15px;
+        }
+
+        /* 공지사항 내용 */
+        .notice-content {
+            font-size: 16px;
+            line-height: 1.6;
+            margin-bottom: 30px;
+        }
+
+        /* 뒤로가기 버튼 */
+        .back-button {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            font-size: 16px;
+            text-decoration: none;
+            border-radius: 5px;
+            text-align: center;
+            width: 100px;
+            margin-top: 20px;
+        }
+
+        .back-button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <div th:if="${nav} == 0">
+        <div th:replace="include/nav :: navbar"></div>
+    </div>
+    <div class="container">
+        <div class="notice-detail">
+            <h1 class="notice-title" th:text="${vo.title}">공지사항 제목</h1>
+            <div class="notice-info">
+                조회수: <span class="notice-views" th:text="${vo.count}">123</span>
+                <span class="notice-date" th:text="${vo.wDate}">작성일자</span>
+            </div>
+            <div class="notice-content">
+                <p th:text="${vo.content}">여기에 공지사항 내용을 작성합니다. 자세한 정보나 추가적인 설명을 여기에 추가할 수 있습니다.</p>
+            </div>
+            <a th:if="${nav} == 1" href="/admin/noticeM" class="back-button">뒤로가기</a>
+            <a th:if="${nav} == 0" href="/community/notice" class="back-button">뒤로가기</a>
+        </div>
+    </div>
+</body>
+</html>

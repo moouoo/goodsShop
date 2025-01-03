@@ -710,4 +710,18 @@ public class ProductController {
         return "product/best100";
     }
 
+    @RequestMapping(value = "/askAboutProduct", method = RequestMethod.POST)
+    String askAboutProduct(String askAboutProductContent, String askAboutProductTitle, int productId, HttpSession session){
+        if(askAboutProductTitle.length() > 20 || askAboutProductContent.length() > 100 || productId <= 0){
+            return "redirect:/message/accessErr";
+        }
+
+        String mid = session.getAttribute("sMid").toString();
+        if(mid == null){
+            return "redirect:/message/goMain";
+        }
+
+        productService.insertProductQ(mid, productId);
+        return "redirect:/message/askAboutProductOk";
+    }
 }

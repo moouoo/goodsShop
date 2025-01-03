@@ -107,3 +107,32 @@ function addWishList(productId){
         alert('서버에 오류가 발생했습니다.');
     });
 }
+
+function askAboutProductModalOpen(productId){
+
+}
+
+function askAboutProductCheck(productId){
+    document.getElementById('productId').value = productId;
+    let productIdCheck = document.getElementById('productId').value;
+    if(productIdCheck == 0){
+        alert('문의하려는 상품을 찾을 수 없습니다.');
+        return;
+    }
+
+    let title =  document.getElementById('askAboutProductTitle').value;
+    let content =  document.getElementById('askAboutProductContent').value;
+
+    if(title.length > 20){
+        alert('제목은 최대 20자까지 가능합니다.');
+        return;
+    }
+
+    if(content.length > 100){
+        alert('문의 내용은 최대 100자까지 가능합니다.');
+        return;
+    }
+
+    let askAboutProductModalForm = document.getElementById('askAboutProductModalForm');
+    askAboutProductModalForm.submit();
+}

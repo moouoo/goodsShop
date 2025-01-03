@@ -233,4 +233,9 @@ public class ProductServiceImpl implements ProductService{
         return productDao.getReviewCountAll(productId);
     }
 
+    @Override
+    public void insertProductQ(String mid, int productId) {
+        productDao.insertProductQ(mid, productId);
+    }
+
 }
