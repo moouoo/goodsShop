@@ -17,6 +17,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -156,7 +157,9 @@ public class ProductController {
     }
 
     @RequestMapping(value = "/{product_name}/{id}/{productId}", method = RequestMethod.GET)
-    String productDetail(@PathVariable("id") int sub_id, @PathVariable("productId") int productId, @PathVariable("product_name") String product_name, Model model) throws JsonProcessingException {
+    String productDetail(@PathVariable("id") int sub_id, @PathVariable("productId") int productId, @PathVariable("product_name") String product_name, Model model,
+                         HttpSession session
+                         ) throws JsonProcessingException {
         List<ProductVo> product_list;
         List<Product_imgVo> product_img_list;
 
@@ -182,6 +185,14 @@ public class ProductController {
 
         model.addAttribute("reviewList", reviewList);
         model.addAttribute("reviewCount", reviewCount);
+
+        // Q&A
+        List<ProductQVo> productQList = productService.getProductQ(productId);
+
+        int productQCount = productService.getProductQCountAll(productId);
+
+        model.addAttribute("productQList", productQList);
+        model.addAttribute("productQCount", productQCount);
 
         navbarHelper.navbarSetup(model);
         return "product/productDetail";
@@ -711,17 +722,26 @@ public class ProductController {
     }
 
     @RequestMapping(value = "/askAboutProduct", method = RequestMethod.POST)
-    String askAboutProduct(String askAboutProductContent, String askAboutProductTitle, int productId, HttpSession session){
+    String askAboutProduct(String askAboutProductContent, String askAboutProductTitle, int productId, HttpSession session, RedirectAttributes redirectAttributes){
         if(askAboutProductTitle.length() > 20 || askAboutProductContent.length() > 100 || productId <= 0){
             return "redirect:/message/accessErr";
         }
 
-        String mid = session.getAttribute("sMid").toString();
-        if(mid == null){
-            return "redirect:/message/goMain";
+        Object ObjMid = session.getAttribute("sMid");
+        if(ObjMid == null){
+            return "redirect:/message/memberX";
         }
+        String mid =  ObjMid.toString();
 
-        productService.insertProductQ(mid, productId);
+        int memberId = memberService.getMemberIdBymid(mid);
+        productService.insertProductQ(memberId, productId, askAboutProductContent, askAboutProductTitle);
+
+        String product_name = productService.getProductNameByProductId(productId);
+        int id = productService.getProductSubCategoryId(productId);
+
+        redirectAttributes.addAttribute("product_name", product_name);
+        redirectAttributes.addAttribute("id", id);
+        redirectAttributes.addAttribute("productId", productId);
         return "redirect:/message/askAboutProductOk";
     }
 }

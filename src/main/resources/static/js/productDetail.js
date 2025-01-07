@@ -2,6 +2,17 @@
 const csrfToken = document.querySelector('meta[name="_csrf"]').getAttribute('content');
 const csrfHeader = document.querySelector('meta[name="_csrf_header"]').getAttribute('content');
 
+let askAboutProductModal = document.getElementById('askAboutProductModal');
+let askAboutProductModalClose = document.querySelector('.askAboutProductModalClose');
+
+askAboutProductModalClose.addEventListener('click', function () {
+    askAboutProductModal.style.display = 'none';
+});
+
+function askAboutProductModalOpen(productId){
+    askAboutProductModal.style.display = 'flex';
+}
+
 function changeImage(src) {
     const mainImage = document.getElementById('main-image');
     mainImage.src = src;
@@ -106,10 +117,6 @@ function addWishList(productId){
         console.error(error);
         alert('서버에 오류가 발생했습니다.');
     });
-}
-
-function askAboutProductModalOpen(productId){
-
 }
 
 function askAboutProductCheck(productId){

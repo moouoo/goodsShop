@@ -105,4 +105,16 @@ public interface MemberDao {
     void updateReviewReplyAndReplyContent(@Param("reviewId") int reviewId, @Param("reviewReplyText") String reviewReplyText);
 
     String getReplyContentByProductOrderId(@Param("reviewProductOrderId") int reviewProductOrderId);
+
+    String getProductQContent(@Param("productQId") int productQId);
+
+    List<ProductQVo> getProductQ(@Param("memberId") int memberId);
+
+    void updateQnaReplyContent(@Param("productQId") int productQId, @Param("qnaReplyContent") String qnaReplyContent);
+
+    int checkExistProductQReplyContent(@Param("productQId") int productQId);
+
+    List<ProductQVo> getProductQViewList(@Param("memberId") int memberId);
+
+    String getProductQReplyContent(@Param("productQId") int productQId);
 }

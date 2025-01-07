@@ -70,5 +70,11 @@ public interface ProductService {
 
     int getReviewCountAll(int productId);
 
-    void insertProductQ(String mid, int productId);
+    void insertProductQ(int memberId, int productId, String askAboutProductContent, String askAboutProductTitle);
+
+    List<ProductQVo> getProductQ(int productId);
+
+    int getProductSubCategoryId(int productId);
+
+    int getProductQCountAll(int productId);
 }

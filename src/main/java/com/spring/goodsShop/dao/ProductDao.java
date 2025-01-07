@@ -71,5 +71,11 @@ public interface ProductDao {
 
     int getReviewCountAll(@Param("productId") int productId);
 
-    void insertProductQ(@Param("mid") String mid, @Param("productId") int productId);
+    void insertProductQ(@Param("memberId") int memberId, @Param("productId") int productId, @Param("askAboutProductContent")  String askAboutProductContent, @Param("askAboutProductTitle") String askAboutProductTitle);
+
+    List<ProductQVo> getProductQ(@Param("productId") int productId);
+
+    int getProductSubCategoryId(@Param("productId") int productId);
+
+    int getProductQCountAll(@Param("productId") int productId);
 }

@@ -45,3 +45,22 @@
     gap: 20px;
     justify-content: center;
 }
+
+/* qna */
+.qnaTitle:hover{
+    cursor: pointer;
+    color: blue;
+}
+
+.qnaModalContent{
+    padding: 0 10px 10px 10px;
+}
+
+.qnaTitleEnd{
+    pointer-events: none;
+    opacity: 0.5;
+}
+
+.qnaViewReplyContent{
+    display: none;
+}

@@ -1,16 +1,23 @@
 package com.spring.goodsShop.controller;
 
+import jakarta.servlet.http.HttpSession;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
 public class MessageController {
 
     @RequestMapping(value = "/message/{msgFlag}", method = RequestMethod.GET)
-    public String listGet(@PathVariable String msgFlag, Model model){
+    public String listGet(@PathVariable String msgFlag, Model model,
+                          @RequestParam(required = false) String product_name,
+                          @RequestParam(required = false) Integer id,
+                          @RequestParam(required = false) Integer productId
+                          ){
+
         if(msgFlag.equals("err")){
             model.addAttribute("msg", "err");
             model.addAttribute("url", "/");
@@ -165,11 +172,23 @@ public class MessageController {
         }
         else if(msgFlag.equals("askAboutProductOk")){
             model.addAttribute("msg", "문의사항을 등록했습니다.");
-            model.addAttribute("url", "/{product_name}/{id}/{productId}");
+            model.addAttribute("url", "/product" + "/" + product_name + "/" + id +"/" +productId);
         }
         else if(msgFlag.equals("accessErr")){
             model.addAttribute("msg", "잘못된 접근입니다.");
             model.addAttribute("url", "/");
+        }
+        else if(msgFlag.equals("qnaErr")){
+            model.addAttribute("msg", "qna데이터 받아올때 에러 발생");
+            model.addAttribute("url", "/member/memberP#qna");
+        }
+        else if(msgFlag.equals("updateQnaReplyContent")){
+            model.addAttribute("msg", "문의에 대한 답변을 완료했습니다.");
+            model.addAttribute("url", "/member/memberP#qna");
+        }
+        else if(msgFlag.equals("existContent")){
+            model.addAttribute("msg", "이미 존재하는 답변내용입니다.");
+            model.addAttribute("url", "/member/memberP#qna");
         }
 
 

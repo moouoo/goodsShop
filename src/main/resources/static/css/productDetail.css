@@ -248,7 +248,7 @@ input[type="number"] {
     text-decoration: none;
 }
 
-//리뷰
+/*리뷰*/
 .review-section {
     width: 80%;
     margin: 20px auto;
@@ -314,8 +314,89 @@ input[type="number"] {
     color: #999;
 }
 
+/*Q&A*/
+.q&a-card {
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background-color: #fff;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    margin-bottom: 15px;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.q&a-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* 사용자 정보 섹션 */
+.q&a-user {
+    font-size: 14px;
+    font-weight: bold;
+    color: #007bff;
+    margin-bottom: 10px;
+}
+
+.q&a-user p {
+    margin: 0;
+}
+
+/* 리뷰 내용 섹션 */
+.q&a-content {
+    font-size: 14px;
+    line-height: 1.6;
+    color: #333;
+}
+
+.q&a-title {
+    font-weight: bold;
+    font-size: 16px;
+    color: #444;
+    margin-bottom: 5px;
+}
+
+.q&a-date {
+    display: block;
+    font-size: 12px;
+    color: #999;
+    margin-bottom: 10px;
+}
+
+.q&a-text {
+    font-size: 14px;
+    color: #555;
+}
+
+.reviewReply-card{
+    margin: 20px;
+}
+
+.reviewAndReply-card{
+    border-bottom: 1px solid black;
+}
+
+/* 반응형 디자인 */
 @media (max-width: 768px) {
     .info-section {
         width: 100%;
+    }
+
+    .q&a-card {
+        padding: 15px;
+    }
+
+    .q&a-title {
+        font-size: 14px;
+    }
+
+    .q&a-date {
+        font-size: 11px;
+    }
+
+    .q&a-text {
+        font-size: 13px;
     }
 }

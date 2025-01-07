@@ -234,8 +234,23 @@ public class ProductServiceImpl implements ProductService{
     }
 
     @Override
-    public void insertProductQ(String mid, int productId) {
-        productDao.insertProductQ(mid, productId);
+    public void insertProductQ(int memberId, int productId, String askAboutProductContent, String askAboutProductTitle) {
+        productDao.insertProductQ(memberId, productId, askAboutProductContent, askAboutProductTitle);
+    }
+
+    @Override
+    public List<ProductQVo> getProductQ(int productId) {
+        return productDao.getProductQ(productId);
+    }
+
+    @Override
+    public int getProductSubCategoryId(int productId) {
+        return productDao.getProductSubCategoryId(productId);
+    }
+
+    @Override
+    public int getProductQCountAll(int productId) {
+        return productDao.getProductQCountAll(productId);
     }
 
 }

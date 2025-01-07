@@ -135,7 +135,7 @@
     </select>
 
     <select id="getReview" resultType="com.spring.goodsShop.vo.ReviewVo">
-        SELECT r.id, r.order_id, r.stars, r.review_img, r.content, r. write_date, m.mid FROM review r
+        SELECT r.id, r.order_id, r.stars, r.review_img, r.content, r. write_date, m.mid, r.reply, r.replyContent FROM review r
         JOIN productOrder po ON r.order_id = po.id
         JOIN member m ON m.id = po.member_id
         WHERE po.product_id = #{productId};
@@ -145,6 +145,20 @@
         SELECT count(*) FROM review r
         JOIN productOrder po ON r.order_id = po.id
         WHERE po.product_id = #{productId};
+    </select>
+
+    <select id="getProductQ" resultType="com.spring.goodsShop.vo.ProductQVo">
+        SELECT pq.*, m.mid FROM product_Q pq
+        JOIN member m ON m.id = pq.member_id
+        WHERE pq.product_id = #{productId};
+    </select>
+
+    <select id="getProductSubCategoryId" resultType="java.lang.Integer">
+        SELECT sub_category_id FROM product WHERE id = #{productId};
+    </select>
+
+    <select id="getProductQCountAll" resultType="java.lang.Integer">
+        SELECT count(*) FROM product_Q WHERE product_id = #{productId};
     </select>
 
 
@@ -159,7 +173,7 @@
     </insert>
 
     <insert id="insertProductQ">
-    <!--   JOIN을 이용해서 가져온 mid를 통해 member테이블을 연결한다음에 member_id를 넣어보자!     -->
+        INSERT INTO product_Q VALUES (default, #{productId}, #{memberId}, #{askAboutProductTitle}, #{askAboutProductContent}, default);
     </insert>
 
 

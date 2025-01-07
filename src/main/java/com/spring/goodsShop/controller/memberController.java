@@ -224,7 +224,6 @@ public class MemberController {
         // section - orders
         // int memberId = memberService.getMemberIdBymid(mid); -> 이미 위에 int memberId 만든게 존재함.(section-productOrder)
         List<OrderVo> sectionOrdersList = memberService.getOrderVoByMemberId(memberId);
-
         model.addAttribute("sectionOrdersList", sectionOrdersList);
 
         // section - wishList
@@ -245,18 +244,25 @@ public class MemberController {
             List<ProductVo> wishListProductTem = memberService.getProductForWishList(wishListProductId);
             wishListProduct.addAll(wishListProductTem);
         }
-
         model.addAttribute("wishListProduct", wishListProduct);
 
         //section - review
         List<ProductVo> orderProductList = productService.getOrderProduct(memberId);
-
         model.addAttribute("orderProductList", orderProductList);
 
         //section - reviewReply (level2)
         // memberId == level2 판매자
         List<ReviewVo> reviewReplyList = memberService.getReviewList(memberId);
         model.addAttribute("reviewReplyList", reviewReplyList);
+
+        //section - qna
+        // memberId == level2 판매자
+        List<ProductQVo> qnaList = memberService.getProductQ(memberId);
+        model.addAttribute("qnaList", qnaList);
+
+        //section - qnaView
+        List<ProductQVo> qnaViewList = memberService.getProductQViewList(memberId);
+        model.addAttribute("qnaViewList", qnaViewList);
 
         return "member/memberP";
     }
@@ -680,8 +686,85 @@ public class MemberController {
             data.put("success", true);
             return ResponseEntity.ok(data);
         }
+    }
 
+    @RequestMapping(value = "/qna", method = RequestMethod.POST)
+    ResponseEntity<Map<String, Object>> qna(@RequestBody Map<String, Integer> item){
+        Map<String, Object> data = new HashMap<>();
 
+        Object productQId_obj = item.get("productQId");
+        if(productQId_obj == null){
+            data.put("success", false);
+            return ResponseEntity.badRequest().body(data);
+        }
 
+        int productQId = Integer.parseInt(productQId_obj.toString());
+
+        try {
+            String qnaContent = memberService.getProductQContent(productQId);
+
+            data.put("success", true);
+            data.put("qnaContent", qnaContent);
+            data.put("productQId", productQId);
+            return ResponseEntity.ok(data);
+        }
+        catch (Exception e) {
+            System.out.println("qnaContent 가져오는데 실패");
+            throw new RuntimeException(e);
+        }
+    }
+
+    @RequestMapping(value = "/qnaReply", method = RequestMethod.POST)
+    String qnaReply(String qnaReplyContent, int productQId){
+        if(qnaReplyContent == null || qnaReplyContent.length() > 300 || productQId == 0 || qnaReplyContent == ""){
+            return "redirect:/message/qnaErr";
+        }
+
+        int check = memberService.checkExistProductQReplyContent(productQId);
+        if(check == 1){
+            return "redirect:/message/existContent";
+        }
+
+        try {
+            memberService.updateQnaReplyContent(productQId, qnaReplyContent);
+            return "redirect:/message/updateQnaReplyContent";
+        }
+        catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+
+    }
+
+    @RequestMapping(value = "/qnaView", method = RequestMethod.POST)
+    ResponseEntity<Map<String, Object>> qnaView(@RequestBody Map<String, Integer> item){
+        Map<String, Object> data = new HashMap<>();
+
+        Object productQId_obj = item.get("productQId");
+        Object qnaViewCount_obj = item.get("qnaViewCount");
+        if(productQId_obj == null || qnaViewCount_obj == null){
+            data.put("success", false);
+            return ResponseEntity.badRequest().body(data);
+        }
+        int productQId = Integer.parseInt(productQId_obj.toString());
+        int qnaViewCount = Integer.parseInt(qnaViewCount_obj.toString());
+
+        try {
+            StringBuilder htmlReplyContent;
+            String replyContent = memberService.getProductQReplyContent(productQId);
+            if(replyContent == null){
+                data.put("success", false);
+                return ResponseEntity.badRequest().body(data);
+            }
+            htmlReplyContent = memberService.madeHtmlReplyContent(replyContent, productQId, qnaViewCount);
+            data.put("success", true);
+            data.put("htmlReplyContent", htmlReplyContent);
+            data.put("productQId", productQId);
+            return ResponseEntity.ok(data);
+
+        }
+        catch (Exception e) {
+            System.out.println("레벨1, 문의보기, 에러발생");
+            throw new RuntimeException(e);
+        }
     }
 }

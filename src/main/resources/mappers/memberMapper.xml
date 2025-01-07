@@ -135,6 +135,32 @@
         SELECT replyContent FROM review WHERE order_id = #{reviewProductOrderId};
     </select>
 
+    <select id="getProductQContent" resultType="java.lang.String">
+        SELECT content FROM product_Q WHERE id = #{productQId};
+    </select>
+
+    <select id="getProductQ" resultType="com.spring.goodsShop.vo.ProductQVo">
+        SELECT pq.id, pq.product_id, pq.title, pq.content, pq.reply, pq.replyContent
+        FROM product_Q pq
+        JOIN product p ON pq.product_id = p.id
+        JOIN member m ON p.member_id = m.id
+        WHERE p.member_id = #{memberId};
+    </select>
+
+    <select id="checkExistProductQReplyContent" resultType="java.lang.Integer">
+        SELECT reply FROM product_Q WHERE id = #{productQId};
+    </select>
+
+    <select id="getProductQViewList" resultType="com.spring.goodsShop.vo.ProductQVo">
+        SELECT pq.*, p.product_name FROM product_Q pq
+        JOIN product p ON p.id = pq.product_id
+        WHERE pq.member_id = #{memberId};
+    </select>
+
+    <select id="getProductQReplyContent" resultType="java.lang.String">
+        SELECT replyContent FROM product_Q WHERE id = #{productQId};
+    </select>
+
 
     <!--  insert  -->
     <insert id="memberJoin">
@@ -222,6 +248,11 @@
     <update id="updateReviewReplyAndReplyContent">
         UPDATE review SET reply = 1, replyContent = #{reviewReplyText}
         WHERE id = #{reviewId};
+    </update>
+
+    <update id="updateQnaReplyContent">
+        UPDATE product_Q SET reply = 1, replyContent = #{qnaReplyContent}
+        WHERE id = #{productQId};
     </update>
 
 

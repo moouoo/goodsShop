@@ -368,5 +368,44 @@ public class MemberServiceImpl implements MemberService{
         return memberDao.getReplyContentByProductOrderId(reviewProductOrderId);
     }
 
+    @Override
+    public String getProductQContent(int productQId) {
+        return memberDao.getProductQContent(productQId);
+    }
+
+    @Override
+    public List<ProductQVo> getProductQ(int memberId) {
+        return memberDao.getProductQ(memberId);
+    }
+
+    @Override
+    public void updateQnaReplyContent(int productQId, String qnaReplyContent) {
+        memberDao.updateQnaReplyContent(productQId, qnaReplyContent);
+    }
+
+    @Override
+    public int checkExistProductQReplyContent(int productQId) {
+        return memberDao.checkExistProductQReplyContent(productQId);
+    }
+
+    @Override
+    public List<ProductQVo> getProductQViewList(int memberId) {
+        return memberDao.getProductQViewList(memberId);
+    }
+
+    @Override
+    public String getProductQReplyContent(int productQId) {
+        return memberDao.getProductQReplyContent(productQId);
+    }
+
+    @Override
+    public StringBuilder madeHtmlReplyContent(String replyContent, int productQId, int qnaViewCount) {
+        StringBuilder htmlReplyContent = new StringBuilder();
+        htmlReplyContent.append("<h3>답변내용<h3>")
+                        .append("<p>"+replyContent+"<p>")
+                        .append("<button onclick='qnaViewClose("+qnaViewCount+")' class='btn'>닫기</button>");
+        return htmlReplyContent;
+    }
+
 
 }

@@ -111,4 +111,18 @@ public interface MemberService {
     void updateReviewReplyAndReplyContent(int reviewId, String reviewReplyText);
 
     String getReplyContentByProductOrderId(int reviewProductOrderId);
+
+    String getProductQContent(int productQId);
+
+    List<ProductQVo> getProductQ(int memberId);
+
+    void updateQnaReplyContent(int productQId, String qnaReplyContent);
+
+    int checkExistProductQReplyContent(int productQId);
+
+    List<ProductQVo> getProductQViewList(int memberId);
+
+    String getProductQReplyContent(int productQId);
+
+    StringBuilder madeHtmlReplyContent(String replyContent, int productQId, int qnaViewCount);
 }

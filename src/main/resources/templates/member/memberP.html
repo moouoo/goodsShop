@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ko" xmlns:th="http://www.w3.org/1999/xhtml">
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,6 +9,7 @@
     <link rel="stylesheet" href="../css/nav.css">
     <link rel="stylesheet" href="../css/modal.css">
     <link rel="stylesheet" href="../css/registerProduct.css">
+    <link rel="stylesheet" href="../css/memberP_review.css">
     <style>
         /* 스타일 내용은 그대로 유지 */
         body {
@@ -194,7 +195,6 @@
             border: 1px solid #ddd;
         }
     </style>
-    <link rel="stylesheet" href="../css/memberP_review.css">
 </head>
 <body>
     <div th:replace="include/nav2 :: navbar2"></div>
@@ -206,11 +206,13 @@
             <a href="#orders" onclick="showSection('orders')">주문 내역</a>
             <a href="#wishlist" onclick="showSection('wishlist')">찜 목록</a>
             <a href="#review" onclick="showSection('review')">리뷰쓰기</a>
+            <a href="#qnaView" onclick="showSection('qnaView')">문의확인</a>
             <p><hr></p><br>
             <h2>판매관리</h2>
             <a href="#product_register" onclick="showSection('product_register')">상품등록</a>
             <a href="#productOrder" onclick="showSection('productOrder')">판매관리</a>
             <a href="#reviewReply" onclick="showSection('reviewReply')">리뷰관리</a>
+            <a href="#qna" onclick="showSection('qna')">문의관리</a>
             <p><hr></p><br>
         </div>
 
@@ -422,6 +424,35 @@
                 </div>
             </div>
 
+            <div class="section" id="qnaView" style="display: none;">
+                <h2>문의한 내용</h2>
+                <table>
+                    <tr>
+                        <th>번호</th>
+                        <th>상품명</th>
+                        <th>문의제목</th>
+                        <th>비고</th>
+                    </tr>
+                    <th:block th:each="qnaViewList, qnaViewListStat : ${qnaViewList}">
+                        <tr>
+                            <td th:text="${qnaViewListStat.count}">123</td>
+                            <td th:text="${qnaViewList.product_name}">상품이름</td>
+                            <td th:text="${qnaViewList.content}">문의제목</td>
+                            <td th:if="${qnaViewList.reply == 1}">
+                                <button th:onclick="|qnaView('${qnaViewList.id}', '${qnaViewListStat.count}')|">답변보기</button>
+                            </td>
+                            <td th:if="${qnaViewList.reply == 0}">
+                                <p>대기중</p>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="5"><div th:id="'qnaViewReplyContent' + ${qnaViewListStat.count}" style="display: none;"></div></td>
+                        </tr>
+                    </th:block>
+                </table>
+
+            </div>
+
             <!-- 유저등급 level2 -->
             <div class="section" id="product_register" style="display: none;">
                 <h2>상품등록</h2>
@@ -557,6 +588,55 @@
                     </tr>
                 </table>
             </div>
+
+            <div class="section" id="qna" style="display: none;">
+                <h2>문의관리</h2>
+                <table>
+                    <tr>
+                        <th>번호</th>
+                        <th>제목</th>
+                        <th>비고</th>
+                    </tr>
+                    <tr th:each="qnaList, qnaStat : ${qnaList}">
+                        <td th:text="${qnaStat.count}">123</td>
+                        <td th:if="${qnaList.reply == 0}"
+                            th:text="${qnaList.title}"
+                            th:productQId="${qnaList.id}"
+                            th:reply="${qnaList.reply}"
+                            class="qnaTitle">
+                            문의제목(답변안함)
+                        </td>
+                        <td th:if="${qnaList.reply == 1}"
+                            th:text="${qnaList.title}"
+                            class="qnaTitleEnd">
+                            문의내용(답변함)
+                        </td>
+                        <td>
+                            <p th:if="${qnaList.reply == 0}">대기중</p>
+                            <p th:if="${qnaList.reply == 1}">답변완료</p>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+
+        </div>
+    </div>
+
+    <div id="qnaModal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <label class="form-group" style="margin-bottom: 0px;">문의내용</label>
+            <div id="qnaModalContent" class="qnaModalContent"></div>
+                <form id="qnaModalForm" method="post" th:action="@{/member/qnaReply}">
+                    <label class="form-group" style="margin-bottom: 0px;">답변작성</label>
+                    <textarea id="qnaReplyContent" name="qnaReplyContent"></textarea>
+                    <div class="modal-footer">
+                        <button type="button" class="btn" onclick="qnaCheck()">답변하기</button>
+                        <button class="btn qnaModalClose" type="button">닫기</button>
+                        <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
+                        <input type="hidden" id="productQId" name="productQId" value="0">
+                    </div>
+                </form>
+            </div>
         </div>
     </div>
 
@@ -633,6 +713,8 @@
         const reviewReplyWriteModalClose = document.querySelector('.reviewReplyWriteModalClose');
         const reviewReplyViewModal = document.getElementById('reviewReplyViewModal');
         const reviewReplyViewModalClose = document.querySelector('.reviewReplyViewModalClose');
+        const qnaModal = document.getElementById('qnaModal');
+        const qnaModalClose = document.querySelector('.qnaModalClose');
 
         // 모달 닫기 함수 (닫기 버튼 클릭 시)
         closeModalBtn.addEventListener("click", () => {
@@ -719,7 +801,7 @@
             const sections = document.querySelectorAll('.section');
 
             // 선택된 섹션의 ID를 확인합니다.
-            let isProductSection = section === 'product_register' || section === 'productOrder';
+            let isProductSection = section === 'product_register' || section === 'productOrder' || section === 'reviewReply' || section === 'qna';
 
             if(isProductSection){
                 let sLevel = [[${level}]];
@@ -1162,5 +1244,6 @@
         }
     </script>
     <script src="/js/memberP_review.js"></script>
+    <script src="/js/memberP_qna.js"></script>
 </body>
 </html>
