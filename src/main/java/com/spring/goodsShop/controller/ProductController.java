@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.spring.goodsShop.enums.PaymentStatus;
 import com.spring.goodsShop.etc.NavbarHelper;
 import com.spring.goodsShop.etc.NumFormat;
+import com.spring.goodsShop.etc.PageProcess;
 import com.spring.goodsShop.etc.PaymentHelper;
 import com.spring.goodsShop.service.AdminService;
 import com.spring.goodsShop.service.MemberService;
@@ -90,19 +91,30 @@ public class ProductController {
     }
 
     @RequestMapping(value = "/allProduct", method = RequestMethod.GET)
-    String allProduct(Model model){
+    String allProduct(Model model, Integer page_integer,
+                      @RequestParam(name="pageNum", defaultValue = "1", required=false) int pageNum,
+                      @RequestParam(name="onePageCount", defaultValue = "20", required=false) int onePageCount
+                      ){
         List<MaincategoryVo> main_list;
         List<ProductVo> product_list;
         List<Product_imgVo> product_img_list;
 
         main_list = adminService.getMainCategory();
-        product_list = productService.getProduct();
+//        product_list = productService.getProduct();
         product_img_list = productService.getProductImg();
 
 
         model.addAttribute("main_list", main_list);
-        model.addAttribute("product_list", product_list);
+//        model.addAttribute("product_list", product_list);
         model.addAttribute("product_img_list", product_img_list);
+
+        PageProcess pageProcess = new PageProcess();
+        String part = "allProduct";
+        PageVo pageVo = pageProcess.pageProcess(part, pageNum, onePageCount);
+        product_list = productService.getProduct(pageVo.getStartPageNum(), onePageCount);
+
+        model.addAttribute("product_list", product_list);
+        model.addAttribute("pageVo", pageVo);
 
         // 내비바 설정
         navbarHelper.navbarSetup(model);

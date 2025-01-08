@@ -161,6 +161,17 @@
         SELECT count(*) FROM product_Q WHERE product_id = #{productId};
     </select>
 
+    <select id="getSearchResult" resultType="com.spring.goodsShop.vo.SearchVo">
+        SELECT p.id as product_id, p.sub_category_id, p.brand, p.product_name, p.price, p.stock, pi.img1
+        FROM product p
+        JOIN product_img pi ON p.product_img_id = pi.id
+        WHERE product_name LIKE CONCAT('%', #{search}, '%');
+    </select>
+
+    <select id="getSearchResultCount" resultType="java.lang.Integer">
+        SELECT count(*) FROM product p WHERE product_name LIKE CONCAT('%', #{search}, '%');
+    </select>
+
 
     <!--  insert  -->
     <insert id="setOrderOne" useGeneratedKeys="true" keyProperty="id">

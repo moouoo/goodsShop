@@ -39,10 +39,11 @@ public class CommunityController {
             throw new IllegalArgumentException("noticeId가 0보다 작아서 오류.");
         }
 
-        String strLevel = session.getAttribute("sLevel").toString();
-        if(strLevel == null){
-            return "redirect:/message/goMain";
+        Object strLevel_obj = session.getAttribute("sLevel");
+        if(strLevel_obj == null){
+            return "redirect:/message/noLogin";
         }
+        String strLevel = strLevel_obj.toString();
 
         int level = Integer.parseInt(strLevel);
         int navX = 1; // 관리자 계정으로 들어갈시 nav안보이게 설정.(navX == 1)

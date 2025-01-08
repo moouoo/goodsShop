@@ -77,4 +77,8 @@ public interface ProductService {
     int getProductSubCategoryId(int productId);
 
     int getProductQCountAll(int productId);
+
+    List<SearchVo> getSearchResult(String search);
+
+    int getSearchResultCount(String search);
 }

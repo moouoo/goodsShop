@@ -190,6 +190,10 @@ public class MessageController {
             model.addAttribute("msg", "이미 존재하는 답변내용입니다.");
             model.addAttribute("url", "/member/memberP#qna");
         }
+        else if(msgFlag.equals("noLogin")){
+            model.addAttribute("msg", "로그인 후 사용할 수 있습니다.");
+            model.addAttribute("url", "/member/login");
+        }
 
 
         return "include/message";

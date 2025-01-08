@@ -332,7 +332,6 @@ input[type="number"] {
     box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
 }
 
-/* 사용자 정보 섹션 */
 .q&a-user {
     font-size: 14px;
     font-weight: bold;
@@ -344,7 +343,6 @@ input[type="number"] {
     margin: 0;
 }
 
-/* 리뷰 내용 섹션 */
 .q&a-content {
     font-size: 14px;
     line-height: 1.6;
@@ -376,6 +374,22 @@ input[type="number"] {
 
 .reviewAndReply-card{
     border-bottom: 1px solid black;
+}
+
+.qna-card{
+    border-bottom: 1px solid #ddd;
+    padding: 15px 0;
+    display: flex;
+    gap: 20px;
+}
+
+.productQ-card{
+    border-bottom: 1px solid black;
+    padding: 15px 0;
+}
+
+.qnsReply-card-card{
+    padding: 20px;
 }
 
 /* 반응형 디자인 */

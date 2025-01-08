@@ -401,9 +401,13 @@ public class MemberServiceImpl implements MemberService{
     @Override
     public StringBuilder madeHtmlReplyContent(String replyContent, int productQId, int qnaViewCount) {
         StringBuilder htmlReplyContent = new StringBuilder();
-        htmlReplyContent.append("<h3>답변내용<h3>")
-                        .append("<p>"+replyContent+"<p>")
-                        .append("<button onclick='qnaViewClose("+qnaViewCount+")' class='btn'>닫기</button>");
+        htmlReplyContent.append("<div style='font-family: Arial, sans-serif; max-width: 600px; margin: 20px auto; padding: 20px; border: 1px solid #ddd; border-radius: 8px; background-color: #f9f9f9;'>")
+                .append("<h3 style='color: #333; border-bottom: 2px solid #007BFF; padding-bottom: 10px; margin-bottom: 20px;'>문의답변</h3>")
+                .append("<p style='font-size: 16px; line-height: 1.6; color: #555;'>"+replyContent+"</p>")
+                .append("<div style='text-align: right; margin-top: 20px;'>")
+                .append("<button onclick='qnaViewClose("+qnaViewCount+")' style='padding: 10px 20px; font-size: 14px; color: #fff; background-color: #007BFF; border: none; border-radius: 4px; cursor: pointer;'>닫기</button>")
+                .append("</div>")
+                .append("</div>");
         return htmlReplyContent;
     }
 

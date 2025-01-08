@@ -78,4 +78,8 @@ public interface ProductDao {
     int getProductSubCategoryId(@Param("productId") int productId);
 
     int getProductQCountAll(@Param("productId") int productId);
+
+    List<SearchVo> getSearchResult(@Param("search") String search);
+
+    int getSearchResultCount(@Param("search") String search);
 }

@@ -253,4 +253,14 @@ public class ProductServiceImpl implements ProductService{
         return productDao.getProductQCountAll(productId);
     }
 
+    @Override
+    public List<SearchVo> getSearchResult(String search) {
+        return productDao.getSearchResult(search);
+    }
+
+    @Override
+    public int getSearchResultCount(String search) {
+        return productDao.getSearchResultCount(search);
+    }
+
 }
