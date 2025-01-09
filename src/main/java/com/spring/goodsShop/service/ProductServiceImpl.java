@@ -263,4 +263,14 @@ public class ProductServiceImpl implements ProductService{
         return productDao.getSearchResultCount(search);
     }
 
+    @Override
+    public List<ProductVo> getProductPagination(int startIndexNum, int onePageCount) {
+        return productDao.getProductPagination(startIndexNum, onePageCount);
+    }
+
+    @Override
+    public int getProductAllTotalCount() {
+        return productDao.getProductAllTotalCount();
+    }
+
 }

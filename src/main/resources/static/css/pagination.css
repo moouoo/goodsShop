@@ -2,47 +2,38 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    gap: 5px;
     margin: 20px 0;
+    padding: 0;
+    list-style: none;
 }
 
-.page-btn {
-    background-color: #f4f4f4;
+.pagination ul {
+    display: flex;
+    gap: 10px;
+    padding: 0;
+    margin: 0;
+}
+
+.pagination li {
+    list-style: none;
+}
+
+.pagination a {
+    display: block;
+    padding: 10px 15px;
+    font-size: 14px;
+    text-decoration: none;
     border: 1px solid #ddd;
     border-radius: 5px;
-    color: #333;
-    padding: 8px 12px;
-    cursor: pointer;
-    font-size: 14px;
     transition: background-color 0.3s, color 0.3s;
 }
 
-.page-btn:hover {
+.pagination a:hover {
     background-color: #007bff;
     color: #fff;
 }
 
-.page-btn.active {
+.active{
     background-color: #007bff;
-    color: #fff;
-    border: 1px solid #0056b3;
-    font-weight: bold;
-}
-
-.page-btn.prev,
-.page-btn.next {
-    font-size: 16px;
-    padding: 8px 16px;
-}
-
-.page-btn[disabled] {
-    background-color: #e9ecef;
-    color: #adb5bd;
-    cursor: not-allowed;
-}
-
-button:disabled, .disabled {
-    pointer-events: none; /* 클릭 이벤트 비활성화 */
-    opacity: 0.6;         /* 투명도 적용 */
-    cursor: not-allowed;  /* 마우스 커서를 "비활성화" 모양으로 변경 */
+    pointer-events: none; /* 클릭 이벤트를 비활성화 */
 }

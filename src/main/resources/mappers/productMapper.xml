@@ -172,6 +172,14 @@
         SELECT count(*) FROM product p WHERE product_name LIKE CONCAT('%', #{search}, '%');
     </select>
 
+    <select id="getProductAllTotalCount" resultType="java.lang.Integer">
+        SELECT count(*) FROM product;
+    </select>
+
+    <select id="getProductPagination" resultType="com.spring.goodsShop.vo.ProductVo">
+        SELECT * FROM product LIMIT #{startIndexNum}, #{onePageCount};
+    </select>
+
 
     <!--  insert  -->
     <insert id="setOrderOne" useGeneratedKeys="true" keyProperty="id">

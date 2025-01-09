@@ -38,17 +38,27 @@
         </div>
 
         <div class="pagination">
-            <button th:if="${pageVo.curBlock > 0}" class="page-btn prev" th:onclick="|goToPage('${pageVo.totalPage}', '${pageVo.page}', '${pageVo.totalPage}')|">&laquo;</button>
-            <button th:if="${}" class="page-btn" onclick="goToPage(1)">1</button>
-            <button class="page-btn" onclick="goToPage(2)">2</button>
-            <button class="page-btn active" onclick="goToPage(3)">3</button>
-            <button class="page-btn" onclick="goToPage(4)">4</button>
-            <button class="page-btn" onclick="goToPage(5)">5</button>
-            <button class="page-btn next" onclick="goToPage('next')">&raquo;</button>
+            <ul>
+                <li th:if="${pageVo.pageNum > 1}">
+                    <a th:href="@{/product/allProduct(pageNum = ${pageVo.pageNum - 1}, onePageCount = ${pageVo.onePageCount})}"> < </a>
+                </li>
+
+                <li th:each="pageBtn : ${#numbers.sequence(pageVo.curBlock, pageVo.blockSize)}">
+                    <a th:class="${pageVo.pageNum == pageBtn ? 'active' : ''}"
+                       th:text="${pageBtn}"
+                       th:href="@{/product/allProduct(pageNum = ${pageBtn}, onePageCount = ${pageVo.onePageCount})}">
+                    </a>
+                </li>
+
+                <li th:if="${pageVo.pageNum >= 1 && pageVo.totalPageCount > pageVo.pageNum}">
+                    <a th:if="${pageVo.pageNum % 4 != 0}" th:href="@{/product/allProduct(pageNum = ${pageVo.pageNum + 1}, onePageCount = ${pageVo.onePageCount})}"> > </a>
+                    <a th:if="${pageVo.pageNum % 4 == 0}" th:href="@{/product/allProduct(pageNum = ${pageVo.pageNum + 1}, onePageCount = ${pageVo.onePageCount})}"> > </a>
+                </li>
+            </ul>
         </div>
 
         <div class="total-products">
-            <span>총 639개의 상품이 있습니다.</span>
+            <span th:text="${productCount}">총 ?개의 상품이 있습니다.</span>
         </div>
     </main>
     <script src="/js/pagination.js"></script>

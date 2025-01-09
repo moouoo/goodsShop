@@ -81,4 +81,8 @@ public interface ProductService {
     List<SearchVo> getSearchResult(String search);
 
     int getSearchResultCount(String search);
+
+    List<ProductVo> getProductPagination(int startIndexNum, int onePageCount);
+
+    int getProductAllTotalCount();
 }

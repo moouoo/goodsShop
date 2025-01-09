@@ -47,6 +47,9 @@ public class ProductController {
     @Autowired
     NumFormat numFormat;
 
+    @Autowired
+    PageProcess pageProcess;
+
     @RequestMapping(value = "insertProduct", method = RequestMethod.POST)
     String product(@ModelAttribute Product_imgVo imgVo, HttpSession session,
                    @RequestParam(value = "subcategory", required = false, defaultValue = "0") int subcategory,
@@ -91,7 +94,7 @@ public class ProductController {
     }
 
     @RequestMapping(value = "/allProduct", method = RequestMethod.GET)
-    String allProduct(Model model, Integer page_integer,
+    String allProduct(Model model,
                       @RequestParam(name="pageNum", defaultValue = "1", required=false) int pageNum,
                       @RequestParam(name="onePageCount", defaultValue = "20", required=false) int onePageCount
                       ){
@@ -108,13 +111,16 @@ public class ProductController {
 //        model.addAttribute("product_list", product_list);
         model.addAttribute("product_img_list", product_img_list);
 
-        PageProcess pageProcess = new PageProcess();
+        PageProcess process = new PageProcess();
         String part = "allProduct";
         PageVo pageVo = pageProcess.pageProcess(part, pageNum, onePageCount);
-        product_list = productService.getProduct(pageVo.getStartPageNum(), onePageCount);
+        product_list = productService.getProductPagination(pageVo.getStartIndexNum(), pageVo.getOnePageCount());
 
         model.addAttribute("product_list", product_list);
         model.addAttribute("pageVo", pageVo);
+
+        int productCount = productService.getProductAllTotalCount();
+        model.addAttribute("productCount", "총 " + productCount + "개의 상품이 존재합니다.");
 
         // 내비바 설정
         navbarHelper.navbarSetup(model);
