@@ -5,87 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="../fontawesome/css/all.min.css">
     <link rel="stylesheet" href="../css/nav.css">
-    <title>allProduct</title>
-    <style>
-        a {
-            text-decoration: none;
-            color: black;
-        }
-        /* 필터 섹션 스타일 */
-        .filter-section {
-            background-color: #fff;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            margin-bottom: 20px;
-            text-align: center;
-        }
-
-        .filter-title {
-            font-size: 1.5rem;
-            font-weight: bold;
-            margin-bottom: 20px;
-        }
-
-        /* 필터 태그 스타일 */
-        .filter-tags {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px; /* 태그 간의 간격 */
-            justify-content: center;
-        }
-
-        .filter-tags a {
-            display: inline-block;
-            background-color: #eee;
-            color: black;
-            padding: 8px 15px;
-            border-radius: 5px;
-            text-decoration: none;
-            transition: background-color 0.3s;
-        }
-
-        .filter-tags a span {
-            font-weight: normal; /* 숫자는 보통 두께로 설정 */
-            margin-left: 5px;
-        }
-
-        .filter-tags a:hover {
-            background-color: #0056b3; /* 호버 시 색상 변경 */
-        }
-
-        /* 상품 그리드 */
-        .product-container {
-            padding: 20px;
-        }
-
-        .product-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-            gap: 20px;
-        }
-
-        .product-card {
-            background-color: #f9f9f9;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            padding: 10px;
-            text-align: center;
-        }
-
-        .product-card img {
-            width: 100%;
-            height: 200px; /* 고정 높이 설정 */
-            object-fit: cover; /* 이미지 비율 유지하며 크기 맞춤 */
-            border-radius: 4px;
-        }
-
-        .total-products {
-            margin-top: 20px;
-            text-align: center;
-            font-weight: bold;
-        }
-    </style>
+    <link rel="stylesheet" href="../css/pagination.css">
+    <link rel="stylesheet" href="../css/productPageMainSub.css">
+    <title>Search</title>
 </head>
 <body>
 <div th:replace="include/nav :: navbar"></div>
@@ -100,6 +22,26 @@
             </a>
             <span th:text="${searchProductList.getFormattedPrice}">가격</span>
         </div>
+    </div>
+
+    <div class="pagination">
+        <ul>
+            <li th:if="${pageVo.pageNum > 1}">
+                <a th:href="@{/search(search = ${search}, pageNum = ${pageVo.pageNum - 1}, onePageCount = ${pageVo.onePageCount})}"> < </a>
+            </li>
+
+            <li th:each="pageBtn : ${#numbers.sequence(pageVo.curBlock, pageVo.blockSize)}">
+                <a th:class="${pageVo.pageNum == pageBtn ? 'active' : ''}"
+                   th:text="${pageBtn}"
+                   th:href="@{/search(search = ${search}, pageNum = ${pageBtn}, onePageCount = ${pageVo.onePageCount})}">
+                </a>
+            </li>
+
+            <li th:if="${pageVo.pageNum >= 1 && pageVo.totalPageCount > pageVo.pageNum}">
+                <a th:if="${pageVo.pageNum % 4 != 0}" th:href="@{/search(search = ${search}, pageNum = ${pageVo.pageNum + 1}, onePageCount = ${pageVo.onePageCount})}"> > </a>
+                <a th:if="${pageVo.pageNum % 4 == 0}" th:href="@{/search(search = ${search}, pageNum = ${pageVo.pageNum + 1}, onePageCount = ${pageVo.onePageCount})}"> > </a>
+            </li>
+        </ul>
     </div>
 
     <div class="total-products" th:if="${searchProductListExist == 0}">

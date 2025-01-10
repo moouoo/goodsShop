@@ -85,4 +85,12 @@ public interface ProductService {
     List<ProductVo> getProductPagination(int startIndexNum, int onePageCount);
 
     int getProductAllTotalCount();
+
+    List<ProductVo> getProductPaginationBySubcategoyId(int id, int startIndexNum, int onePageCount);
+
+    int getMainCategoryProductTotalCount(int subCategoryId);
+
+    int getSearchProductTotalCount(String search);
+
+    List<SearchVo> getSearchResultPagination(String search, int startIndexNum, int onePageCount);
 }

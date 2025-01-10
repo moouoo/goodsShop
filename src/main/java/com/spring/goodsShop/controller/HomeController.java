@@ -1,20 +1,16 @@
 package com.spring.goodsShop.controller;
 
 import com.spring.goodsShop.etc.NavbarHelper;
+import com.spring.goodsShop.etc.PageProcess;
 import com.spring.goodsShop.service.AdminService;
 import com.spring.goodsShop.service.ProductService;
-import com.spring.goodsShop.vo.MaincategoryVo;
-import com.spring.goodsShop.vo.ProductVo;
-import com.spring.goodsShop.vo.SearchVo;
-import com.spring.goodsShop.vo.SubcategoryVo;
+import com.spring.goodsShop.vo.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Controller
@@ -28,6 +24,9 @@ public class HomeController {
 
     @Autowired
     ProductService productService;
+
+    @Autowired
+    PageProcess pageProcess;
 
     @GetMapping("/")
     String hello(Model model){
@@ -44,9 +43,18 @@ public class HomeController {
     }
 
     @RequestMapping(value = "search", method = RequestMethod.GET)
-    String search(Model model, String search){
-        List<SearchVo> searchProductList = productService.getSearchResult(search);
+    String search(Model model, String search,
+                  @RequestParam(name="pageNum", defaultValue = "1", required=false) int pageNum,
+                  @RequestParam(name="onePageCount", defaultValue = "20", required=false) int onePageCount
+                  ){
+        // 페이징처리
+        List<ProductVo> empty = new ArrayList<>();
+        String part = "searchProduct";
+        PageVo pageVo = pageProcess.pageProcess(part, pageNum, onePageCount, empty, search);
+        List<SearchVo> searchProductList = productService.getSearchResultPagination(search, pageVo.getStartIndexNum(), pageVo.getOnePageCount());
         model.addAttribute("searchProductList", searchProductList);
+        model.addAttribute("pageVo", pageVo);
+        model.addAttribute("search", search);
 
         int searchProductListCount = productService.getSearchResultCount(search);
         model.addAttribute("searchProductListCount", "총 "+searchProductListCount + "개의 상품이 존재합니다.");

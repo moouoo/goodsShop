@@ -111,9 +111,9 @@ public class ProductController {
 //        model.addAttribute("product_list", product_list);
         model.addAttribute("product_img_list", product_img_list);
 
-        PageProcess process = new PageProcess();
+        List<ProductVo> emptyList = new ArrayList<>();
         String part = "allProduct";
-        PageVo pageVo = pageProcess.pageProcess(part, pageNum, onePageCount);
+        PageVo pageVo = pageProcess.pageProcess(part, pageNum, onePageCount, emptyList, "");
         product_list = productService.getProductPagination(pageVo.getStartIndexNum(), pageVo.getOnePageCount());
 
         model.addAttribute("product_list", product_list);
@@ -128,9 +128,12 @@ public class ProductController {
     }
 
     @RequestMapping(value = "/{title}", method = RequestMethod.GET)
-    String productTitle(@PathVariable("title") String title, Model model, ProductVo productVo){
+    String productTitle(@PathVariable("title") String title, Model model,
+                        @RequestParam(name="pageNum", defaultValue = "1", required=false) int pageNum,
+                        @RequestParam(name="onePageCount", defaultValue = "20", required=false) int onePageCount
+                        ){
         List<SubcategoryVo> sub_list;
-        List<ProductVo> product_list = new ArrayList<>();
+        List<ProductVo> product_listImsi = new ArrayList<>();
         List<Product_imgVo> product_img_list;
 
         int mainCategoryId = productService.getMainCategoryIdByTitle(title);
@@ -139,36 +142,55 @@ public class ProductController {
         for (int i = 0; i < sub_list.size(); i++) {
             int id = sub_list.get(i).getId();
             List<ProductVo> temList = productService.getProductBySubcategoyId(id);
-            product_list.addAll(temList);
+            product_listImsi.addAll(temList);
         }
+
         product_img_list = productService.getProductImg();
+
+        // 페이징처리
+        String part = "mainCategoryProduct";
+        PageVo pageVo = pageProcess.pageProcess(part, pageNum, onePageCount, product_listImsi, "");
+        List<ProductVo> product_list = pageProcess.categoryPagination(product_listImsi, onePageCount, pageVo.getStartIndexNum());
 
         model.addAttribute("title", title);
         model.addAttribute("sub_list", sub_list);
         model.addAttribute("product_list", product_list);
         model.addAttribute("product_img_list", product_img_list);
+        model.addAttribute("pageVo", pageVo);
+        model.addAttribute("totalCount", "총 " + product_listImsi.size() + "개의 상품이 있습니다.");
 
         navbarHelper.navbarSetup(model);
         return "product/productPageMain";
     }
 
     @RequestMapping(value = "/{title}/{id}", method = RequestMethod.GET)
-    String productTitleId(@PathVariable("title") String title, @PathVariable("id") int id, Model model){
+    String productTitleId(@PathVariable("title") String title, @PathVariable("id") int id, Model model,
+                          @RequestParam(name="pageNum", defaultValue = "1", required=false) int pageNum,
+                          @RequestParam(name="onePageCount", defaultValue = "20", required=false) int onePageCount
+                          ){
         List<SubcategoryVo> sub_list;
-        List<ProductVo> product_list;
+        List<ProductVo> product_listImsi;
         List<Product_imgVo> product_img_list;
 
         String sub_title = productService.getSubcategoryTitle(id);
         int mainCategoryId = productService.getMainCategoryIdByTitle(title);
         sub_list = adminService.getSubCategory(mainCategoryId);
         product_img_list = productService.getProductImg();
-        product_list = productService.getProductBySubcategoyId(id);
+        product_listImsi = productService.getProductBySubcategoyId(id);
+
+        // 페이징처리
+        String part = "subCategoryProduct";
+        PageVo pageVo = pageProcess.pageProcess(part, pageNum, onePageCount, product_listImsi, "");
+        List<ProductVo> product_list = pageProcess.categoryPagination(product_listImsi, onePageCount, pageVo.getStartIndexNum());
 
         model.addAttribute("sub_list", sub_list);
         model.addAttribute("sub_title", sub_title);
         model.addAttribute("title", title);
         model.addAttribute("product_list", product_list);
         model.addAttribute("product_img_list", product_img_list);
+        model.addAttribute("pageVo", pageVo);
+        model.addAttribute("subCategoryId", id);
+        model.addAttribute("totalCount", "총 " + product_listImsi.size() + "개의 상품이 있습니다.");
 
         navbarHelper.navbarSetup(model);
         return "product/productPageSub";
@@ -730,10 +752,18 @@ public class ProductController {
     }
 
     @RequestMapping(value = "/best100", method = RequestMethod.GET)
-    String best100(Model model){
-        List<ProductVo> productBest100 = productService.getProductBest100();
+    String best100(Model model,
+                   @RequestParam(name="pageNum", defaultValue = "1", required=false) int pageNum,
+                   @RequestParam(name="onePageCount", defaultValue = "20", required=false) int onePageCount
+                   ){
+        // 페이징처리
+        List<ProductVo> productBest100Imsi = productService.getProductBest100();
+        String part = "best100Product";
+        PageVo pageVo = pageProcess.pageProcess(part, pageNum, onePageCount, productBest100Imsi, "");
+        List<ProductVo> productBest100 = pageProcess.categoryPagination(productBest100Imsi, onePageCount, pageVo.getStartIndexNum());
 
         model.addAttribute("productBest100", productBest100);
+        model.addAttribute("pageVo", pageVo);
 
         navbarHelper.navbarSetup(model);
         return "product/best100";

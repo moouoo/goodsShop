@@ -273,4 +273,24 @@ public class ProductServiceImpl implements ProductService{
         return productDao.getProductAllTotalCount();
     }
 
+    @Override
+    public List<ProductVo> getProductPaginationBySubcategoyId(int id, int startIndexNum, int onePageCount) {
+        return productDao.getProductPaginationBySubcategoyId(id, startIndexNum, onePageCount);
+    }
+
+    @Override
+    public int getMainCategoryProductTotalCount(int subCategoryId) {
+        return productDao.getMainCategoryProductTotalCount(subCategoryId);
+    }
+
+    @Override
+    public int getSearchProductTotalCount(String search) {
+        return productDao.getSearchProductTotalCount(search);
+    }
+
+    @Override
+    public List<SearchVo> getSearchResultPagination(String search, int startIndexNum, int onePageCount) {
+        return productDao.getSearchResultPagination(search, startIndexNum, onePageCount);
+    }
+
 }

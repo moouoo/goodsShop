@@ -13,5 +13,4 @@ public class PageVo {
     private int curBlock;
 
     private int totalCount;
-
 }

@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="../fontawesome/css/all.min.css">
     <link rel="stylesheet" href="../css/nav.css">
+    <link rel="stylesheet" href="../css/pagination.css">
     <title>BEST100</title>
     <style>
         a {
@@ -77,6 +78,26 @@
                 </a>
                 <span th:text="${productBest100.getFormattedPrice}">가격</span>
             </div>
+        </div>
+
+        <div class="pagination">
+            <ul>
+                <li th:if="${pageVo.pageNum > 1}">
+                    <a th:href="@{/product/best100(pageNum = ${pageVo.pageNum - 1}, onePageCount = ${pageVo.onePageCount})}"> < </a>
+                </li>
+
+                <li th:each="pageBtn : ${#numbers.sequence(pageVo.curBlock, pageVo.blockSize)}">
+                    <a th:class="${pageVo.pageNum == pageBtn ? 'active' : ''}"
+                       th:text="${pageBtn}"
+                       th:href="@{/product/best100(pageNum = ${pageBtn}, onePageCount = ${pageVo.onePageCount})}">
+                    </a>
+                </li>
+
+                <li th:if="${pageVo.pageNum >= 1 && pageVo.totalPageCount > pageVo.pageNum}">
+                    <a th:if="${pageVo.pageNum % 4 != 0}" th:href="@{/product/best100(pageNum = ${pageVo.pageNum + 1}, onePageCount = ${pageVo.onePageCount})}"> > </a>
+                    <a th:if="${pageVo.pageNum % 4 == 0}" th:href="@{/product/best100(pageNum = ${pageVo.pageNum + 1}, onePageCount = ${pageVo.onePageCount})}"> > </a>
+                </li>
+            </ul>
         </div>
 
         <div class="total-products">

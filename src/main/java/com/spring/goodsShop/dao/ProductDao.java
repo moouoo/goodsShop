@@ -86,4 +86,12 @@ public interface ProductDao {
     int getProductAllTotalCount();
 
     List<ProductVo> getProductPagination(@Param("startIndexNum") int startIndexNum, @Param("onePageCount") int onePageCount);
+
+    List<ProductVo> getProductPaginationBySubcategoyId(@Param("id") int id, @Param("startIndexNum") int startIndexNum, @Param("onePageCount") int onePageCount);
+
+    int getMainCategoryProductTotalCount(@Param("subCategoryId") int subCategoryId);
+
+    int getSearchProductTotalCount(@Param("search") String search);
+
+    List<SearchVo> getSearchResultPagination(@Param("search") String search, @Param("startIndexNum") int startIndexNum, @Param("onePageCount") int onePageCount);
 }
