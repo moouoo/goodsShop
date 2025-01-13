@@ -31,6 +31,14 @@
         SELECT * FROM notice WHERE id = #{noticeId};
     </select>
 
+    <select id="getNoticeAllPagination" resultType="com.spring.goodsShop.vo.NoticeVo">
+        SELECT * FROM notice LIMIT #{startIndexNum}, #{onePageCount};
+    </select>
+
+    <select id="getNoticeTotalCount" resultType="java.lang.Integer">
+        SELECT count(*) FROM notice;
+    </select>
+
 
     <!--  insert  -->
     <insert id="setMainCategory">

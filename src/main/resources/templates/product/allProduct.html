@@ -50,9 +50,12 @@
                     </a>
                 </li>
 
+<!--                <li th:if="${pageVo.pageNum >= 1 && pageVo.totalPageCount > pageVo.pageNum}">-->
+<!--                    <a th:if="${pageVo.pageNum % 4 != 0}" th:href="@{/product/allProduct(pageNum = ${pageVo.pageNum + 1}, onePageCount = ${pageVo.onePageCount})}"> > </a>-->
+<!--                    <a th:if="${pageVo.pageNum % 4 == 0}" th:href="@{/product/allProduct(pageNum = ${pageVo.pageNum + 1}, onePageCount = ${pageVo.onePageCount})}"> > </a>-->
+<!--                </li>-->
                 <li th:if="${pageVo.pageNum >= 1 && pageVo.totalPageCount > pageVo.pageNum}">
-                    <a th:if="${pageVo.pageNum % 4 != 0}" th:href="@{/product/allProduct(pageNum = ${pageVo.pageNum + 1}, onePageCount = ${pageVo.onePageCount})}"> > </a>
-                    <a th:if="${pageVo.pageNum % 4 == 0}" th:href="@{/product/allProduct(pageNum = ${pageVo.pageNum + 1}, onePageCount = ${pageVo.onePageCount})}"> > </a>
+                    <a th:href="@{/product/allProduct(pageNum = ${pageVo.pageNum + 1}, onePageCount = ${pageVo.onePageCount})}"> > </a>
                 </li>
             </ul>
         </div>
@@ -61,6 +64,5 @@
             <span th:text="${productCount}">총 ?개의 상품이 있습니다.</span>
         </div>
     </main>
-    <script src="/js/pagination.js"></script>
 </body>
 </html>

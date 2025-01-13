@@ -103,4 +103,14 @@ public class AdminServiceImpl implements AdminService{
     public void updateNoticeCount(int noticeId) {
         adminDao.updateNoticeCount(noticeId);
     }
+
+    @Override
+    public List<NoticeVo> getNoticeAllPagination(int startIndexNum, int onePageCount) {
+        return adminDao.getNoticeAllPagination(startIndexNum, onePageCount);
+    }
+
+    @Override
+    public int getNoticeTotalCount() {
+        return adminDao.getNoticeTotalCount();
+    }
 }

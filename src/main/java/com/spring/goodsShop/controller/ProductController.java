@@ -711,15 +711,22 @@ public class ProductController {
         String idTem = !item.get("id").toString().isEmpty() ? item.get("id").toString() : "";
         int productId = !item.get("productId").toString().isEmpty() ? Integer.parseInt(item.get("productId").toString()) : 0;
         String design = !item.get("design").toString().isEmpty() ? item.get("design").toString() : "";
-
-        Integer sLevelObj = (Integer) session.getAttribute("sLevel"); // null 안전하게 처리 가능
-        int sLevel = (sLevelObj != null) ? sLevelObj : 0;
-        String level = "level" + sLevel;
+        String amount = item.get("amount") == null ? "" : item.get("amount").toString();
 
         Map<String, Object> data = new HashMap<>();
 
+        Object sLevelObj = session.getAttribute("sLevel");
+        if(sLevelObj == null){
+            data.put("login", false);
+            return ResponseEntity.badRequest().body(data);
+        }
+        int sLevel = Integer.parseInt(sLevelObj.toString());
+        String level = "level" + sLevel;
+
+
         if(subcategoryId == 0 || maincategoryId == 0 || sLevel == 0 || idTem.isEmpty()){
             data.put("success", false);
+            data.put("login", true);
             return ResponseEntity.badRequest().body(data);
         }
 
@@ -730,22 +737,32 @@ public class ProductController {
         List<CouponVo> couponList = productService.getCouponVos(level, maincategoryId, subcategoryId);
 
         data.put("success", true);
+        data.put("login", true);
         data.put("couponList", couponList);
         data.put("id", id);
         data.put("productId", productId);
         data.put("design", design);
+        data.put("amount", amount);
 
         return ResponseEntity.ok(data);
     }
 
     @RequestMapping(value = "/productNew", method = RequestMethod.GET)
-    String productNew(Model model){
+    String productNew(Model model,
+                      @RequestParam(name="pageNum", defaultValue = "1", required=false) int pageNum,
+                      @RequestParam(name="onePageCount", defaultValue = "20", required=false) int onePageCount
+                      ){
         List<ProductVo> product_listLimit10 = productService.getProductDESCLimit10();
-        List<ProductVo> product_list = productService.getProductDESC();
+
+        String part = "newProduct";
+        List<ProductVo> empty = new ArrayList<>();
+        PageVo pageVo = pageProcess.pageProcess(part, pageNum, onePageCount, empty, "");
+        List<ProductVo> product_list = productService.getProductDESCPagination(pageVo.getStartIndexNum(), onePageCount);
 
 
         model.addAttribute("product_listLimit10", product_listLimit10);
         model.addAttribute("product_list", product_list);
+        model.addAttribute("pageVo", pageVo);
 
         navbarHelper.navbarSetup(model);
         return "product/productNew";
@@ -791,5 +808,28 @@ public class ProductController {
         redirectAttributes.addAttribute("id", id);
         redirectAttributes.addAttribute("productId", productId);
         return "redirect:/message/askAboutProductOk";
+    }
+
+    @RequestMapping(value = "/resetPrice", method = RequestMethod.POST)
+    ResponseEntity<Map<String, Object>> resetPrice(@RequestBody Map<String, Integer> item){
+        Map<String, Object> data = new HashMap<>();
+        Object productId_obj = item.get("productId");
+        Object amount_obj = item.get("amount");
+
+        if(productId_obj == null || amount_obj == null){
+            System.out.println("여기로 들어왔니?");
+            data.put("success", false);
+            return ResponseEntity.badRequest().body(data);
+        }
+        int productId = Integer.parseInt(productId_obj.toString());
+        int amount = Integer.parseInt(amount_obj.toString());
+
+        int price = productService.getProductPriceByProductId(productId);
+        int resetPrice = price * amount;
+
+        data.put("success", true);
+        data.put("resetPrice", resetPrice);
+        System.out.println(resetPrice);
+        return ResponseEntity.ok(data);
     }
 }

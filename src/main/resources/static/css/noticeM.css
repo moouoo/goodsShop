@@ -1,0 +1,91 @@
+/* 전체 화면 스타일 */
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: #f9f9f9;
+    margin: 0;
+    padding: 0;
+}
+
+a{
+    text-decoration: none;
+    color: #555;
+}
+
+/* 제목 스타일 */
+h2 {
+    text-align: center;
+    color: #333;
+    margin: 20px 0;
+}
+
+/* 테이블 컨테이너 */
+table {
+    width: 80%;
+    margin: 0 auto;
+    border-collapse: collapse;
+    background-color: #fff;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* 테이블 헤더 */
+th {
+    background-color: #007bff;
+    color: #fff;
+    padding: 12px;
+    text-align: center;
+    font-size: 16px;
+}
+
+/* 테이블 본문 */
+td {
+    text-align: center;
+    padding: 10px;
+    font-size: 14px;
+    color: #555;
+}
+
+/* 짝수 행 배경색 */
+tr:nth-child(even) {
+    background-color: #f2f2f2;
+}
+
+/* 홀수 행 배경색 */
+tr:nth-child(odd) {
+    background-color: #ffffff;
+}
+
+.deleteBtn{
+    background-color: red;
+    color: black;
+}
+
+.deleteBtn:hover{
+    cursor: pointer;
+}
+
+.writeBtn{
+    background-color: #0299ff;
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    cursor: pointer;
+    border-radius: 5px;
+    float: right;
+    margin-bottom: 2px;
+}
+
+/* 반응형 처리 */
+@media (max-width: 768px) {
+    table {
+        width: 100%;
+        font-size: 12px;
+    }
+
+    th, td {
+        padding: 8px;
+    }
+
+    h2 {
+        font-size: 20px;
+    }
+}

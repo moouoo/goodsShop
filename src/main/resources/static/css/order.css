@@ -242,3 +242,31 @@ button{
 .payment-form{
     margin-top: 5px;
 }
+
+.deactivate{
+    pointer-events: none;
+    opacity: 0.6;
+}
+
+
+/**/
+/* 라디오 버튼을 감싸는 div */
+.radio-container {
+    position: relative;
+    display: inline-block;
+}
+
+
+/*
+.radio-container input[type="radio"] {
+    display: none;
+}
+*/
+
+
+/* 비활성화된 상태에서 라디오 버튼의 스타일 변경 */
+.radio-container.deactivate label {
+    opacity: 0.5;
+    pointer-events: none; /* 클릭 방지 */
+    background-color: #ccc;
+}

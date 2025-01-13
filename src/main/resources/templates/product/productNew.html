@@ -6,6 +6,7 @@
     <link rel="stylesheet" href="../fontawesome/css/all.min.css">
     <link rel="stylesheet" href="../css/nav.css">
     <link rel="stylesheet" href="../css/productNew.css">
+    <link rel="stylesheet" href="../css/pagination.css">
     <title>신제품</title>
 </head>
 <body>
@@ -44,6 +45,25 @@
                 <span th:text="${product_list.getFormattedPrice}">가격</span>
             </div>
         </div>
+    </div>
+
+    <div class="pagination">
+        <ul>
+            <li th:if="${pageVo.pageNum > 1}">
+                <a th:href="@{/product/productNew(pageNum = ${pageVo.pageNum - 1}, onePageCount = ${pageVo.onePageCount})}"> < </a>
+            </li>
+
+            <li th:each="pageBtn : ${#numbers.sequence(pageVo.curBlock, pageVo.blockSize)}">
+                <a th:class="${pageVo.pageNum == pageBtn ? 'active' : ''}"
+                   th:text="${pageBtn}"
+                   th:href="@{/product/productNew(pageNum = ${pageBtn}, onePageCount = ${pageVo.onePageCount})}">
+                </a>
+            </li>
+
+            <li th:if="${pageVo.pageNum >= 1 && pageVo.totalPageCount > pageVo.pageNum}">
+                <a th:href="@{/product/productNew(pageNum = ${pageVo.pageNum + 1}, onePageCount = ${pageVo.onePageCount})}"> > </a>
+            </li>
+        </ul>
     </div>
 
     <script src="/js/productNew_slider.js"></script>

@@ -1,11 +1,9 @@
 package com.spring.goodsShop.controller;
 
+import com.spring.goodsShop.etc.PageProcess;
 import com.spring.goodsShop.service.AdminService;
 import com.spring.goodsShop.service.MemberService;
-import com.spring.goodsShop.vo.MaincategoryVo;
-import com.spring.goodsShop.vo.MemberVo;
-import com.spring.goodsShop.vo.NoticeVo;
-import com.spring.goodsShop.vo.SubcategoryVo;
+import com.spring.goodsShop.vo.*;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
@@ -15,7 +13,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-import java.sql.SQLException;
 import java.util.*;
 
 @Controller
@@ -26,6 +23,9 @@ public class AdminController {
 
     @Autowired
     MemberService memberService;
+
+    @Autowired
+    PageProcess pageProcess;
 
     @RequestMapping(value = "/adminP", method = RequestMethod.GET)
     String admin(){
@@ -182,16 +182,18 @@ public class AdminController {
         return "{\"success\": true }";
     }
 
-    @RequestMapping(value = "/inquiryM", method = RequestMethod.GET)
-    String inquiryM(){
-        return "admin/inquiryM";
-    }
-
     @RequestMapping(value = "/noticeM", method = RequestMethod.GET)
-    String notice(Model model){
-        List<NoticeVo> noticeList = adminService.getNoticeAll();
+    String notice(Model model,
+                  @RequestParam(name="pageNum", defaultValue = "1", required=false) int pageNum,
+                  @RequestParam(name="onePageCount", defaultValue = "20", required=false) int onePageCount
+                  ){
+        String part = "notice";
+        List<ProductVo> empty = new ArrayList<>();
+        PageVo pageVo = pageProcess.pageProcess(part, pageNum, onePageCount, empty, "");
+        List<NoticeVo> noticeList = adminService.getNoticeAllPagination(pageVo.getStartIndexNum(), pageVo.getOnePageCount());
 
         model.addAttribute("noticeList", noticeList);
+        model.addAttribute("pageVo", pageVo);
         return "admin/noticeM";
     }
 

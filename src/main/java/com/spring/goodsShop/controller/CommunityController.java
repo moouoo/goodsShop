@@ -1,8 +1,11 @@
 package com.spring.goodsShop.controller;
 
 import com.spring.goodsShop.etc.NavbarHelper;
+import com.spring.goodsShop.etc.PageProcess;
 import com.spring.goodsShop.service.AdminService;
 import com.spring.goodsShop.vo.NoticeVo;
+import com.spring.goodsShop.vo.PageVo;
+import com.spring.goodsShop.vo.ProductVo;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
@@ -11,6 +14,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,10 +28,21 @@ public class CommunityController {
     @Autowired
     AdminService adminService;
 
+    @Autowired
+    PageProcess pageProcess;
+
     @RequestMapping(value = "/notice", method = RequestMethod.GET)
-    String notice(Model model){
-        List<NoticeVo> noticeList = adminService.getNoticeAll();
+    String notice(Model model,
+                  @RequestParam(name="pageNum", defaultValue = "1", required=false) int pageNum,
+                  @RequestParam(name="onePageCount", defaultValue = "20", required=false) int onePageCount
+                  ){
+        String part = "notice";
+        List<ProductVo> empty = new ArrayList<>();
+        PageVo pageVo = pageProcess.pageProcess(part, pageNum, onePageCount, empty, "");
+        List<NoticeVo> noticeList = adminService.getNoticeAllPagination(pageVo.getStartIndexNum(), pageVo.getOnePageCount());
+
         model.addAttribute("noticeList", noticeList);
+        model.addAttribute("pageVo", pageVo);
 
         navbarHelper.navbarSetup(model);
         return "/community/notice";

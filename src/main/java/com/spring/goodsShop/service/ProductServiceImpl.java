@@ -78,6 +78,10 @@ public class ProductServiceImpl implements ProductService{
         // 쿠폰만료일을 구분하기위한 오늘의 날짜 가져오기
         LocalDate today = LocalDate.now();
 
+        // 적용한 쿠폰 막는 코드 작성 + 사용한 쿠폰 막는 코드 작성
+
+
+
         //쿠폰의 코드분석
         for (int i = 0; i < couponVoList.size(); i++) {
             CouponVo couponVo = couponVoList.get(i);
@@ -291,6 +295,11 @@ public class ProductServiceImpl implements ProductService{
     @Override
     public List<SearchVo> getSearchResultPagination(String search, int startIndexNum, int onePageCount) {
         return productDao.getSearchResultPagination(search, startIndexNum, onePageCount);
+    }
+
+    @Override
+    public List<ProductVo> getProductDESCPagination(int startIndexNum, int onePageCount) {
+        return productDao.getProductDESCPagination(startIndexNum, onePageCount);
     }
 
 }

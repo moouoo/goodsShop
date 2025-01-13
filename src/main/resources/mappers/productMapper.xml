@@ -200,6 +200,14 @@
         LIMIT #{startIndexNum}, #{onePageCount};
     </select>
 
+    <select id="getProductDESCPagination" resultType="com.spring.goodsShop.vo.ProductVo">
+        SELECT p.id, p.sub_category_id, p.product_name, p.price, p.brand, pi.img1
+        FROM product p
+        JOIN product_img pi ON p.product_img_id = pi.id
+        ORDER BY p.Rdate DESC
+        LIMIT #{startIndexNum}, #{onePageCount};
+    </select>
+
 
     <!--  insert  -->
     <insert id="setOrderOne" useGeneratedKeys="true" keyProperty="id">

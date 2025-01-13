@@ -38,4 +38,8 @@ public interface AdminDao {
     NoticeVo getNoticeByNoticeId(@Param("noticeId") int noticeId);
 
     void updateNoticeCount(@Param("noticeId") int noticeId);
+
+    List<NoticeVo> getNoticeAllPagination(@Param("startIndexNum") int startIndexNum, @Param("onePageCount") int onePageCount);
+
+    int getNoticeTotalCount();
 }

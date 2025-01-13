@@ -37,4 +37,8 @@ public interface AdminService {
     NoticeVo getNoticeByNoticeId(int noticeId);
 
     void updateNoticeCount(int noticeId);
+
+    List<NoticeVo> getNoticeAllPagination(int startIndexNum, int onePageCount);
+
+    int getNoticeTotalCount();
 }

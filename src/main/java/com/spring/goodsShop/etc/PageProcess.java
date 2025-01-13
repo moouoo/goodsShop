@@ -1,5 +1,6 @@
 package com.spring.goodsShop.etc;
 
+import com.spring.goodsShop.service.AdminService;
 import com.spring.goodsShop.service.ProductService;
 import com.spring.goodsShop.vo.PageVo;
 import com.spring.goodsShop.vo.ProductVo;
@@ -14,6 +15,9 @@ public class PageProcess {
 
     @Autowired
     ProductService productService;
+
+    @Autowired
+    AdminService adminService;
 
     public PageVo pageProcess(String part, int pageNum, int onePageCount, List<ProductVo> product_list, String search){
         PageVo pageVo = new PageVo();
@@ -30,8 +34,8 @@ public class PageProcess {
         else if (part.equals("subCategoryProduct")) totalCount = product_list.size();
         else if (part.equals("searchProduct")) totalCount = productService.getSearchProductTotalCount(search);
         else if (part.equals("best100Product")) totalCount = product_list.size();
-//        else if (part.equals("newProduct")) totalCount = productService.getNewProductTotalCount();
-//        else if (part.equals("notice")) totalCount = productService.getNoticeTotalCount();
+        else if (part.equals("newProduct")) totalCount = productService.getProductAllTotalCount();
+        else if (part.equals("notice")) totalCount = adminService.getNoticeTotalCount();
 
         int totalPageCount = totalCount % onePageCount == 0 ? (totalCount / onePageCount) : (totalCount / onePageCount) + 1;
         int startIndexNum = (pageNum - 1) * onePageCount;

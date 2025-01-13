@@ -93,4 +93,6 @@ public interface ProductService {
     int getSearchProductTotalCount(String search);
 
     List<SearchVo> getSearchResultPagination(String search, int startIndexNum, int onePageCount);
+
+    List<ProductVo> getProductDESCPagination(int startIndexNum, int onePageCount);
 }

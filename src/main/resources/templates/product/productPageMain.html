@@ -49,8 +49,7 @@
             </li>
 
             <li th:if="${pageVo.pageNum >= 1 && pageVo.totalPageCount > pageVo.pageNum}">
-                <a th:if="${pageVo.pageNum % 4 != 0}" th:href="@{/product/{title}(title = ${title}, pageNum = ${pageVo.pageNum + 1}, onePageCount = ${pageVo.onePageCount})}"> > </a>
-                <a th:if="${pageVo.pageNum % 4 == 0}" th:href="@{/product/{title}(title = ${title}, pageNum = ${pageVo.pageNum + 1}, onePageCount = ${pageVo.onePageCount})}"> > </a>
+                <a th:href="@{/product/{title}(title = ${title}, pageNum = ${pageVo.pageNum + 1}, onePageCount = ${pageVo.onePageCount})}"> > </a>
             </li>
         </ul>
     </div>
