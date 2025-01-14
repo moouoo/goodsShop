@@ -464,6 +464,7 @@ public class ProductController {
             int productId = Integer.parseInt(productIdsObj.get(i).toString());
             int price = productService.getProductPriceByProductId(productId);
             int amount = Integer.parseInt(amountsObj.get(i).toString());
+            productService.updateProductStock(productId, amount);
             String design = designsObj.get(i).toString();
             String productName = productService.getProductNameByProductId(productId);
 
@@ -730,6 +731,8 @@ public class ProductController {
             return ResponseEntity.badRequest().body(data);
         }
 
+        int resetPrice = productService.getProductPriceByProductId(productId);
+
         //itemPrice_0
         //01234567890
         int id = Integer.parseInt(idTem.substring(10));
@@ -743,6 +746,7 @@ public class ProductController {
         data.put("productId", productId);
         data.put("design", design);
         data.put("amount", amount);
+        data.put("resetPrice", resetPrice);
 
         return ResponseEntity.ok(data);
     }
@@ -810,26 +814,5 @@ public class ProductController {
         return "redirect:/message/askAboutProductOk";
     }
 
-    @RequestMapping(value = "/resetPrice", method = RequestMethod.POST)
-    ResponseEntity<Map<String, Object>> resetPrice(@RequestBody Map<String, Integer> item){
-        Map<String, Object> data = new HashMap<>();
-        Object productId_obj = item.get("productId");
-        Object amount_obj = item.get("amount");
 
-        if(productId_obj == null || amount_obj == null){
-            System.out.println("여기로 들어왔니?");
-            data.put("success", false);
-            return ResponseEntity.badRequest().body(data);
-        }
-        int productId = Integer.parseInt(productId_obj.toString());
-        int amount = Integer.parseInt(amount_obj.toString());
-
-        int price = productService.getProductPriceByProductId(productId);
-        int resetPrice = price * amount;
-
-        data.put("success", true);
-        data.put("resetPrice", resetPrice);
-        System.out.println(resetPrice);
-        return ResponseEntity.ok(data);
-    }
 }

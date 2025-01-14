@@ -95,4 +95,6 @@ public interface ProductService {
     List<SearchVo> getSearchResultPagination(String search, int startIndexNum, int onePageCount);
 
     List<ProductVo> getProductDESCPagination(int startIndexNum, int onePageCount);
+
+    void updateProductStock(int productId, int amount);
 }

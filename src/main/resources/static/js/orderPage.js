@@ -56,22 +56,36 @@ function checkCustomMsg(){
     }
 }
 
+function functionCouponCheck(couponList, id, productId, design, resetPrice){
+    // 적용 버튼의 onclick 속성에 id 값을 동적으로 설정
+    // '적용' 버튼을 동적으로 찾고, onclick 속성 설정
+    const couponCheckBtn = document.querySelector('.action-btn');
+    if (couponCheckBtn) {
+        couponCheckBtn.setAttribute('onclick', `couponCheck(${id}, ${productId}, '${design}', ${resetPrice})`);
+    }
+    else{
+        alert('radio버튼 오류');
+    }
+}
+
 // 모달창
-function couponModal(couponList, id, productId, design, amount) {
+function couponModal(couponList, id, productId, design, resetPrice) {
     document.getElementById('couponModal').style.display = 'flex';
     // 쿠폰 테이블 가져오기
     const tableBody = document.querySelector('#couponModal table tbody');
 
     // 기존 행 제거
-    tableBody.innerHTML = '';
+    if(tableBody.children.length != 0) {
+        functionCouponCheck(couponList, id, productId, design, resetPrice);
+        return;
+    }
 
     // 쿠폰 데이터를 테이블에 추가
     couponList.forEach(coupon => {
         const row = `
-            <tr class="couponUse${coupon.id}">
+            <tr>
                 <td>
-                    <input type="radio" name="couponSelect" value="${coupon.id}" id="coupon${coupon.id}">
-
+                    <input type="radio" name="couponSelect" value="${coupon.id}">
                 </td>
                 <td>${coupon.coupon_name}</td>
                 <td>${coupon.coupon_rate}</td>
@@ -80,16 +94,7 @@ function couponModal(couponList, id, productId, design, amount) {
         `;
         tableBody.insertAdjacentHTML('beforeend', row);
     });
-
-    // 적용 버튼의 onclick 속성에 id 값을 동적으로 설정
-    // '적용' 버튼을 동적으로 찾고, onclick 속성 설정
-    const couponCheckBtn = document.querySelector('.action-btn');
-    if (couponCheckBtn) {
-        couponCheckBtn.setAttribute('onclick', `couponCheck(${id}, ${productId}, '${design}', ${amount})`);
-    }
-    else{
-        alert('radio버튼 오류');
-    }
+    functionCouponCheck(couponList, id, productId, design, resetPrice);
 }
 
 function closeModal() {
@@ -109,7 +114,7 @@ window.addEventListener("click", (e) => {
 });
 
 // 각 상품에 사용할 수 있는 쿠폰 가져오기
-function selectCouponForItem(subcategoryId, maincategoryId, idTem, productId, design, amount){
+function selectCouponForItem(subcategoryId, maincategoryId, idTem, productId, design){
     fetch('/product/selectCouponForItem', {
         method: 'POST',
         headers: {
@@ -121,8 +126,7 @@ function selectCouponForItem(subcategoryId, maincategoryId, idTem, productId, de
             maincategoryId : maincategoryId,
             id : idTem,
             productId : productId,
-            design : design,
-            amount : amount
+            design : design
         })
     })
     .then(response => {
@@ -133,7 +137,9 @@ function selectCouponForItem(subcategoryId, maincategoryId, idTem, productId, de
     })
     .then(data => {
         if(data.login){
-            if (data.success) couponModal(data.couponList, data.id, data.productId, data.design, data.amount);
+            if (data.success) {
+                couponModal(data.couponList, data.id, data.productId, data.design, data.resetPrice);
+            }
             else alert("쿠폰리스트불러오기 실패");
         }
         else{
@@ -147,16 +153,24 @@ function selectCouponForItem(subcategoryId, maincategoryId, idTem, productId, de
     });
 }
 
-const couponData = []; // 쿠폰 결과를 담을 배열
-function couponCheck(id, productId, design, amount){
+let couponData = []; // 쿠폰 결과를 담을 배열
+function couponCheck(id, productId, design, resetPrice){
     // 선택된 라디오 버튼 가져오기
     const selectedCoupon = document.querySelector('input[name="couponSelect"]:checked');
     let couponId = selectedCoupon ? selectedCoupon.value.trim() : "";
 
-    couponData.push({productId, couponId, design});
+    if(couponData.length === 0) {
+        couponData.push({productId, couponId, design});
+    }
+    else{
+        let ExistCouponId = couponData.some(coupon => coupon.couponId === couponId);
+        if(ExistCouponId){
+            couponData = couponData.filter(coupon => coupon.couponId !== couponId);
+            alert('이미 적용중인 쿠폰입니다.');
+            return;
+        }
+    }
 
-    // css를 부여해서 radio버튼 비활성하여 중복 쿠폰적용을 막아야함. 지금까지 실패중
-    selectedCoupon.classList.add('deactivate');
     selectedCoupon.disabled = true;
 
     // 할인결과를 위한 선언
@@ -164,8 +178,22 @@ function couponCheck(id, productId, design, amount){
     let pointInput = document.getElementById("reward-points");
     let enteredPoints = parseInt(pointInput.value) || 0;
 
-    let priceElement = document.getElementById(`itemPrice_${id}`);
-    let price = priceElement ? parseInt(priceElement.textContent.replace(/[^0-9]/g, '')) : 0;
+    let price;
+    let ExistCouponData = couponData.some(coupon => coupon.productId === productId);
+    if(ExistCouponData){
+        couponData = couponData.filter(coupon => coupon.productId !== productId);
+        couponData.push({productId, couponId, design});
+//        const radios = document.querySelectorAll('input[name="couponSelect"]');
+//        radios.forEach(radio => {
+//           radio.disabled = false;
+//        });
+        selectedCoupon.disabled = true;
+        price = resetPrice;
+    }
+    else{
+        let priceElement = document.getElementById(`itemPrice_${id}`);
+        price = priceElement ? parseInt(priceElement.textContent.replace(/[^0-9]/g, '')) : 0;
+    }
 
     if(couponId == "") alert('쿠폰을 선택해주세요.');
     else if(price == 0) alert('상품가격을 가져올 수 없습니다. 문의해주세요.');
@@ -209,8 +237,8 @@ function couponCheck(id, productId, design, amount){
                 }
                 else{
                     let updateFinalDiscountPrice = finalDiscountPrice + discountPrice;
-                    document.getElementById('finalDiscountPrice').textContent = '- ' + updateFinalDiscountPrice.toLocaleString() + ' 원';
                     document.getElementById('couponDiscountPrice').textContent = '- ' + updateFinalDiscountPrice.toLocaleString() + ' 원';
+                    document.getElementById('finalDiscountPrice').textContent = '- ' + updateFinalDiscountPrice.toLocaleString() + ' 원';
                     finalPrice();
                 }
             }

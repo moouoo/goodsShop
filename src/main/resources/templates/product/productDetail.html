@@ -50,11 +50,14 @@
                     <label for="amount">TOTAL (QUANTITY)</label>
                     <input type="number" id="amount" name="amount" value="0" min="0">
                 </div>
-                <div class="button-container">
+                <div class="button-container" th:if="${product_list.stock != 0}">
                     <input type="hidden" name="productId" th:value="${productId}">
                     <button type="button" class="buy-now" th:productId="${productId}" onclick="addToCart(this.getAttribute('productId'))">바로 구매하기</button>
                     <button type="button" class="add-cart" th:productId="${productId}" onclick="addToCart(this.getAttribute('productId'))">장바구니</button>
                     <button type="button" th:productId="${productId}" class="wish-list" onclick="addWishList(this.getAttribute('productId'))">관심상품</button>
+                </div>
+                <div class="button-container" th:if="${product_list.stock == 0}">
+                    <p>재고량이 없습니다.</p>
                 </div>
             </form>
         </div>

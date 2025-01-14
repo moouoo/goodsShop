@@ -96,4 +96,6 @@ public interface ProductDao {
     List<SearchVo> getSearchResultPagination(@Param("search") String search, @Param("startIndexNum") int startIndexNum, @Param("onePageCount") int onePageCount);
 
     List<ProductVo> getProductDESCPagination(@Param("startIndexNum") int startIndexNum, @Param("onePageCount") int onePageCount);
+
+    void updateProductStock(@Param("productId") int productId, @Param("amount") int amount);
 }

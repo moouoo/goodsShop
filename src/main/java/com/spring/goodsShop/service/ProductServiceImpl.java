@@ -302,4 +302,9 @@ public class ProductServiceImpl implements ProductService{
         return productDao.getProductDESCPagination(startIndexNum, onePageCount);
     }
 
+    @Override
+    public void updateProductStock(int productId, int amount) {
+        productDao.updateProductStock(productId, amount);
+    }
+
 }

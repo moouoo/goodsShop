@@ -106,7 +106,7 @@
                        th:subcategoryId="${item.subcategoryId}" th:maincategoryId="${item.subcategoryId}"
                        th:idTem="'itemPrice_' + ${iterStat.index}" th:productId="${item.productId}" th:design="${item.design}" th:amount="${item.amount}"
                        onclick="selectCouponForItem(this.getAttribute('subcategoryId'), this.getAttribute('maincategoryId'),
-                       this.getAttribute('idTem'), this.getAttribute('productId'), this.getAttribute('design'), this.getAttribute('amount'))"
+                       this.getAttribute('idTem'), this.getAttribute('productId'), this.getAttribute('design'))"
                        value="쿠폰적용">
                 <div class="order-price" th:text="${item.price * item.amount}" th:id="'itemPrice_' + ${iterStat.index}">
                     구매하는 상품의 가격

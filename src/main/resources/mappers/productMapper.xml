@@ -233,6 +233,10 @@
         UPDATE productOrder SET reviewStatus = #{reviewStatus} WHERE id = #{reviewProductOrderId};
     </update>
 
+    <update id="updateProductStock">
+        UPDATE product SET stock = stock - #{amount} WHERE id = #{productId};
+    </update>
+
 
     <!--  delete  -->
 </mapper>

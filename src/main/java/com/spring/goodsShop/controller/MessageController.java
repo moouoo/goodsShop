@@ -194,6 +194,18 @@ public class MessageController {
             model.addAttribute("msg", "로그인 후 사용할 수 있습니다.");
             model.addAttribute("url", "/member/login");
         }
+        else if(msgFlag.equals("adminNo")){
+            model.addAttribute("msg", "관리자계정만 이용 가능합니다.");
+            model.addAttribute("url", "/member/login");
+        }
+        else if(msgFlag.equals("level1No")){
+            model.addAttribute("msg", "로그인시 이용 가능합니다.");
+            model.addAttribute("url", "/member/login");
+        }
+        else if(msgFlag.equals("level2No")){
+            model.addAttribute("msg", "마이페이지에서 계좌등록시 이용가능합니다.");
+            model.addAttribute("url", "/member/login");
+        }
 
 
         return "include/message";
