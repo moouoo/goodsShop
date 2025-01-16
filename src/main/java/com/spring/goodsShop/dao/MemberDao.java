@@ -32,7 +32,7 @@ public interface MemberDao {
 
     void setAccount_num(@Param("account_num") String account_num, @Param("mid") String mid);
 
-    void updateLevel(@Param("level") int level);
+    void updateLevel(@Param("level") int level, @Param("mid") String mid);
 
     int getMemberIdBymid(@Param("mid") String mid);
 

@@ -18,6 +18,9 @@
     <div class="a">
         <h2>안녕하세요 굿즈샵입니다.</h2>
         <p>홈은 어떻게 꾸며야할지 감 자체가 잡히지 않아용 어캐해야할까용</p>
+        <div th:with="level = ${session.sLevel}">
+            <p th:text="${level}"></p>
+        </div>
     </div>
 
 </body>

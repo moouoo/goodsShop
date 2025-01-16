@@ -36,7 +36,7 @@ public interface MemberService {
 
     void setAccount_num(String account_num, String mid);
 
-    void updateLevel(int level);
+    void updateLevel(int level, String mid);
 
     int getMemberIdBymid(String mid);
 

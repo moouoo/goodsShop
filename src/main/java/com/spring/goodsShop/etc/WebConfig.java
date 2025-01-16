@@ -1,8 +1,8 @@
 package com.spring.goodsShop.etc;
 
-import com.spring.goodsShop.interceptor.Level1_intercetor;
+import com.spring.goodsShop.interceptor.Level1_interceptor;
 import com.spring.goodsShop.interceptor.Level2_interceptor;
-import com.spring.goodsShop.interceptor.Level3_interceptor;
+import com.spring.goodsShop.interceptor.Level99_interceptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.*;
@@ -10,13 +10,13 @@ import org.springframework.web.servlet.config.annotation.*;
 @Configuration
 public class WebConfig implements WebMvcConfigurer {
     @Autowired
-    Level3_interceptor level3Interceptor;
+    Level99_interceptor level99Interceptor;
 
     @Autowired
     Level2_interceptor level2Interceptor;
 
     @Autowired
-    Level1_intercetor level1Intercetor;
+    Level1_interceptor level1Interceptor;
 
 //    @Override
 //    public void addCorsMappings(CorsRegistry registry) {
@@ -42,16 +42,18 @@ public class WebConfig implements WebMvcConfigurer {
                 .addResourceLocations("file:/Users/moo/IdeaProjects/goodsShop/src/main/resources/static/img/");
     }
 
+    // 인터센터설정
     @Override
     public void addInterceptors(InterceptorRegistry registry){
-        registry.addInterceptor(level3Interceptor)
+        registry.addInterceptor(level99Interceptor)
                 .addPathPatterns("/admin/**");
-        registry.addInterceptor(level2Interceptor)
-                .addPathPatterns("/member/**");
-        registry.addInterceptor(level1Intercetor)
-                .addPathPatterns("/member/*");
+        //registry.addInterceptor(level2Interceptor)
+        registry.addInterceptor(level1Interceptor)
+                .addPathPatterns("/product/cart")
+                .addPathPatterns("/product/orderPage")
+                .addPathPatterns("/product/askAboutProduct");
     }
 
-    // 인턴셉터 조건 설정 및 위치설정해야함.
+
 
 }

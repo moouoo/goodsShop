@@ -138,8 +138,8 @@ public class MemberServiceImpl implements MemberService{
     }
 
     @Override
-    public void updateLevel(int level) {
-        memberDao.updateLevel(level);
+    public void updateLevel(int level, String mid) {
+        memberDao.updateLevel(level, mid);
     }
 
     @Override

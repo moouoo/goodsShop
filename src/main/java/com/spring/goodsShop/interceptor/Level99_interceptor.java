@@ -9,13 +9,14 @@ import org.springframework.web.servlet.HandlerInterceptor;
 import java.io.IOException;
 
 @Component
-public class Level3_interceptor implements HandlerInterceptor {
+public class Level99_interceptor implements HandlerInterceptor {
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws IOException {
         HttpSession session = request.getSession();
         int level = session.getAttribute("sLevel") == null ? 0 : Integer.parseInt(session.getAttribute("sLevel").toString());
 
-        if(level != 3){
+        // 관리자만 이용 가능.
+        if(level != 99){
             response.sendRedirect(request.getContextPath() + "/message/adminNo");
             return false;
         }

@@ -1,0 +1,51 @@
+a {
+    text-decoration: none;
+    color: black;
+}
+/* 필터 섹션 스타일 */
+.filter-section {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.filter-title {
+    font-size: 1.5rem;
+    font-weight: bold;
+    margin-bottom: 20px;
+}
+
+/* 상품 그리드 */
+.product-container {
+    padding: 20px;
+}
+
+.product-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 20px;
+}
+
+.product-card {
+    background-color: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 10px;
+    text-align: center;
+}
+
+.product-card img {
+    width: 100%;
+    height: 200px; /* 고정 높이 설정 */
+    object-fit: cover; /* 이미지 비율 유지하며 크기 맞춤 */
+    border-radius: 4px;
+}
+
+.total-products {
+    margin-top: 20px;
+    text-align: center;
+    font-weight: bold;
+}

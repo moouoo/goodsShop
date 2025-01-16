@@ -223,7 +223,7 @@
                 <p>닉네임: <span id="level" th:text="${level_name}">등급</span></p>
                 <p>이메일: <span id="userEmail" th:text="${email}">example@example.com</span></p>
                 <p>계좌번호: <span id="userAccount_num" th:text="${account_num}">352-0869-2631-53</span></p>
-                <form name="accountForm" method="post" th:action="@{/member/editAccount_num}">
+                <form name="accountForm" id="accountForm" method="post" th:action="@{/member/editAccount_num}">
                     <div class="account_num_display">
                         <input type="text" id="account_num" name="account_num">
                         <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
@@ -801,7 +801,12 @@
             const sections = document.querySelectorAll('.section');
 
             // 선택된 섹션의 ID를 확인합니다.
-            let isProductSection = section === 'product_register' || section === 'productOrder' || section === 'reviewReply' || section === 'qna';
+            let isProductSection = (
+                section === 'product_register' ||
+                section === 'productOrder' ||
+                section === 'reviewReply' ||
+                section === 'qna'
+            );
 
             if(isProductSection){
                 let sLevel = [[${level}]];
@@ -839,7 +844,7 @@
         }
 
         function editAccount_num(){
-            const sendRefundForm = document.getElementById('sendRefundForm');
+            const sendRefundForm = document.getElementById('accountForm');
 
             let account_num = document.getElementById("account_num").value.trim();
             if(account_num == "") {

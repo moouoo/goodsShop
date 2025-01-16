@@ -204,7 +204,7 @@ public class MessageController {
         }
         else if(msgFlag.equals("level2No")){
             model.addAttribute("msg", "마이페이지에서 계좌등록시 이용가능합니다.");
-            model.addAttribute("url", "/member/login");
+            model.addAttribute("url", "/member/memberP");
         }
 
 

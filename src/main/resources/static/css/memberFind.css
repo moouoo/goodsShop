@@ -1,0 +1,83 @@
+.container {
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    max-width: 100%;
+    width: 100%;
+    display: flex;                /* Flexbox 활성화 */
+    justify-content: center;      /* 가로 중앙 정렬 */
+    align-items: center;          /* 세로 중앙 정렬 */
+}
+
+.content{
+    background-color: #ffffff;
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    text-align: center;
+    width: 40%;
+}
+
+h2 {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.tab-buttons {
+    display: flex;
+    justify-content: space-between;
+}
+
+.tab-buttons button {
+    width: 48%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    background-color: #f4f4f9;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+.tab-buttons button.active {
+    background-color: #4CAF50;
+    color: white;
+}
+
+.form-group {
+    display: none;
+    margin-top: 20px;
+}
+
+.form-group.active {
+    display: block;
+}
+
+label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+
+input[type="text"], input[type="email"] {
+    width: 94.5%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    margin-bottom: 15px;
+    font-size: 16px;
+}
+
+input[type="button"] {
+    width: 100%;
+    padding: 10px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+input[type="button"]:hover {
+    background-color: #45a049;
+}

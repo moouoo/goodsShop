@@ -277,11 +277,10 @@ public class MemberController {
 
     @RequestMapping(value = "/editAccount_num", method = RequestMethod.POST)
     String editAccount_num(String account_num, HttpSession session){
-        String mid = (String) session.getAttribute("sMid");
+        String mid = session.getAttribute("sMid") == null ? "" : session.getAttribute("sMid").toString();
         String ACCOUNT_REGEX = "^\\d{2,3}-\\d{2,4}-\\d{2,4}-\\d{2,6}$";
 
-        int level = (int) session.getAttribute("sLevel");
-
+        int level;
         // 정규식 패턴 컴파일
         Pattern pattern = Pattern.compile(ACCOUNT_REGEX);
         Matcher matcher = pattern.matcher(account_num);
@@ -291,7 +290,7 @@ public class MemberController {
             // 유효한 계좌번호일 경우 처리
             memberService.setAccount_num(account_num, mid);
             level = 2;
-            memberService.updateLevel(level);
+            memberService.updateLevel(level, mid);
             session.setAttribute("sLevel", level);
             return "redirect:/message/ok_account_num";
         } else {
@@ -495,6 +494,7 @@ public class MemberController {
         String mid = (String) session.getAttribute("sMid");
         if (mid == null) {
             data.put("loginOk", false);
+            return ResponseEntity.badRequest().body(data);
         }
         else{
             int memberId = memberService.getMemberIdBymid(mid);

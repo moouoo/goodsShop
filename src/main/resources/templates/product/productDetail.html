@@ -75,7 +75,6 @@
         <div class="tab-content">
             <div id="detail" class="tab-pane active" th:each="product_list : ${product_list}">
                 <img th:src="@{/img/product_detail/{detail}(detail=${product_list.product_img_detail})}" alt="상세정보 이미지" style="width: 100%; max-width: 860px; display: block; margin: 0 auto;">
-                <p>상세정보 내용을 여기에 추가하세요.</p>
             </div>
 
             <div id="review" class="tab-pane">

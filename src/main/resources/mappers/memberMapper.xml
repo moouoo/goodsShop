@@ -214,7 +214,7 @@
     </update>
 
     <update id="updateLevel">
-        update member set level = #{level};
+        update member set level = #{level} WHERE mid = #{mid};
     </update>
 
     <update id="pwdSet">
