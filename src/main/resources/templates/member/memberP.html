@@ -510,7 +510,7 @@
                         </div>
                     </div>
                     <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
-                    <input type="button" onclick="productCheck()" value="상품 등록">
+                    <input type="button" onclick="productCheck()" class="btn" value="상품 등록">
                 </form>
             </div>
 
@@ -753,7 +753,7 @@
             }
         });
 
-        // 모달 열기
+       // 모달 열기
         function openPwdSetModal(){
              modal.style.display = 'flex';
         }
@@ -1032,8 +1032,8 @@
 
             // 상세 이미지 파일 처리
             if (productImgDetails) {
-                console.log('선택한 상세 이미지:', productImgDetails.name);
-                console.log('파일 크기:', productImgDetails.size);
+                //console.log('선택한 상세 이미지:', productImgDetails.name);
+                //console.log('파일 크기:', productImgDetails.size);
             }
 
             if(maincategory == "" || subcategory == ""){

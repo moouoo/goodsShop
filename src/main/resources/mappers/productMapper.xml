@@ -112,7 +112,8 @@
     <select id="getProductBest100" resultType="com.spring.goodsShop.vo.ProductVo">
         SELECT * FROM product p
         JOIN product_img pi ON p.product_img_id = pi.id
-        ORDER BY sales_count DESC, Rdate DESC;
+        ORDER BY sales_count DESC, Rdate DESC
+        LIMIT 100;
     </select>
 
     <resultMap id="OrderProductListMap" type="com.spring.goodsShop.vo.ProductVo">

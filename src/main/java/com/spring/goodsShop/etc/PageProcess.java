@@ -48,69 +48,67 @@ public class PageProcess {
         // 원하는 페이징 블럭 수 == blockSize
         // 그에 따른 페이징으로 넘어갈 수 조건문 if(pageNum >= ?)
         // 한페이지에 몇개의 상품을 보여줄것인가? -> control의 @RequestParam(name="onePageCount", defaultValue = "3", required=false) int onePageCount
-        int curBlock = 1;
-        int blockSize = 4;
-        if(pageNum >= 5){
-            blockSize = ((pageNum - 1) / blockSize) * blockSize + blockSize;
-            curBlock = ((pageNum - 1) / blockSize) * blockSize + 1;
-
-            if (totalPageCount < blockSize) {
-                blockSize = curBlock;
-            }
-        }
-
-        if(onePageCount >= totalPageCount){
-            blockSize = totalPageCount;
-        }
-
-        pageVo.setCurBlock(curBlock);
-        pageVo.setBlockSize(blockSize);
-
-        return pageVo;
 
 //        int curBlock = 1;
-//        int blockSize = onePageCount;
+//        int blockSize = 4;
 //
 //        if(blockSize >= totalPageCount) blockSize = totalPageCount;
-//        else blockSize = 4;
 //
 //        if(pageNum >= 5 && pageNum <= 8){
 //            curBlock = 5;
 //            blockSize = 8;
 //            if(totalPageCount < blockSize){
-//                blockSize = curBlock;
+//                blockSize = totalPageCount;
 //            }
 //        }
 //        else if (pageNum >= 9 && pageNum <= 12) {
 //            curBlock = 9;
 //            blockSize = 12;
 //            if(totalPageCount < blockSize){
-//                blockSize = curBlock;
+//                blockSize = totalPageCount;
 //            }
 //        }
+//        pageVo.setCurBlock(curBlock);
+//        pageVo.setBlockSize(blockSize);
+//
 //        return pageVo;
+
+        int curBlock = 1;
+        int blockSize = 4;
+
+        if(pageNum >= 5){
+            curBlock = ((pageNum - 1) / blockSize) * blockSize + 1;
+            blockSize = ((pageNum - 1) / blockSize) * blockSize + blockSize;
+        }
+
+        if (totalPageCount < blockSize) blockSize = totalPageCount;
+
+        pageVo.setCurBlock(curBlock);
+        pageVo.setBlockSize(blockSize);
+
+        return pageVo;
     }
 
-
-    public List<ProductVo> categoryPagination(List<ProductVo> product_listImsi, int onePageCount, int startIndexNum) {
+    public List<ProductVo> categoryPagination(List<ProductVo> product_listImsi, int onePageCount, int startIndexNum, int pageNum) {
         List<ProductVo> product_list = new ArrayList<>();
 
-        for (int i = 0; i < product_listImsi.size(); i++) {
-            if (i == startIndexNum) {
-                if(onePageCount > startIndexNum && onePageCount < product_listImsi.size()){
-                    product_list = product_listImsi.subList(startIndexNum, onePageCount);
-                }
-
-                else if (onePageCount == startIndexNum || onePageCount == product_listImsi.size()) {
-                    product_list = product_listImsi.subList(startIndexNum, onePageCount * (startIndexNum / 10));
-                }
-
-                else {
-                    product_list = product_listImsi.subList(startIndexNum, product_listImsi.size());
-                }
-                break;
-            }
+        // 처음 1페이지 처리, 삼품갯수가 20개 초과인. 혹은 딱 20개인.
+        if((onePageCount > startIndexNum && onePageCount < product_listImsi.size()) || onePageCount == product_listImsi.size()){
+            product_list = product_listImsi.subList(startIndexNum, onePageCount);
         }
+
+        // 중간페이지치리
+        else if((onePageCount <= startIndexNum && product_listImsi.size() / startIndexNum >= 1)){
+            if((product_listImsi.size() - startIndexNum) < onePageCount) product_list = product_listImsi.subList(startIndexNum, product_listImsi.size());
+            else product_list = product_listImsi.subList(startIndexNum, (pageNum * onePageCount));
+
+        }
+        // 마지막페이지 처리
+        else {
+            product_list = product_listImsi.subList(startIndexNum, product_listImsi.size());
+            System.out.println("여기옴?");
+        }
+
         return product_list;
     }
 }

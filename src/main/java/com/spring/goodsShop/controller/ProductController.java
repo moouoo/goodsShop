@@ -150,7 +150,7 @@ public class ProductController {
         // 페이징처리
         String part = "mainCategoryProduct";
         PageVo pageVo = pageProcess.pageProcess(part, pageNum, onePageCount, product_listImsi, "");
-        List<ProductVo> product_list = pageProcess.categoryPagination(product_listImsi, onePageCount, pageVo.getStartIndexNum());
+        List<ProductVo> product_list = pageProcess.categoryPagination(product_listImsi, onePageCount, pageVo.getStartIndexNum(), pageNum);
 
         model.addAttribute("title", title);
         model.addAttribute("sub_list", sub_list);
@@ -181,7 +181,7 @@ public class ProductController {
         // 페이징처리
         String part = "subCategoryProduct";
         PageVo pageVo = pageProcess.pageProcess(part, pageNum, onePageCount, product_listImsi, "");
-        List<ProductVo> product_list = pageProcess.categoryPagination(product_listImsi, onePageCount, pageVo.getStartIndexNum());
+        List<ProductVo> product_list = pageProcess.categoryPagination(product_listImsi, onePageCount, pageVo.getStartIndexNum(), pageNum);
 
         model.addAttribute("sub_list", sub_list);
         model.addAttribute("sub_title", sub_title);
@@ -191,6 +191,7 @@ public class ProductController {
         model.addAttribute("pageVo", pageVo);
         model.addAttribute("subCategoryId", id);
         model.addAttribute("totalCount", "총 " + product_listImsi.size() + "개의 상품이 있습니다.");
+
 
         navbarHelper.navbarSetup(model);
         return "product/productPageSub";
@@ -711,7 +712,7 @@ public class ProductController {
         List<ProductVo> productBest100Imsi = productService.getProductBest100();
         String part = "best100Product";
         PageVo pageVo = pageProcess.pageProcess(part, pageNum, onePageCount, productBest100Imsi, "");
-        List<ProductVo> productBest100 = pageProcess.categoryPagination(productBest100Imsi, onePageCount, pageVo.getStartIndexNum());
+        List<ProductVo> productBest100 = pageProcess.categoryPagination(productBest100Imsi, onePageCount, pageVo.getStartIndexNum(), pageNum);
 
         model.addAttribute("productBest100", productBest100);
         model.addAttribute("pageVo", pageVo);
